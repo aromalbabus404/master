@@ -87,7 +87,12 @@ WSGI_APPLICATION = "aquacraft.wsgi.application"
 # -----------------------------------------------------------------------------
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+print("=" * 60)
+print("DATABASE_URL =", DATABASE_URL)
+print("=" * 60)
+
 if DATABASE_URL:
+    print("Using PostgreSQL")
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
@@ -96,13 +101,13 @@ if DATABASE_URL:
         )
     }
 else:
+    print("Using SQLite")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-
 # -----------------------------------------------------------------------------
 # Password Validation
 # -----------------------------------------------------------------------------
