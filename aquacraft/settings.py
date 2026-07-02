@@ -1,8 +1,8 @@
 from pathlib import Path
 import os
 
-import os
 import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,12 +54,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "aquacraft.wsgi.application"
+
 DATABASES = {
-    "default": dj_database_url.config(
-        conn_max_age=600,
-        conn_health_checks=True,
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL")
     )
 }
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
