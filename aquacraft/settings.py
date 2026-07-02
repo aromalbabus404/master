@@ -10,9 +10,17 @@ SECRET_KEY = "django-insecure-CHANGE-ME-before-deploying-to-production"
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+DEBUG = False
+
 ALLOWED_HOSTS = [
+    ".vercel.app",
     "localhost",
     "127.0.0.1",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://master-iae76xxi6-aromal-dev.vercel.app",
+    "https://master-git-main-aromal-dev.vercel.app",
 ]
 
 INSTALLED_APPS = [
