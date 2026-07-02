@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
 
+import os
+import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-CHANGE-ME-before-deploying-to-production"
@@ -53,14 +56,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "aquacraft.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "aquacraft",
-        "USER": "postgres",
-        "PASSWORD": "Aromal@123",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
+    "default": dj_database_url.config(
+        default="postgresql://postgres:Aromal@123@localhost:5432/aquacraft",
+        conn_max_age=600,
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
