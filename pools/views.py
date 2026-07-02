@@ -1,5 +1,6 @@
 import json
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -109,6 +110,42 @@ def dashboard(request):
         "stat_orders": Order.objects.count(),
     }
     return render(request, "pools/dashboard.html", context)
+
+
+
+def admin_login(request):
+    # Already logged in
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password,
+        )
+
+        if user is not None:
+            login(request, user)
+            return redirect("dashboard")
+
+        messages.error(request, "Invalid username or password.")
+
+    return render(request, "registration/login.html")
+
+
+# ----------------------------
+# LOGOUT
+# ----------------------------
+def admin_logout(request):
+    logout(request)
+    return redirect("admin_login")
+
+
+
 
 
 @login_required
