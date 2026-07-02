@@ -92,16 +92,16 @@ WSGI_APPLICATION = "aquacraft.wsgi.application"
 #
 # Since this app runs on Vercel, we need the PUBLIC url. We check both env var
 # names (public first) so this works regardless of which one is set.
-DATABASE_URL = os.getenv("DATABASE_PUBLIC_URL") or os.getenv("DATABASE_URL")
+DATABASE_PUBLIC_URL= os.getenv("DATABASE_PUBLIC_URL") or os.getenv("DATABASE_URL")
 print("=" * 60)
-print("DATABASE_URL =", DATABASE_URL)
+print("DATABASE_URL =", DATABASE_PUBLIC_URL)
 print("=" * 60)
 
-if DATABASE_URL:
+if DATABASE_PUBLIC_URL:
     print("Using PostgreSQL")
     DATABASES = {
         "default": dj_database_url.parse(
-            DATABASE_URL,
+           DATABASE_PUBLIC_URL,
             conn_max_age=600,
             ssl_require=True,
         )
