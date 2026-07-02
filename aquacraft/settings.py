@@ -85,7 +85,13 @@ WSGI_APPLICATION = "aquacraft.wsgi.application"
 # -----------------------------------------------------------------------------
 # Database
 # -----------------------------------------------------------------------------
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Railway gives you two Postgres URLs:
+#   DATABASE_URL         -> internal, only reachable from within Railway's network
+#   DATABASE_PUBLIC_URL  -> external/public, reachable from Vercel or anywhere else
+#
+# Since this app runs on Vercel, we need the PUBLIC url. We check both env var
+# names (public first) so this works regardless of which one is set.
+DATABASE_URL = os.getenv("DATABASE_PUBLIC_URL") or os.getenv("DATABASE_URL")
 
 print("=" * 60)
 print("DATABASE_URL =", DATABASE_URL)
