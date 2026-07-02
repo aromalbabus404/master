@@ -54,14 +54,12 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "aquacraft.wsgi.application"
-
 DATABASES = {
     "default": dj_database_url.config(
-        default="postgresql://postgres:Aromal@123@localhost:5432/aquacraft",
         conn_max_age=600,
+        conn_health_checks=True,
     )
 }
-
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
