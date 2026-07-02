@@ -6,22 +6,11 @@ from django.contrib.auth import views as auth_views
 from pools import views
 
 urlpatterns = [
-    # Your custom dashboard
-    path("admin/", views.dashboard, name="dashboard"),
+    path("admin/", views.dashboard, name="dashboard"),   # Custom dashboard
+    path("django-admin/", admin.site.urls),              # Django admin
 
-    # Django built-in admin
-    path("django-admin/", admin.site.urls),
-
-    path(
-        "login/",
-        auth_views.LoginView.as_view(template_name="registration/login.html"),
-        name="login",
-    ),
-    path(
-        "logout/",
-        auth_views.LogoutView.as_view(next_page="login"),
-        name="logout",
-    ),
+    path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
 
     path("", include("pools.urls")),
 ]
