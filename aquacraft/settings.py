@@ -2,28 +2,36 @@ from pathlib import Path
 import os
 import dj_database_url
 
-# Base directory
+# -----------------------------------------------------------------------------
+# Base Directory
+# -----------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# -----------------------------------------------------------------------------
 # Security
-SECRET_KEY = "django-insecure-CHANGE-ME-before-deploying-to-production"
+# -----------------------------------------------------------------------------
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-change-this-in-production"
+)
 
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = [
     ".vercel.app",
-    "master-three-ecru.vercel.app",
+    ".up.railway.app",
     "localhost",
     "127.0.0.1",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://master-three-ecru.vercel.app",
-    "https://master-iae76xxi6-aromal-dev.vercel.app",
-    "https://master-git-main-aromal-dev.vercel.app",
+    "https://*.vercel.app",
+    "https://*.up.railway.app",
 ]
 
+# -----------------------------------------------------------------------------
 # Applications
+# -----------------------------------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -31,12 +39,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     "pools",
 ]
 
+# -----------------------------------------------------------------------------
 # Middleware
+# -----------------------------------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -47,6 +61,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "aquacraft.urls"
 
+# -----------------------------------------------------------------------------
+# Templates
+# -----------------------------------------------------------------------------
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -65,7 +82,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "aquacraft.wsgi.application"
 
+# -----------------------------------------------------------------------------
 # Database
+# -----------------------------------------------------------------------------
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
@@ -84,7 +103,9 @@ else:
         }
     }
 
-# Password validation
+# -----------------------------------------------------------------------------
+# Password Validation
+# -----------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -100,36 +121,52 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# -----------------------------------------------------------------------------
 # Internationalization
+# -----------------------------------------------------------------------------
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
-
 USE_TZ = True
 
-# Static files
-STATIC_URL = "static/"
+# -----------------------------------------------------------------------------
+# Static Files
+# -----------------------------------------------------------------------------
+STATIC_URL = "/static/"
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
+
+# Uncomment ONLY if you have a project-level "static" folder.
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# Media files
+# -----------------------------------------------------------------------------
+# Media
+# -----------------------------------------------------------------------------
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# Default primary key
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
+# -----------------------------------------------------------------------------
 # Authentication
+# -----------------------------------------------------------------------------
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
 
-# Upload limits
+# -----------------------------------------------------------------------------
+# Default Primary Key
+# -----------------------------------------------------------------------------
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# -----------------------------------------------------------------------------
+# Upload Limits
+# -----------------------------------------------------------------------------
 FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
