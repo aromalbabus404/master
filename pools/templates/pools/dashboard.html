@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaCraft Pools | Admin Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B3247; --deep:#072433; --aqua:#1FC8C2; --aqua-deep:#0FA39E;
+    --gold:#F2A93B; --sand:#F7F2E7; --foam:#EAF7F6;
+  }
+  body{font-family:'Inter',sans-serif;background:var(--sand);}
+  .sidebar{background:var(--navy); min-height:100vh; color:#fff; padding-top:24px;}
+  .sidebar .brand{font-family:'Archivo Black'; font-size:1.2rem; padding:0 20px 24px; }
+  .sidebar .brand span{color:var(--aqua);}
+  .sidebar .nav-link{
+    color:rgba(255,255,255,.78); padding:12px 22px; font-weight:600; font-size:.92rem;
+    border-left:3px solid transparent; cursor:pointer;
+  }
+  .sidebar .nav-link.active, .sidebar .nav-link:hover{
+    background:rgba(255,255,255,.07); color:#fff; border-left-color:var(--aqua);
+  }
+  .topbar{background:#fff; padding:16px 28px; border-bottom:1px solid #e3dcc9; display:flex; justify-content:space-between; align-items:center;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .card-section{background:#fff;border-radius:14px;padding:24px;box-shadow:0 10px 26px rgba(7,36,51,.08);margin-bottom:24px;}
+  .card-section h5{font-family:'Archivo Black';font-size:1.05rem;margin-bottom:18px;}
+  .table thead{background:var(--foam);}
+  .badge-pending{background:#F2A93B;}
+  .badge-approved{background:#1FC8C2;}
+  .badge-rejected{background:#D45353;}
+  .thumb{width:54px;height:54px;object-fit:cover;border-radius:8px;}
+  .gallery-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;}
+  .gallery-item{position:relative;}
+  .gallery-item .del-btn{
+    position:absolute;top:6px;right:6px;background:#D45353;color:#fff;border:none;
+    border-radius:50%;width:26px;height:26px;font-size:.8rem;line-height:1;
+  }
+  .stat-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 10px 26px rgba(7,36,51,.08);}
+  .stat-card strong{font-family:'Archivo Black';font-size:1.6rem;display:block;color:var(--navy);}
+  .stat-card small{color:#5C7282;text-transform:uppercase;font-size:.72rem;font-weight:700;}
+  @media(max-width:768px){ .sidebar{min-height:auto;} }
+</style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <!-- SIDEBAR -->
+    <div class="col-lg-2 col-md-3 sidebar p-0">
+      <div class="brand">Aqua<span>Craft</span> Admin</div>
+      <div class="nav flex-column">
+        <a class="nav-link active" data-panel="overview">📊 Overview</a>
+        <a class="nav-link" data-panel="hero">🌊 Hero Section</a>
+        <a class="nav-link" data-panel="products">🛒 Products</a>
+        <a class="nav-link" data-panel="gallery">🖼 Gallery</a>
+        <a class="nav-link" data-panel="reviews">⭐ Reviews</a>
+        <a class="nav-link" data-panel="orders">📦 Orders</a>
+        <a class="nav-link" data-panel="settings">⚙️ Settings</a>
+        <a href="{% url 'logout' %}" class="nav-link text-danger mt-3">🚪 Logout</a>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="col-lg-10 col-md-9 p-0">
+      <div class="topbar">
+        <h5 class="mb-0" style="font-family:'Archivo Black';">Welcome, {{ request.user.username }}</h5>
+        <a href="{% url 'index' %}" target="_blank" class="btn btn-sm btn-outline-dark">View Live Site ↗</a>
+      </div>
+
+      <div class="p-4">
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- OVERVIEW -->
+        <div class="panel active" id="panel-overview">
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_products }}</strong><small>Products</small></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_gallery }}</strong><small>Gallery Images</small></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_pending }}</strong><small>Pending Reviews</small></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_orders }}</strong><small>Orders Received</small></div></div>
+          </div>
+          <div class="card-section">
+            <h5>Quick Notes</h5>
+            <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — hero text, products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp.</p>
+          </div>
+        </div>
+
+        <!-- HERO -->
+        <div class="panel" id="panel-hero">
+          <div class="card-section">
+            <h5>Hero Section</h5>
+            <form method="post" action="{% url 'hero_save' %}">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Eyebrow text</label>
+                  {{ hero_form.eyebrow }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Heading (use &lt;br&gt; for a line break)</label>
+                  {{ hero_form.heading }}
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-bold">Subtext</label>
+                  {{ hero_form.sub }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Background video URL (mp4)</label>
+                  {{ hero_form.video_url }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Poster image URL</label>
+                  {{ hero_form.poster_image }}
+                </div>
+                <div class="col-md-3"><label class="form-label fw-bold">Stat 1</label>{{ hero_form.stat1_value }}<div class="mt-1">{{ hero_form.stat1_label }}</div></div>
+                <div class="col-md-3"><label class="form-label fw-bold">Stat 2</label>{{ hero_form.stat2_value }}<div class="mt-1">{{ hero_form.stat2_label }}</div></div>
+                <div class="col-md-3"><label class="form-label fw-bold">Stat 3</label>{{ hero_form.stat3_value }}<div class="mt-1">{{ hero_form.stat3_label }}</div></div>
+                <div class="col-md-3"><label class="form-label fw-bold">Stat 4</label>{{ hero_form.stat4_value }}<div class="mt-1">{{ hero_form.stat4_label }}</div></div>
+              </div>
+              <button class="btn btn-dark mt-3" type="submit">Save Hero Section</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="panel" id="panel-products">
+          <div class="card-section">
+            <h5>Add Product</h5>
+            <form method="post" action="{% url 'product_add' %}" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label fw-bold">Name</label>{{ product_form.name }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold">Category</label>{{ product_form.category }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold">Badge (optional)</label>{{ product_form.badge }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold">Price (₹)</label>{{ product_form.price }}</div>
+                <div class="col-md-3"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
+                <div class="col-md-6"><label class="form-label fw-bold">Sizes (comma separated)</label>{{ product_form.sizes }}</div>
+                <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
+                <div class="col-md-4"><label class="form-label fw-bold">…or upload image</label>{{ product_form.image_file }}</div>
+              </div>
+              <button class="btn btn-primary mt-3" type="submit">Add Product</button>
+            </form>
+          </div>
+
+          <div class="card-section">
+            <h5>All Products</h5>
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th></th></tr></thead>
+                <tbody>
+                {% for p in products %}
+                  <tr>
+                    <td><img class="thumb" src="{{ p.image }}"></td>
+                    <td>{{ p.name }}{% if p.badge %} <span class="badge bg-warning text-dark">{{ p.badge }}</span>{% endif %}</td>
+                    <td class="text-capitalize">{{ p.get_category_display }}</td>
+                    <td>₹{{ p.price|floatformat:0 }}{% if p.mrp %} <small class="text-muted text-decoration-line-through">₹{{ p.mrp|floatformat:0 }}</small>{% endif %}</td>
+                    <td>{{ p.sizes }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary edit-prod-btn"
+                        data-id="{{ p.id }}" data-name="{{ p.name }}" data-category="{{ p.category }}"
+                        data-badge="{{ p.badge|default:'' }}" data-price="{{ p.price }}" data-mrp="{{ p.mrp|default:'' }}"
+                        data-sizes="{{ p.sizes }}" data-imgurl="{{ p.image_url|default:'' }}"
+                        data-action="{% url 'product_edit' p.id %}" type="button">Edit</button>
+                      <form method="post" action="{% url 'product_delete' p.id %}" style="display:inline;" onsubmit="return confirm('Delete this product?');">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="6" class="text-muted text-center py-4">No products yet.</td></tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Edit modal -->
+          <div class="modal fade" id="editProductModal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="post" enctype="multipart/form-data" id="editProductForm">
+                  {% csrf_token %}
+                  <div class="modal-header">
+                    <h5 class="modal-title">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body row g-3">
+                    <div class="col-md-8"><label class="form-label fw-bold">Name</label><input class="form-control" name="name" id="ed_name"></div>
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold">Category</label>
+                      <select class="form-select" name="category" id="ed_category">
+                        {% for key, label in categories %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Price</label><input type="number" class="form-control" name="price" id="ed_price"></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
+                    <div class="col-12"><label class="form-label fw-bold">Sizes (comma separated)</label><input class="form-control" name="sizes" id="ed_sizes"></div>
+                    <div class="col-md-8"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" id="ed_imgurl"></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">…or upload new</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GALLERY -->
+        <div class="panel" id="panel-gallery">
+          <div class="card-section">
+            <h5>Add Gallery Image</h5>
+            <form method="post" action="{% url 'gallery_add' %}" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="row g-3 align-items-end">
+                <div class="col-md-7"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" placeholder="https://..."></div>
+                <div class="col-md-3"><label class="form-label fw-bold">…or upload</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
+                <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Add</button></div>
+              </div>
+            </form>
+          </div>
+          <div class="card-section">
+            <h5>Gallery</h5>
+            <div class="row g-3">
+              {% for g in gallery %}
+              <div class="col-6 col-md-3">
+                <div class="gallery-item">
+                  <img class="gallery-thumb" src="{{ g.image }}">
+                  <form method="post" action="{% url 'gallery_delete' g.id %}" onsubmit="return confirm('Delete this image?');">
+                    {% csrf_token %}
+                    <button class="del-btn" type="submit">✕</button>
+                  </form>
+                </div>
+              </div>
+              {% empty %}
+              <p class="text-muted">No gallery images yet.</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- REVIEWS -->
+        <div class="panel" id="panel-reviews">
+          <div class="card-section">
+            <h5>Customer Reviews</h5>
+            <p class="text-muted">New reviews submitted on the storefront start as <span class="badge badge-pending">Pending</span>. Approve to publish them live, or reject to hide.</p>
+            {% for r in reviews %}
+            <div class="d-flex gap-3 align-items-start border-bottom py-3">
+              <img src="{{ r.avatar_url }}" class="thumb rounded-circle">
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ r.name }}</strong>
+                  <span class="badge {% if r.status == 'approved' %}badge-approved{% elif r.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">{{ r.status }}</span>
+                </div>
+                <div class="text-warning small mb-1">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
+                <p class="mb-2">{{ r.text }}</p>
+                {% if r.status == 'pending' %}
+                  <form method="post" action="{% url 'review_set_status' r.id 'approved' %}" style="display:inline;">
+                    {% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Approve</button>
+                  </form>
+                  <form method="post" action="{% url 'review_set_status' r.id 'rejected' %}" style="display:inline;">
+                    {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Reject</button>
+                  </form>
+                {% else %}
+                  <form method="post" action="{% url 'review_set_status' r.id 'pending' %}">
+                    {% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Mark Pending</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No reviews submitted yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="panel" id="panel-orders">
+          <div class="card-section">
+            <h5>Orders</h5>
+            <p class="text-muted">Orders placed on the storefront are saved here instantly and also sent to your WhatsApp.</p>
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead><tr><th>Date</th><th>Name</th><th>Mobile</th><th>State</th><th>Pincode</th><th>Address</th><th>Items</th><th>Total</th></tr></thead>
+                <tbody>
+                {% for o in orders %}
+                  <tr>
+                    <td>{{ o.created_at|date:"d M Y, H:i" }}</td>
+                    <td>{{ o.name }}</td>
+                    <td>{{ o.mobile }}</td>
+                    <td>{{ o.state }}</td>
+                    <td>{{ o.pincode }}</td>
+                    <td>{{ o.address }}</td>
+                    <td>{% for it in o.items.all %}{{ it.name }} ({{ it.size }}) x{{ it.qty }}<br>{% endfor %}</td>
+                    <td>₹{{ o.total|floatformat:0 }}</td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="8" class="text-muted text-center py-4">No orders yet.</td></tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="panel" id="panel-settings">
+          <div class="card-section">
+            <h5>WhatsApp Notification Settings</h5>
+            <p class="text-muted">Orders and new reviews from the storefront open a WhatsApp chat to this number automatically.</p>
+            <form method="post" action="{% url 'settings_save' %}">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">Admin WhatsApp number (with country code, no +)</label>
+                  {{ settings_form.admin_whatsapp }}
+                </div>
+              </div>
+              <button class="btn btn-dark mt-3" type="submit">Save Settings</button>
+            </form>
+            <hr class="my-4">
+            <h5>About this admin</h5>
+            <p class="text-muted mb-0">This dashboard reads and writes a real SQLite database via Django models — every save here is permanent and shared across all admins and devices. Log-ins are real Django user accounts; create more admins with <code>python manage.py createsuperuser</code>. Django's own built-in admin is also available at <code>/admin/</code> for bulk edits.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ---- Sidebar tab switching (pure UI, no data logic — data already came from the DB) ---- */
+document.querySelectorAll('.sidebar .nav-link[data-panel]').forEach(link=>{
+  link.addEventListener('click', ()=>{
+    document.querySelectorAll('.sidebar .nav-link').forEach(l=>l.classList.remove('active'));
+    link.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-'+link.dataset.panel).classList.add('active');
+  });
+});
+
+/* ---- Edit product modal: fill fields from the row's data-* attrs, set form action ---- */
+const editModalEl = document.getElementById('editProductModal');
+const editModal = new bootstrap.Modal(editModalEl);
+document.querySelectorAll('.edit-prod-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.getElementById('editProductForm').action = btn.dataset.action;
+    document.getElementById('ed_name').value = btn.dataset.name;
+    document.getElementById('ed_category').value = btn.dataset.category;
+    document.getElementById('ed_badge').value = btn.dataset.badge;
+    document.getElementById('ed_price').value = btn.dataset.price;
+    document.getElementById('ed_mrp').value = btn.dataset.mrp;
+    document.getElementById('ed_sizes').value = btn.dataset.sizes;
+    document.getElementById('ed_imgurl').value = btn.dataset.imgurl;
+    editModal.show();
+  });
+});
+</script>
+</body>
+</html>
