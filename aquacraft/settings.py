@@ -1,12 +1,13 @@
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
 
 # -----------------------------------------------------------------------------
 # Base Directory
 # -----------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR / ".env")
 # -----------------------------------------------------------------------------
 # Security
 # -----------------------------------------------------------------------------
@@ -92,7 +93,6 @@ WSGI_APPLICATION = "aquacraft.wsgi.application"
 # Since this app runs on Vercel, we need the PUBLIC url. We check both env var
 # names (public first) so this works regardless of which one is set.
 DATABASE_URL = os.getenv("DATABASE_PUBLIC_URL") or os.getenv("DATABASE_URL")
-
 print("=" * 60)
 print("DATABASE_URL =", DATABASE_URL)
 print("=" * 60)
