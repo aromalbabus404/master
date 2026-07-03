@@ -25,7 +25,6 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError("Add an image URL or upload an image file.")
         return cleaned
 
-
 class HeroForm(forms.ModelForm):
     class Meta:
         model = HeroSection
@@ -52,8 +51,13 @@ class HeroForm(forms.ModelForm):
 
         widgets = {
             "eyebrow": forms.TextInput(attrs={"class": "form-control"}),
+
             "heading": forms.TextInput(attrs={"class": "form-control"}),
-            "sub": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+
+            "sub": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 3,
+            }),
 
             "video_url": forms.URLInput(attrs={
                 "class": "form-control",
@@ -88,6 +92,48 @@ class HeroForm(forms.ModelForm):
             "stat4_label": forms.TextInput(attrs={"class": "form-control"}),
         }
 
+    # -------------------------
+    # Validate uploaded video
+    # -------------------------
+    def clean_video_file(self):
+        video = self.cleaned_data.get("video_file")
+
+        if video:
+            # Cloudinary free limit = 10MB
+            max_size = 10 * 1024 * 1024
+
+            if video.size > max_size:
+                raise forms.ValidationError(
+                    "Video must be smaller than 10 MB."
+                )
+
+            if not video.content_type.startswith("video/"):
+                raise forms.ValidationError(
+                    "Please upload a valid video."
+                )
+
+        return video
+
+    # -------------------------
+    # Validate uploaded image
+    # -------------------------
+    def clean_poster_image_file(self):
+        image = self.cleaned_data.get("poster_image_file")
+
+        if image:
+            max_size = 5 * 1024 * 1024
+
+            if image.size > max_size:
+                raise forms.ValidationError(
+                    "Image must be smaller than 5 MB."
+                )
+
+            if not image.content_type.startswith("image/"):
+                raise forms.ValidationError(
+                    "Please upload a valid image."
+                )
+
+        return image
 
 class SiteSettingsForm(forms.ModelForm):
     class Meta:

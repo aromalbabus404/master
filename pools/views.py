@@ -144,7 +144,6 @@ def admin_logout(request):
     logout(request)
     return redirect("admin_login")
 
-
 @login_required
 @require_POST
 def hero_save(request):
@@ -153,36 +152,42 @@ def hero_save(request):
     form = HeroForm(
         request.POST,
         request.FILES,
-        instance=hero
+        instance=hero,
     )
 
     if form.is_valid():
         hero = form.save(commit=False)
 
-        # If a new video file is uploaded, use it
+        # Save uploaded video
         if request.FILES.get("video_file"):
             hero.video_file = request.FILES["video_file"]
+            hero.video_url = ""
 
-        # If a new image is uploaded, use it
+        # Save uploaded poster image
         if request.FILES.get("poster_image_file"):
             hero.poster_image_file = request.FILES["poster_image_file"]
+            hero.poster_image = ""
 
         hero.save()
 
-        # Update URL fields so the frontend can continue using them
+        # Update URL fields after upload
         if hero.video_file:
             hero.video_url = hero.video_file.url
 
         if hero.poster_image_file:
             hero.poster_image = hero.poster_image_file.url
 
-        hero.save()
+        hero.save(update_fields=[
+            "video_url",
+            "poster_image",
+        ])
 
         messages.success(request, "Hero section updated successfully.")
 
     else:
-        print(form.errors)
-        messages.error(request, f"Could not save hero section: {form.errors}")
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"{field}: {error}")
 
     return redirect("dashboard")
 
