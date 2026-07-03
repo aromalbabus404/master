@@ -3,230 +3,311 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Login | AquaCraft Pools</title>
+<title>Admin Login | MasterPool</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #0B3247;
-    --aqua: #1FC8C2;
-    --sand: #F7F2E7;
-    --transition-premium: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  :root{
+    --navy:#0B3C5D;
+    --navy-deep:#072840;
+    --teal:#1FA2B8;
+    --gold:#E8B84B;
+    --gold-hover:#D9A331;
+    --off-white:#F7FAFC;
+    --charcoal:#1E2A32;
+    --foam:#BFE7EC;
   }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: #051924;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    margin: 0;
-    overflow: hidden;
-    position: relative;
+  *{box-sizing:border-box;}
+
+  html,body{height:100%;}
+
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--charcoal);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 45%, var(--teal) 100%);
   }
 
-  /* Premium Animated Floating Background Orbs */
-  body::before, body::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    z-index: 1;
-    opacity: 0.4;
+  /* ---------- Ambient water surface ---------- */
+  .water-layer{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    width:200%;
+    height:220px;
+    background-repeat:repeat-x;
+    background-size:50% 100%;
+    opacity:.35;
+    z-index:0;
+  }
+  .water-layer.back{
+    height:260px;
+    opacity:.22;
+    animation:drift 26s linear infinite;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200'%3E%3Cpath d='M0 100 Q 100 60 200 100 T 400 100 T 600 100 T 800 100 V200H0Z' fill='%231FA2B8'/%3E%3C/svg%3E");
+  }
+  .water-layer.front{
+    height:190px;
+    opacity:.30;
+    animation:drift 17s linear infinite reverse;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200'%3E%3Cpath d='M0 110 Q 100 150 200 110 T 400 110 T 600 110 T 800 110 V200H0Z' fill='%23072840'/%3E%3C/svg%3E");
+  }
+  @keyframes drift{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  .bubble{
+    position:fixed;
+    bottom:-40px;
+    border-radius:50%;
+    background:rgba(191,231,236,.35);
+    border:1px solid rgba(191,231,236,.5);
+    animation:rise linear infinite;
+    z-index:0;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:.8; }
+    100%{ transform:translateY(-110vh) translateX(20px); opacity:0; }
   }
 
-  body::before {
-    width: 350px;
-    height: 350px;
-    background: var(--aqua);
-    top: -50px;
-    left: -50px;
-    animation: floatOrbOne 12s infinite alternate ease-in-out;
+  /* ---------- Layout ---------- */
+  .stage{
+    position:relative;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:28px;
   }
 
-  body::after {
-    width: 400px;
-    height: 400px;
-    background: var(--navy);
-    bottom: -100px;
-    right: -100px;
-    animation: floatOrbTwo 15s infinite alternate ease-in-out;
+  /* Depth gauge signature element */
+  .depth-gauge{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:var(--foam);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem;
+    letter-spacing:.04em;
+    user-select:none;
+    padding-top:6px;
+  }
+  .depth-gauge .rule{
+    width:1px;
+    height:340px;
+    background:linear-gradient(to bottom, rgba(191,231,236,.05), rgba(191,231,236,.55) 8%, rgba(191,231,236,.55) 92%, rgba(191,231,236,.05));
+    position:relative;
+    margin-top:4px;
+  }
+  .depth-gauge .tick{
+    position:absolute;
+    left:-5px;
+    width:11px;
+    height:1px;
+    background:rgba(191,231,236,.55);
+  }
+  .depth-gauge .tick span{
+    position:absolute;
+    left:16px;
+    top:-7px;
+    white-space:nowrap;
+    opacity:.75;
+  }
+  .depth-gauge .marker{
+    position:absolute;
+    left:-4px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:var(--gold);
+    animation:bob 3.4s ease-in-out infinite;
+  }
+  .depth-gauge .marker .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 0 4px rgba(232,184,75,.25);
+  }
+  .depth-gauge .marker span{ font-weight:600; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(4px); } }
+
+  .depth-gauge .label-top,.depth-gauge .label-bottom{
+    opacity:.7;
+    text-align:center;
+    line-height:1.4;
   }
 
-  @keyframes floatOrbOne {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(80px, 50px) scale(1.2); }
+  /* ---------- Card ---------- */
+  .card-box{
+    background:var(--off-white);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(4,20,32,.45), 0 0 0 1px rgba(255,255,255,.06);
+    max-width:400px;
+    width:100%;
   }
 
-  @keyframes floatOrbTwo {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(-60px, -80px) scale(1.1); }
+  .card-header{
+    position:relative;
+    background:linear-gradient(120deg, var(--navy) 0%, var(--teal) 100%);
+    padding:30px 32px 40px;
+    color:#fff;
+  }
+  .card-header svg{
+    position:absolute;
+    left:0; bottom:-1px;
+    width:100%;
+    height:24px;
+    display:block;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--foam);
+    opacity:.85;
+    margin-bottom:10px;
+  }
+  .brand{
+    font-family:'Archivo Black',sans-serif;
+    font-size:1.55rem;
+    line-height:1.1;
+    margin:0;
+  }
+  .brand span{ color:var(--gold); }
+
+  .card-body{ padding:30px 32px 34px; }
+
+  .sub{
+    color:var(--charcoal);
+    opacity:.65;
+    font-size:.88rem;
+    margin-bottom:22px;
   }
 
-  /* Frosted Glassmorphism Premium Card with Scale-In Animation */
-  .card-box {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 24px;
-    padding: 45px 40px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
-    max-width: 420px;
-    width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    z-index: 2;
-    opacity: 0;
-    transform: scale(0.92);
-    animation: premiumReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  label.form-label{
+    color:var(--charcoal);
+    font-size:.8rem;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    font-weight:600;
+    opacity:.75;
   }
 
-  @keyframes premiumReveal {
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+  .form-control{
+    border:1.5px solid #E1E9EE;
+    border-radius:10px;
+    padding:.62rem .85rem;
+  }
+  .form-control:focus{
+    border-color:var(--teal);
+    box-shadow:0 0 0 .18rem rgba(31,162,184,.22);
   }
 
-  .brand {
-    font-family: 'Archivo Black';
-    font-size: 1.6rem;
-    color: var(--navy);
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
+  a{ color:var(--teal); text-decoration:none; }
+  a:hover{ color:var(--navy); text-decoration:underline; }
+
+  .btn-cta{
+    position:relative;
+    overflow:hidden;
+    background:var(--gold);
+    color:var(--charcoal);
+    font-weight:700;
+    letter-spacing:.02em;
+    border:none;
+    border-radius:10px;
+    padding:.68rem 1rem;
+    transition:background .2s ease, transform .15s ease;
+  }
+  .btn-cta:hover{
+    background:var(--gold-hover);
+    color:var(--charcoal);
+    transform:translateY(-1px);
+  }
+  .btn-cta:active{ transform:translateY(0); }
+  .btn-cta::after{
+    content:"";
+    position:absolute;
+    top:50%; left:50%;
+    width:0; height:0;
+    background:rgba(255,255,255,.45);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    transition:width .5s ease, height .5s ease, opacity .6s ease;
+    opacity:0;
+  }
+  .btn-cta:hover::after{ width:260px; height:260px; opacity:1; }
+
+  @media (max-width: 760px){
+    .depth-gauge{ display:none; }
   }
 
-  .brand span {
-    color: #19aba5;
-  }
-
-  .sub {
-    color: #526675;
-    font-size: 0.95rem;
-    margin-bottom: 32px;
-    line-height: 1.5;
-  }
-
-  .form-label {
-    color: var(--navy);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-  }
-
-  .form-control {
-    border: 2px solid rgba(11, 50, 71, 0.1);
-    border-radius: 12px;
-    padding: 13px 16px;
-    font-size: 0.95rem;
-    color: var(--navy);
-    background-color: rgba(255, 255, 255, 0.5);
-    transition: var(--transition-premium);
-  }
-
-  .form-control:focus {
-    background-color: #fff;
-    border-color: var(--aqua);
-    box-shadow: 0 0 0 4px rgba(31, 200, 194, 0.2);
-    outline: 0;
-  }
-
-  /* Luxury Button with Shimmer Reflection Effect */
-  .btn-navy {
-    background: var(--navy);
-    color: #fff;
-    font-weight: 600;
-    padding: 14px;
-    border-radius: 12px;
-    border: none;
-    letter-spacing: 0.5px;
-    transition: var(--transition-premium);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-navy::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -150%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-    transform: skewX(-25deg);
-  }
-
-  .btn-navy:hover::before {
-    animation: shimmer 1.5s infinite;
-  }
-
-  @keyframes shimmer {
-    100% { left: 150%; }
-  }
-
-  .btn-navy:hover {
-    background: #134661;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(11, 50, 71, 0.3);
-  }
-
-  .btn-navy:active {
-    transform: translateY(0);
-  }
-
-  .alert-danger {
-    background-color: #FFF5F5;
-    border: 1px solid #FED7D7;
-    color: #C53030;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    padding: 12px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    animation: smoothShake 0.4s ease-in-out;
-  }
-
-  @keyframes smoothShake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-4px); }
-    40%, 80% { transform: translateX(4px); }
+  @media (prefers-reduced-motion: reduce){
+    .water-layer, .bubble, .depth-gauge .marker{ animation:none !important; }
   }
 </style>
 </head>
 <body>
 
-<div class="card-box">
-  <div class="brand">Aqua<span>Craft</span> Admin</div>
-  <p class="sub">Sign in to manage products, gallery, reviews & orders.</p>
+<div class="water-layer back"></div>
+<div class="water-layer front"></div>
+<div class="bubble" style="left:12%; width:8px; height:8px; animation-duration:9s; animation-delay:0s;"></div>
+<div class="bubble" style="left:22%; width:5px; height:5px; animation-duration:12s; animation-delay:2s;"></div>
+<div class="bubble" style="left:78%; width:10px; height:10px; animation-duration:10s; animation-delay:1s;"></div>
+<div class="bubble" style="left:88%; width:6px; height:6px; animation-duration:14s; animation-delay:3.5s;"></div>
+<div class="bubble" style="left:65%; width:4px; height:4px; animation-duration:11s; animation-delay:5s;"></div>
 
-  {% if form.errors %}
-    <div class="alert alert-danger">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+<div class="stage">
+
+  <div class="depth-gauge" aria-hidden="true">
+    <div class="label-top">SURFACE<br>ACCESS</div>
+    <div class="rule">
+      <div class="marker" style="top:0;"><div class="dot"></div><span>0.0M</span></div>
+      <div class="tick" style="top:60px;"><span>1M</span></div>
+      <div class="tick" style="top:120px;"><span>2M</span></div>
+      <div class="tick" style="top:180px;"><span>3M</span></div>
+      <div class="tick" style="top:240px;"><span>4M</span></div>
+      <div class="tick" style="top:300px;"><span>5M</span></div>
+    </div>
+    <div class="label-bottom">SYSTEM<br>DEPTH</div>
+  </div>
+
+  <div class="card-box">
+    <div class="card-header">
+      <div class="eyebrow">Admin Console</div>
+      <h1 class="brand">Master<span>Pool</span></h1>
+      <svg viewBox="0 0 400 24" preserveAspectRatio="none">
+        <path d="M0 12 Q 100 24 200 12 T 400 12 V24 H0 Z" fill="#F7FAFC"/>
       </svg>
-      Incorrect username or password.
     </div>
-  {% endif %}
 
-  <form method="post">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label class="form-label">Username</label>
-      <input type="text" name="username" class="form-control" required autofocus autocomplete="username">
+    <div class="card-body">
+      <p class="sub">Sign in to manage products, gallery, reviews &amp; orders.</p>
+
+      {% if form.errors %}
+        <div class="alert alert-danger py-2">Incorrect username or password.</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" required autofocus>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn btn-cta w-100">Log In</button>
+      </form>
     </div>
-    <div class="mb-4">
-      <label class="form-label">Password</label>
-      <input type="password" name="password" class="form-control" required autocomplete="current-password">
-    </div>
-    <input type="hidden" name="next" value="{{ next }}">
-    <button type="submit" class="btn btn-navy w-100">Log In</button>
-  </form>
+  </div>
+
 </div>
 
 </body>
