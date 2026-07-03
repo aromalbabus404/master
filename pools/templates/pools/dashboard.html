@@ -41,7 +41,31 @@
   .stat-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 10px 26px rgba(7,36,51,.08);}
   .stat-card strong{font-family:'Archivo Black';font-size:1.6rem;display:block;color:var(--navy);}
   .stat-card small{color:#5C7282;text-transform:uppercase;font-size:.72rem;font-weight:700;}
-  @media(max-width:768px){ .sidebar{min-height:auto;} }
+
+  /* ---- Preview panel ---- */
+  .preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .preview-toolbar .url-pill{
+    background:var(--foam);color:var(--navy);font-weight:600;font-size:.82rem;
+    padding:8px 14px;border-radius:999px;display:flex;align-items:center;gap:8px;
+  }
+  .preview-toolbar .url-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--aqua-deep);display:inline-block;}
+  .preview-frame-wrap{
+    position:relative;border:1px solid #e3dcc9;border-radius:14px;overflow:hidden;
+    box-shadow:0 10px 26px rgba(7,36,51,.08);background:#fff;
+  }
+  .preview-frame-wrap iframe{width:100%;height:80vh;border:0;display:block;background:#fff;}
+  .preview-loading{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:#fff;color:#5C7282;font-weight:600;font-size:.9rem;gap:10px;transition:opacity .25s ease;
+  }
+  .preview-loading.hidden{opacity:0;pointer-events:none;}
+  .spinner-dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--foam);border-top-color:var(--aqua-deep);animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .device-btn{border:1px solid #e3dcc9;background:#fff;color:var(--navy);border-radius:8px;padding:7px 12px;font-size:.85rem;font-weight:600;}
+  .device-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .preview-frame-wrap.mobile-size{max-width:420px;margin:0 auto;}
+
+  @media(max-width:768px){ .sidebar{min-height:auto;} .preview-frame-wrap iframe{height:70vh;} }
 </style>
 </head>
 <body>
@@ -52,6 +76,7 @@
       <div class="brand">Aqua<span>Craft</span> Admin</div>
       <div class="nav flex-column">
         <a class="nav-link active" data-panel="overview">📊 Overview</a>
+        <a class="nav-link" data-panel="preview">👁 Preview Site</a>
         <a class="nav-link" data-panel="hero">🌊 Hero Section</a>
         <a class="nav-link" data-panel="products">🛒 Products</a>
         <a class="nav-link" data-panel="gallery">🖼 Gallery</a>
@@ -87,7 +112,28 @@
           </div>
           <div class="card-section">
             <h5>Quick Notes</h5>
-            <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — hero text, products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp.</p>
+            <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — hero text, products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp. Use <strong>Preview Site</strong> in the sidebar to see the live storefront update in real time, right here in the dashboard.</p>
+          </div>
+        </div>
+
+        <!-- PREVIEW SITE (working live index page, embedded) -->
+        <div class="panel" id="panel-preview">
+          <div class="card-section">
+            <div class="preview-toolbar">
+              <h5 class="mb-0">Live Site Preview</h5>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="url-pill"><span class="dot"></span>{{ request.scheme }}://{{ request.get_host }}{% url 'index' %}</span>
+                <button type="button" class="device-btn active" id="btnDesktop">🖥 Desktop</button>
+                <button type="button" class="device-btn" id="btnMobile">📱 Mobile</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnRefreshPreview">↻ Refresh</button>
+                <a href="{% url 'index' %}" target="_blank" class="btn btn-sm btn-outline-dark">Open Full Tab ↗</a>
+              </div>
+            </div>
+            <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Hero, Products, Gallery or Reviews, then hit Refresh to see them update below.</p>
+            <div class="preview-frame-wrap" id="previewFrameWrap">
+              <div class="preview-loading" id="previewLoading"><span class="spinner-dot"></span>Loading live site…</div>
+              <iframe id="previewFrame" src="{% url 'index' %}" title="AquaCraft Pools — live storefront preview"></iframe>
+            </div>
           </div>
         </div>
 
@@ -348,7 +394,41 @@ document.querySelectorAll('.sidebar .nav-link[data-panel]').forEach(link=>{
     link.classList.add('active');
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     document.getElementById('panel-'+link.dataset.panel).classList.add('active');
+
+    // Lazily (re)load the preview iframe the first time its panel is opened,
+    // so it always reflects the latest saved content rather than a stale load from page-open.
+    if(link.dataset.panel === 'preview' && !previewFrame.dataset.loadedOnce){
+      reloadPreview();
+    }
   });
+});
+
+/* ---- Live Site Preview panel: working embedded storefront ---- */
+const previewFrame = document.getElementById('previewFrame');
+const previewLoading = document.getElementById('previewLoading');
+const previewFrameWrap = document.getElementById('previewFrameWrap');
+
+function reloadPreview(){
+  previewLoading.classList.remove('hidden');
+  // Cache-bust so edits saved in other panels are reflected immediately
+  const base = "{% url 'index' %}";
+  previewFrame.src = base + (base.includes('?') ? '&' : '?') + '_preview=' + Date.now();
+}
+previewFrame.addEventListener('load', ()=>{
+  previewFrame.dataset.loadedOnce = "1";
+  previewLoading.classList.add('hidden');
+});
+document.getElementById('btnRefreshPreview').addEventListener('click', reloadPreview);
+
+document.getElementById('btnDesktop').addEventListener('click', function(){
+  previewFrameWrap.classList.remove('mobile-size');
+  this.classList.add('active');
+  document.getElementById('btnMobile').classList.remove('active');
+});
+document.getElementById('btnMobile').addEventListener('click', function(){
+  previewFrameWrap.classList.add('mobile-size');
+  this.classList.add('active');
+  document.getElementById('btnDesktop').classList.remove('active');
 });
 
 /* ---- Edit product modal: fill fields from the row's data-* attrs, set form action ---- */
