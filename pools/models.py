@@ -1,25 +1,48 @@
 from django.db import models
 
-
 class HeroSection(models.Model):
     """Singleton row (pk=1) holding the storefront hero content."""
-    eyebrow = models.CharField(max_length=200, default="Designed & Built in Kerala")
+
+    eyebrow = models.CharField(
+        max_length=200,
+        default="Designed & Built in Kerala"
+    )
+
     heading = models.CharField(
-        max_length=300, default="Pools shaped<br>around how you live",
+        max_length=300,
+        default="Pools shaped<br>around how you live",
         help_text="Use <br> for a line break, same as the original hero heading."
     )
+
     sub = models.TextField(
         default="From drone-surveyed site plans to the last pool light installed — "
                 "custom swimming pools, renovations and premium accessories, delivered as one seamless build."
     )
+
     video_url = models.URLField(
         blank=True,
         default="https://cdn.coverr.co/videos/coverr-aerial-view-of-a-swimming-pool-2633/1080p.mp4",
     )
+
     poster_image = models.URLField(
         blank=True,
         default="https://images.unsplash.com/photo-1572331165267-854da2b10ccf?q=80&w=1600&auto=format&fit=crop",
     )
+
+    # Upload Video
+    video_file = models.FileField(
+        upload_to="hero/videos/",
+        blank=True,
+        null=True,
+    )
+
+    # Upload Image
+    poster_image_file = models.ImageField(
+        upload_to="hero/images/",
+        blank=True,
+        null=True,
+    )
+
     stat1_value = models.CharField(max_length=20, default="240+")
     stat1_label = models.CharField(max_length=40, default="Pools Built")
     stat2_value = models.CharField(max_length=20, default="4.9★")
@@ -34,7 +57,7 @@ class HeroSection(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        pass  # singleton: never actually delete
+        pass
 
     @classmethod
     def load(cls):
@@ -52,7 +75,6 @@ class HeroSection(models.Model):
 
     def __str__(self):
         return "Hero Section"
-
 
 class SiteSettings(models.Model):
     """Singleton row (pk=1) holding site-wide settings."""

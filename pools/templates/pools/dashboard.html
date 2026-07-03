@@ -141,7 +141,9 @@
         <div class="panel" id="panel-hero">
           <div class="card-section">
             <h5>Hero Section</h5>
-            <form method="post" action="{% url 'hero_save' %}">
+            <form method="post"
+      action="{% url 'hero_save' %}"
+      enctype="multipart/form-data">
               {% csrf_token %}
               <div class="row g-3">
                 <div class="col-md-6">
@@ -156,14 +158,30 @@
                   <label class="form-label fw-bold">Subtext</label>
                   {{ hero_form.sub }}
                 </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Background video URL (mp4)</label>
-                  {{ hero_form.video_url }}
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Poster image URL</label>
-                  {{ hero_form.poster_image }}
-                </div>
+               <div class="col-md-6">
+    <label class="form-label fw-bold">Upload Background Video (MP4)</label>
+    {{ hero_form.video_file }}
+</div>
+
+<div class="col-md-6">
+    <label class="form-label fw-bold">Upload Background Image</label>
+    {{ hero_form.poster_image_file }}
+</div>
+<div class="col-md-6">
+    {% if hero.video_file %}
+        <small class="text-success">
+            Current Video Uploaded
+        </small>
+    {% endif %}
+</div>
+
+<div class="col-md-6">
+    {% if hero.poster_image_file %}
+        <img src="{{ hero.poster_image_file.url }}"
+             class="img-fluid rounded mt-2"
+             style="max-height:120px;">
+    {% endif %}
+</div>
                 <div class="col-md-3"><label class="form-label fw-bold">Stat 1</label>{{ hero_form.stat1_value }}<div class="mt-1">{{ hero_form.stat1_label }}</div></div>
                 <div class="col-md-3"><label class="form-label fw-bold">Stat 2</label>{{ hero_form.stat2_value }}<div class="mt-1">{{ hero_form.stat2_label }}</div></div>
                 <div class="col-md-3"><label class="form-label fw-bold">Stat 3</label>{{ hero_form.stat3_value }}<div class="mt-1">{{ hero_form.stat3_label }}</div></div>

@@ -30,16 +30,63 @@ class HeroForm(forms.ModelForm):
     class Meta:
         model = HeroSection
         fields = [
-            "eyebrow", "heading", "sub", "video_url", "poster_image",
-            "stat1_value", "stat1_label", "stat2_value", "stat2_label",
-            "stat3_value", "stat3_label", "stat4_value", "stat4_label",
+            "eyebrow",
+            "heading",
+            "sub",
+
+            "video_url",
+            "poster_image",
+
+            "video_file",
+            "poster_image_file",
+
+            "stat1_value",
+            "stat1_label",
+            "stat2_value",
+            "stat2_label",
+            "stat3_value",
+            "stat3_label",
+            "stat4_value",
+            "stat4_label",
         ]
-        widgets = {f: forms.TextInput(attrs={"class": "form-control"}) for f in [
-            "eyebrow", "heading", "video_url", "poster_image",
-            "stat1_value", "stat1_label", "stat2_value", "stat2_label",
-            "stat3_value", "stat3_label", "stat4_value", "stat4_label",
-        ]}
-        widgets["sub"] = forms.Textarea(attrs={"class": "form-control", "rows": 2})
+
+        widgets = {
+            "eyebrow": forms.TextInput(attrs={"class": "form-control"}),
+            "heading": forms.TextInput(attrs={"class": "form-control"}),
+            "sub": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+
+            "video_url": forms.URLInput(attrs={
+                "class": "form-control",
+                "placeholder": "https://..."
+            }),
+
+            "poster_image": forms.URLInput(attrs={
+                "class": "form-control",
+                "placeholder": "https://..."
+            }),
+
+            "video_file": forms.ClearableFileInput(attrs={
+                "class": "form-control",
+                "accept": "video/*",
+            }),
+
+            "poster_image_file": forms.ClearableFileInput(attrs={
+                "class": "form-control",
+                "accept": "image/*",
+            }),
+
+            "stat1_value": forms.TextInput(attrs={"class": "form-control"}),
+            "stat1_label": forms.TextInput(attrs={"class": "form-control"}),
+
+            "stat2_value": forms.TextInput(attrs={"class": "form-control"}),
+            "stat2_label": forms.TextInput(attrs={"class": "form-control"}),
+
+            "stat3_value": forms.TextInput(attrs={"class": "form-control"}),
+            "stat3_label": forms.TextInput(attrs={"class": "form-control"}),
+
+            "stat4_value": forms.TextInput(attrs={"class": "form-control"}),
+            "stat4_label": forms.TextInput(attrs={"class": "form-control"}),
+        }
 
 
 class SiteSettingsForm(forms.ModelForm):
