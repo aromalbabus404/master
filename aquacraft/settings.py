@@ -169,14 +169,14 @@ STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
-}
+}   
 
 # -----------------------------------------------------------------------------
 # Authentication
 # -----------------------------------------------------------------------------
-LOGIN_URL = "login"
+LOGIN_URL = "admin_login"
 LOGIN_REDIRECT_URL = "dashboard"
-LOGOUT_REDIRECT_URL = "login"
+LOGOUT_REDIRECT_URL = "admin_login"
 
 # -----------------------------------------------------------------------------
 # Default Primary Key
