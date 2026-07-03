@@ -50,9 +50,13 @@ class HeroForm(forms.ModelForm):
         ]
 
         widgets = {
-            "eyebrow": forms.TextInput(attrs={"class": "form-control"}),
+            "eyebrow": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
 
-            "heading": forms.TextInput(attrs={"class": "form-control"}),
+            "heading": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
 
             "sub": forms.Textarea(attrs={
                 "class": "form-control",
@@ -79,17 +83,33 @@ class HeroForm(forms.ModelForm):
                 "accept": "image/*",
             }),
 
-            "stat1_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat1_label": forms.TextInput(attrs={"class": "form-control"}),
+            "stat1_value": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
+            "stat1_label": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
 
-            "stat2_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat2_label": forms.TextInput(attrs={"class": "form-control"}),
+            "stat2_value": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
+            "stat2_label": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
 
-            "stat3_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat3_label": forms.TextInput(attrs={"class": "form-control"}),
+            "stat3_value": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
+            "stat3_label": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
 
-            "stat4_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat4_label": forms.TextInput(attrs={"class": "form-control"}),
+            "stat4_value": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
+            "stat4_label": forms.TextInput(attrs={
+                "class": "form-control"
+            }),
         }
 
     # -------------------------
@@ -98,15 +118,21 @@ class HeroForm(forms.ModelForm):
     def clean_video_file(self):
         video = self.cleaned_data.get("video_file")
 
-        if video:
-            # Cloudinary free limit = 10MB
-            max_size = 10 * 1024 * 1024
+        if not video:
+            return video
 
-            if video.size > max_size:
-                raise forms.ValidationError(
-                    "Video must be smaller than 10 MB."
-                )
+        # Existing Cloudinary file
+        if not hasattr(video, "size"):
+            return video
 
+        max_size = 100 * 1024 * 1024  # 100 MB
+
+        if video.size > max_size:
+            raise forms.ValidationError(
+                "Video must be smaller than 100 MB."
+            )
+
+        if hasattr(video, "content_type"):
             if not video.content_type.startswith("video/"):
                 raise forms.ValidationError(
                     "Please upload a valid video."
@@ -120,14 +146,21 @@ class HeroForm(forms.ModelForm):
     def clean_poster_image_file(self):
         image = self.cleaned_data.get("poster_image_file")
 
-        if image:
-            max_size = 5 * 1024 * 1024
+        if not image:
+            return image
 
-            if image.size > max_size:
-                raise forms.ValidationError(
-                    "Image must be smaller than 5 MB."
-                )
+        # Existing Cloudinary image
+        if not hasattr(image, "size"):
+            return image
 
+        max_size = 10 * 1024 * 1024  # 10 MB
+
+        if image.size > max_size:
+            raise forms.ValidationError(
+                "Image must be smaller than 10 MB."
+            )
+
+        if hasattr(image, "content_type"):
             if not image.content_type.startswith("image/"):
                 raise forms.ValidationError(
                     "Please upload a valid image."
