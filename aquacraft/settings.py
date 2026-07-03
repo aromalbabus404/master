@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import cloudinary
 import dj_database_url
 from dotenv import load_dotenv
 # -----------------------------------------------------------------------------
@@ -7,6 +8,12 @@ from dotenv import load_dotenv
 # -----------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
 # -----------------------------------------------------------------------------
 # Security
 # -----------------------------------------------------------------------------
@@ -39,6 +46,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    "cloudinary",
+    "cloudinary_storage",
 
     "pools",
 ]
@@ -160,17 +170,15 @@ STATICFILES_DIRS = [
 # -----------------------------------------------------------------------------
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
-}   
-
+}
 # -----------------------------------------------------------------------------
 # Authentication
 # -----------------------------------------------------------------------------
