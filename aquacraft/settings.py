@@ -29,11 +29,17 @@ ALLOWED_HOSTS = [
     ".up.railway.app",
     "localhost",
     "127.0.0.1",
+
+    "ajithkv.site",
+    "www.ajithkv.site",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.vercel.app",
     "https://*.up.railway.app",
+
+    "https://ajithkv.site",
+    "https://www.ajithkv.site",
 ]
 
 # -----------------------------------------------------------------------------
