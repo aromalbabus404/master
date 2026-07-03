@@ -1,4 +1,7 @@
 from django.db import models
+from django.db import models
+from cloudinary.models import CloudinaryField
+
 
 class HeroSection(models.Model):
     """Singleton row (pk=1) holding the storefront hero content."""
@@ -11,7 +14,7 @@ class HeroSection(models.Model):
     heading = models.CharField(
         max_length=300,
         default="Pools shaped<br>around how you live",
-        help_text="Use <br> for a line break, same as the original hero heading."
+        help_text="Use <br> for a line break."
     )
 
     sub = models.TextField(
@@ -19,6 +22,7 @@ class HeroSection(models.Model):
                 "custom swimming pools, renovations and premium accessories, delivered as one seamless build."
     )
 
+    # URL fields (optional)
     video_url = models.URLField(
         blank=True,
         default="https://cdn.coverr.co/videos/coverr-aerial-view-of-a-swimming-pool-2633/1080p.mp4",
@@ -29,32 +33,43 @@ class HeroSection(models.Model):
         default="https://images.unsplash.com/photo-1572331165267-854da2b10ccf?q=80&w=1600&auto=format&fit=crop",
     )
 
-    # Upload Video
-    video_file = models.FileField(
-        upload_to="hero/videos/",
+    # Cloudinary Video
+    video_file = CloudinaryField(
+        resource_type="video",
         blank=True,
         null=True,
     )
 
-    # Upload Image
-    poster_image_file = models.ImageField(
-        upload_to="hero/images/",
+    # Cloudinary Image
+    poster_image_file = CloudinaryField(
+        "image",
         blank=True,
         null=True,
     )
 
     stat1_value = models.CharField(max_length=20, default="240+")
     stat1_label = models.CharField(max_length=40, default="Pools Built")
+
     stat2_value = models.CharField(max_length=20, default="4.9★")
     stat2_label = models.CharField(max_length=40, default="Client Rating")
+
     stat3_value = models.CharField(max_length=20, default="12 Yrs")
     stat3_label = models.CharField(max_length=40, default="Experience")
+
     stat4_value = models.CharField(max_length=20, default="60+")
     stat4_label = models.CharField(max_length=40, default="Accessories")
 
     def save(self, *args, **kwargs):
         self.pk = 1
         super().save(*args, **kwargs)
+
+        if self.video_file:
+            self.video_url = self.video_file.build_url(resource_type="video")
+
+        if self.poster_image_file:
+            self.poster_image = self.poster_image_file.build_url()
+
+        super().save(update_fields=["video_url", "poster_image"])
 
     def delete(self, *args, **kwargs):
         pass
