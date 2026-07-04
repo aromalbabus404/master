@@ -144,7 +144,6 @@ def admin_login(request):
 def admin_logout(request):
     logout(request)
     return redirect("admin_login")
-
 @login_required
 @require_POST
 def hero_save(request):
@@ -171,12 +170,12 @@ def hero_save(request):
 
         hero.save()
 
-        # Update URL fields after upload
+        # Update URL fields after Cloudinary upload
         if hero.video_file:
-            hero.video_url = hero.video_file.url
+            hero.video_url = hero.video_file.build_url(resource_type="video")
 
         if hero.poster_image_file:
-            hero.poster_image = hero.poster_image_file.url
+            hero.poster_image = hero.poster_image_file.build_url()
 
         hero.save(update_fields=[
             "video_url",
@@ -225,19 +224,51 @@ def product_delete(request, pk):
     messages.success(request, "Product deleted.")
     return redirect("dashboard")
 
+import os
+
+ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+MAX_IMAGE_SIZE_MB = 5
+
 
 @login_required
 @require_POST
 def gallery_add(request):
     url = request.POST.get("image_url", "").strip()
     file = request.FILES.get("image_file")
+
     if not url and not file:
         messages.error(request, "Add an image URL or upload a file.")
         return redirect("dashboard")
-    GalleryImage.objects.create(image_url=url or None, image_file=file or None)
-    messages.success(request, "Image added to gallery.")
-    return redirect("dashboard")
 
+    if file:
+        ext = os.path.splitext(file.name)[1].lower()
+        if ext not in ALLOWED_IMAGE_EXTENSIONS:
+            messages.error(request, "Unsupported file type. Please upload a JPG, PNG, WEBP, or GIF image.")
+            return redirect("dashboard")
+
+        if file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024:
+            messages.error(request, f"Image is too large. Max size is {MAX_IMAGE_SIZE_MB}MB.")
+            return redirect("dashboard")
+
+        if not file.content_type or not file.content_type.startswith("image/"):
+            messages.error(request, "The uploaded file does not appear to be a valid image.")
+            return redirect("dashboard")
+
+    gallery = GalleryImage()
+
+    if file:
+        gallery.image_file = file
+    elif url:
+        gallery.image_url = url
+
+    try:
+        gallery.save()
+    except Exception:
+        messages.error(request, "Something went wrong while saving the image. Please try again.")
+        return redirect("dashboard")
+
+    messages.success(request, "Gallery image uploaded.")
+    return redirect("dashboard")
 
 @login_required
 @require_POST

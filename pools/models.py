@@ -3,6 +3,7 @@ from django.db import models
 from cloudinary.models import CloudinaryField
 
 
+
 class HeroSection(models.Model):
     """Singleton row (pk=1) holding the storefront hero content."""
 
@@ -153,21 +154,33 @@ class Product(models.Model):
 
 class GalleryImage(models.Model):
     image_url = models.URLField(blank=True, null=True)
-    image_file = models.ImageField(upload_to="gallery/", blank=True, null=True)
+
+    image_file = CloudinaryField(
+        "image",
+        blank=True,
+        null=True,
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image_file:
+            self.image_url = self.image_file.build_url()
+            super().save(update_fields=["image_url"])
+
     @property
     def image(self):
         if self.image_file:
-            return self.image_file.url
+            return self.image_file.build_url()
         return self.image_url or ""
 
     def __str__(self):
-        return f"Gallery image #{self.pk}"
-
+        return f"Gallery Image #{self.pk}"
 
 STATUS_CHOICES = [
     ("pending", "Pending"),
