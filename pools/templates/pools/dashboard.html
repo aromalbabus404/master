@@ -287,15 +287,99 @@
   /* ===== Modal animation polish ===== */
   .modal.fade .modal-dialog{transition:transform .25s ease, opacity .25s ease;}
 
-  /* ===== Edit Product modal: guarantee it fits the viewport and scrolls internally ===== */
-  #editProductModal .modal-dialog{
-    max-height:calc(100vh - 3.5rem);
+  /* ===== Edit Product modal ===== */
+  @media (max-width:575.98px){
+
+    #editProductModal{
+        padding:0 !important;
+    }
+
+    #editProductModal .modal-dialog{
+        margin:0;
+        max-width:100%;
+        width:100%;
+        height:100%;
+        display:flex;
+        align-items:flex-end;
+    }
+
+    #editProductModal .modal-content{
+        width:100%;
+        height:88vh;
+        border-radius:20px 20px 0 0;
+        border:none;
+        box-shadow:0 -8px 30px rgba(11,60,93,.18);
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
+    }
+
+    #editProductModal .modal-content::before{
+      content:"";
+      display:block;
+      width:40px;height:4px;
+      background:var(--border);
+      border-radius:99px;
+      margin:10px auto 2px;
+      flex:0 0 auto;
+    }
+
+    #editProductModal .modal-header{
+        flex-shrink:0;
+        border-bottom:1px solid var(--border);
+        padding:10px 20px 14px;
+    }
+
+    #editProductModal .modal-body{
+        flex:1;
+        overflow-y:auto;
+        overflow-x:hidden;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y;
+        overscroll-behavior:contain;
+        padding:20px;
+    }
+
+    #editProductModal .modal-footer{
+        flex-shrink:0;
+        background:#fff;
+        border-top:1px solid var(--border);
+        padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+    }
+
+    #editProductModal.show .modal-dialog{
+      animation:sheetUp .28s ease both;
+    }
   }
-  #editProductModal .modal-content{
-    max-height:calc(100vh - 3.5rem);
+  @keyframes sheetUp{
+    from{transform:translateY(24px);opacity:.6;}
+    to{transform:translateY(0);opacity:1;}
   }
-  #editProductModal .modal-body{
-    overflow-y:auto;
+
+  /* Desktop / tablet (>=576px): centered, height-capped, internally scrolling dialog. */
+  @media(min-width:576px){
+    #editProductModal .modal-content{
+      display:flex;
+      flex-direction:column;
+    }
+    #editProductModal .modal-body{
+      overflow-y:auto;
+      flex:1 1 auto;
+      min-height:0;
+    }
+    #editProductModal .modal-header,
+    #editProductModal .modal-footer{
+      flex:0 0 auto;
+    }
+    #editProductModal .modal-dialog{
+      display:flex;
+      align-items:center;
+      min-height:calc(100% - 3.5rem);
+      max-height:calc(100vh - 3.5rem);
+    }
+    #editProductModal .modal-content{
+      max-height:calc(100vh - 3.5rem);
+    }
   }
 
   /* ===== Alerts ===== */
@@ -530,6 +614,10 @@
 </div>
 
 <div class="col-md-6">
+  <label class="form-label fw-bold">Upload Background Image</label>
+  {{ hero_form.poster_image_file }}
+</div>
+<div class="col-md-6">
   {% if hero.video_file %}
       <small class="text-success">
           Current Video Uploaded
@@ -747,7 +835,7 @@
 <!-- Edit Product modal: intentionally placed OUTSIDE .shell / .panel so it is never a
      descendant of an animated element (transform on an ancestor breaks position:fixed) -->
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <form method="post" enctype="multipart/form-data" id="editProductForm">
         {% csrf_token %}
