@@ -1,226 +1,239 @@
-from django import forms
-from .models import Product, HeroSection, SiteSettings
+from django.db import models
+from django.db import models
+from cloudinary.models import CloudinaryField
 
 
-class ProductForm(forms.ModelForm):
-    class Meta:
-        model = Product
-        fields = [
-            "name",
-            "category",
-            "badge",
-            "price",
-            "mrp",
-            "sizes",
-            "image_url",
-            "image_file",
+class HeroSection(models.Model):
+    """Singleton row (pk=1) holding the storefront hero content."""
+
+    eyebrow = models.CharField(
+        max_length=200,
+        default="Designed & Built in Kerala"
+    )
+
+    heading = models.CharField(
+        max_length=300,
+        default="Pools shaped<br>around how you live",
+        help_text="Use <br> for a line break."
+    )
+
+    sub = models.TextField(
+        default="From drone-surveyed site plans to the last pool light installed — "
+                "custom swimming pools, renovations and premium accessories, delivered as one seamless build."
+    )
+
+    # URL fields (optional)
+    video_url = models.URLField(
+        blank=True,
+        default="https://cdn.coverr.co/videos/coverr-aerial-view-of-a-swimming-pool-2633/1080p.mp4",
+    )
+
+    poster_image = models.URLField(
+        blank=True,
+        default="https://images.unsplash.com/photo-1572331165267-854da2b10ccf?q=80&w=1600&auto=format&fit=crop",
+    )
+
+    # Cloudinary Video
+    video_file = CloudinaryField(
+        resource_type="video",
+        blank=True,
+        null=True,
+    )
+
+    # Cloudinary Image
+    poster_image_file = CloudinaryField(
+        "image",
+        blank=True,
+        null=True,
+    )
+
+    stat1_value = models.CharField(max_length=20, default="240+")
+    stat1_label = models.CharField(max_length=40, default="Pools Built")
+
+    stat2_value = models.CharField(max_length=20, default="4.9★")
+    stat2_label = models.CharField(max_length=40, default="Client Rating")
+
+    stat3_value = models.CharField(max_length=20, default="12 Yrs")
+    stat3_label = models.CharField(max_length=40, default="Experience")
+
+    stat4_value = models.CharField(max_length=20, default="60+")
+    stat4_label = models.CharField(max_length=40, default="Accessories")
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+        if self.video_file:
+            self.video_url = self.video_file.build_url(resource_type="video")
+
+        if self.poster_image_file:
+            self.poster_image = self.poster_image_file.build_url()
+
+        super().save(update_fields=["video_url", "poster_image"])
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    @property
+    def stats(self):
+        return [
+            {"v": self.stat1_value, "l": self.stat1_label},
+            {"v": self.stat2_value, "l": self.stat2_label},
+            {"v": self.stat3_value, "l": self.stat3_label},
+            {"v": self.stat4_value, "l": self.stat4_label},
         ]
 
-        widgets = {
-            "name": forms.TextInput(attrs={"class": "form-control"}),
-            "category": forms.Select(attrs={"class": "form-select"}),
-            "badge": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "e.g. Bestseller"
-            }),
-            "price": forms.NumberInput(attrs={"class": "form-control"}),
-            "mrp": forms.NumberInput(attrs={"class": "form-control"}),
-            "sizes": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "20x10 ft, 25x12 ft"
-            }),
-            "image_url": forms.URLInput(attrs={
-                "class": "form-control",
-                "placeholder": "https://..."
-            }),
-            "image_file": forms.ClearableFileInput(attrs={
-                "class": "form-control",
-                "accept": "image/*"
-            }),
-        }
+    def __str__(self):
+        return "Hero Section"
 
-    def clean_image_file(self):
-        image = self.cleaned_data.get("image_file")
+class SiteSettings(models.Model):
+    """Singleton row (pk=1) holding site-wide settings."""
+    admin_whatsapp = models.CharField(
+        max_length=20, default="917356462150",
+        help_text="Country code + number, digits only, no + or spaces. e.g. 917356462150"
+    )
 
-        if not image:
-            return image
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
 
-        # Existing Cloudinary image
-        if not hasattr(image, "size"):
-            return image
+    def delete(self, *args, **kwargs):
+        pass
 
-        max_size = 20 * 1024 * 1024  # 20 MB
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
 
-        if image.size > max_size:
-            raise forms.ValidationError(
-                "Image size must be less than 20 MB."
-            )
-
-        if hasattr(image, "content_type"):
-            if not image.content_type.startswith("image/"):
-                raise forms.ValidationError(
-                    "Please upload a valid image."
-                )
-
-        return image
-
-    def clean(self):
-        cleaned = super().clean()
-
-        if (
-            not cleaned.get("image_url")
-            and not cleaned.get("image_file")
-            and not (self.instance and self.instance.image_file)
-        ):
-            raise forms.ValidationError(
-                "Please provide an image URL or upload an image."
-            )
-
-        return cleaned
+    def __str__(self):
+        return "Site Settings"
 
 
-class HeroForm(forms.ModelForm):
+CATEGORY_CHOICES = [
+    ("pool", "Pool Designs"),
+    ("pump", "Pumps & Filters"),
+    ("light", "Lighting"),
+    ("cover", "Covers & Ladders"),
+    ("clean", "Cleaning"),
+]
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=200)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="pool")
+    badge = models.CharField(max_length=50, blank=True, null=True)
+    price = models.PositiveIntegerField()
+    mrp = models.PositiveIntegerField(blank=True, null=True, verbose_name="MRP (strikethrough price)")
+    sizes = models.CharField(max_length=300, help_text="Comma separated, e.g. 20x10 ft, 25x12 ft")
+    image_url = models.URLField(blank=True, null=True, help_text="Use this OR upload a file below.")
+    image_file = models.ImageField(upload_to="products/", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True)
+
     class Meta:
-        model = HeroSection
+        ordering = ["-created_at"]
 
-        fields = [
-            "eyebrow",
-            "heading",
-            "sub",
+    @property
+    def image(self):
+        if self.image_file:
+            return self.image_file.url
+        return self.image_url or ""
 
-            "video_url",
-            "poster_image",
+    def size_list(self):
+        return [s.strip() for s in self.sizes.split(",") if s.strip()]
 
-            "video_file",
-            "poster_image_file",
-
-            "stat1_value",
-            "stat1_label",
-
-            "stat2_value",
-            "stat2_label",
-
-            "stat3_value",
-            "stat3_label",
-
-            "stat4_value",
-            "stat4_label",
-        ]
-
-        widgets = {
-            "eyebrow": forms.TextInput(attrs={
-                "class": "form-control"
-            }),
-
-            "heading": forms.TextInput(attrs={
-                "class": "form-control"
-            }),
-
-            "sub": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 3
-            }),
-
-            "video_url": forms.URLInput(attrs={
-                "class": "form-control",
-                "placeholder": "https://..."
-            }),
-
-            "poster_image": forms.URLInput(attrs={
-                "class": "form-control",
-                "placeholder": "https://..."
-            }),
-
-            "video_file": forms.ClearableFileInput(attrs={
-                "class": "form-control",
-                "accept": "video/*"
-            }),
-
-            "poster_image_file": forms.ClearableFileInput(attrs={
-                "class": "form-control",
-                "accept": "image/*"
-            }),
-
-            "stat1_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat1_label": forms.TextInput(attrs={"class": "form-control"}),
-
-            "stat2_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat2_label": forms.TextInput(attrs={"class": "form-control"}),
-
-            "stat3_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat3_label": forms.TextInput(attrs={"class": "form-control"}),
-
-            "stat4_value": forms.TextInput(attrs={"class": "form-control"}),
-            "stat4_label": forms.TextInput(attrs={"class": "form-control"}),
-        }
-
-    # -------------------------
-    # Validate Video (30 MB)
-    # -------------------------
-
-    def clean_video_file(self):
-        video = self.cleaned_data.get("video_file")
-
-        if not video:
-            return video
-
-        # Existing Cloudinary file
-        if not hasattr(video, "size"):
-            return video
-
-        max_size = 30 * 1024 * 1024  # 30 MB
-
-        if video.size > max_size:
-            raise forms.ValidationError(
-                "Video must be smaller than 30 MB."
-            )
-
-        if hasattr(video, "content_type"):
-            if not video.content_type.startswith("video/"):
-                raise forms.ValidationError(
-                    "Please upload a valid video file."
-                )
-
-        return video
-
-    # -------------------------
-    # Validate Hero Image (20 MB)
-    # -------------------------
-
-    def clean_poster_image_file(self):
-        image = self.cleaned_data.get("poster_image_file")
-
-        if not image:
-            return image
-
-        # Existing Cloudinary image
-        if not hasattr(image, "size"):
-            return image
-
-        max_size = 20 * 1024 * 1024  # 20 MB
-
-        if image.size > max_size:
-            raise forms.ValidationError(
-                "Image must be smaller than 20 MB."
-            )
-
-        if hasattr(image, "content_type"):
-            if not image.content_type.startswith("image/"):
-                raise forms.ValidationError(
-                    "Please upload a valid image."
-                )
-
-        return image
+    def __str__(self):
+        return self.name
 
 
-class SiteSettingsForm(forms.ModelForm):
+class GalleryImage(models.Model):
+    image_url = models.URLField(blank=True, null=True)
+    image_file = models.ImageField(upload_to="gallery/", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
-        model = SiteSettings
-        fields = ["admin_whatsapp"]
+        ordering = ["-created_at"]
 
-        widgets = {
-            "admin_whatsapp": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "917356462150"
-            })
-        }
+    @property
+    def image(self):
+        if self.image_file:
+            return self.image_file.url
+        return self.image_url or ""
+
+    def __str__(self):
+        return f"Gallery image #{self.pk}"
+
+
+STATUS_CHOICES = [
+    ("pending", "Pending"),
+    ("approved", "Approved"),
+    ("rejected", "Rejected"),
+]
+
+
+class Review(models.Model):
+    name = models.CharField(max_length=120)
+    rating = models.PositiveSmallIntegerField(default=5)
+    text = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    @property
+    def avatar_url(self):
+        from urllib.parse import quote
+        return f"https://api.dicebear.com/7.x/initials/svg?seed={quote(self.name)}&backgroundColor=1FC8C2&textColor=ffffff"
+
+    @property
+    def stars_full(self):
+        return range(self.rating)
+
+    @property
+    def stars_empty(self):
+        return range(5 - self.rating)
+
+    def __str__(self):
+        return f"{self.name} ({self.rating}★) - {self.status}"
+
+
+class ReviewMedia(models.Model):
+    review = models.ForeignKey(Review, related_name="media", on_delete=models.CASCADE)
+    file = models.FileField(upload_to="reviews/")
+    is_video = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Media for review #{self.review_id}"
+
+
+class Order(models.Model):
+    name = models.CharField(max_length=120)
+    mobile = models.CharField(max_length=15)
+    state = models.CharField(max_length=80)
+    pincode = models.CharField(max_length=10)
+    address = models.TextField()
+    total = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Order #{self.pk} - {self.name} - ₹{self.total}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    size = models.CharField(max_length=100)
+    qty = models.PositiveIntegerField()
+    price = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.name} ({self.size}) x{self.qty}"
