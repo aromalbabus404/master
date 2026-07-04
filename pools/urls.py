@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     # Storefront
     path("", views.index, name="index"),
+    path("shop/", views.shop, name="shop"),
     path("api/orders/", views.submit_order, name="submit_order"),
     path("api/reviews/", views.submit_review, name="submit_review"),
 

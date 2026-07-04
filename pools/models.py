@@ -133,6 +133,7 @@ class Product(models.Model):
     image_url = models.URLField(blank=True, null=True, help_text="Use this OR upload a file below.")
     image_file = models.ImageField(upload_to="products/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ["-created_at"]

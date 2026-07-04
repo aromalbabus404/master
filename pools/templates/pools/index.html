@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AquaCraft Pools | Custom Pools & Pool Accessories — Kerala</title>
+<title>Master Pools | Custom Pools & Pool Accessories — Kerala</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'Manrope',sans-serif;background:var(--sand);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;}
+body{font-family:'Manrope',sans-serif;background:var(--sand);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 img{max-width:100%;display:block;}
 a{color:inherit;text-decoration:none;}
 ul{list-style:none;}
@@ -39,6 +39,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:
 header.scrolled{background:var(--ink);box-shadow:var(--shadow);padding:14px 32px;}
 .logo{font-family:'Fraunces',serif;font-weight:600;color:var(--white);font-size:1.4rem;display:flex;align-items:center;gap:2px;font-style:italic;}
 .logo span{color:var(--seafoam);font-style:normal;}
+.logo-img{height:46px;width:auto;display:block;background:transparent;}
 nav ul{display:flex;gap:34px;}
 nav a{color:var(--white);font-weight:600;font-size:.86rem;opacity:.85;letter-spacing:.3px;text-transform:uppercase;}
 nav a:hover{opacity:1;color:var(--seafoam);}
@@ -50,14 +51,16 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .mobile-nav{display:none;position:fixed;top:0;right:-100%;width:78%;max-width:320px;height:100%;background:var(--ink);z-index:260;padding:90px 28px 28px;transition:right .3s ease;}
 .mobile-nav.open{right:0;}
 .mobile-nav a{display:block;color:var(--white);font-weight:700;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);font-family:'Fraunces',serif;font-size:1.05rem;}
+.mobile-nav-close{position:absolute;top:24px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:var(--white);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.mobile-nav-close:hover{background:var(--brass);color:var(--ink);border-color:var(--brass);}
 
 /* ============ HERO — image background + sliding card carousel ============ */
 .hero{position:relative;padding:170px 0 70px;overflow:hidden;}
 .hero-bg-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);}
 .hero-bg-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(11,33,31,.6) 0%, rgba(11,33,31,.5) 45%, rgba(11,33,31,.72) 100%);}
-.hero-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:56px;align-items:center;}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:56px;align-items:center;}
 
-.hero-text{max-width:600px;opacity:0;animation:heroFadeUp .8s ease forwards;order:2;}
+.hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:2;}
 .hero-text .eyebrow{color:var(--brass-light);}
 .hero-text .eyebrow::before{background:var(--seafoam);}
 .hero-text h1{font-size:clamp(2.3rem,4.6vw,3.7rem);color:var(--white);margin-bottom:20px;font-weight:500;}
@@ -70,7 +73,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-stats small{color:rgba(255,255,255,.65);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;}
 
 /* ---- sliding card carousel (borrowed from the plant-shop hero) ---- */
-.carousel-wrap{position:relative;width:100%;max-width:340px;margin-right:auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:1;}
+.carousel-wrap{position:relative;width:100%;max-width:340px;min-width:0;margin-right:auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:1;}
 .carousel-mask{
   position:relative;overflow:hidden;border-radius:var(--radius);
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
@@ -120,7 +123,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 
 @media(max-width:980px){
   .hero{padding:150px 0 60px;}
-  .hero-grid{grid-template-columns:1fr;}
+  .hero-grid{grid-template-columns:minmax(0,1fr);}
   .carousel-wrap{max-width:460px;margin:0 auto 36px;}
 }
 @media(max-width:600px){
@@ -139,6 +142,9 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .service-card .ic{width:54px;height:54px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center;color:var(--seafoam-deep);margin-bottom:20px;font-size:1.4rem;}
 .service-card h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.12rem;margin-bottom:9px;}
 .service-card p{color:var(--muted);font-size:.92rem;}
+.services-wa{display:inline-flex;align-items:center;gap:10px;margin-top:38px;background:#25D366;color:#fff;padding:14px 26px;border-radius:999px;font-weight:700;font-size:.92rem;box-shadow:0 12px 28px rgba(37,211,102,.28);transition:.25s ease;}
+.services-wa:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(37,211,102,.36);color:#fff;}
+.services-wa svg{width:20px;height:20px;flex-shrink:0;}
 
 /* ============ SHOP ============ */
 .shop-tabs{display:flex;gap:10px;margin-bottom:40px;flex-wrap:wrap;}
@@ -265,6 +271,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .hero-text{padding-left:0;}
 }
 @media(max-width:600px){
+    .logo-img{height:36px;}
     .product-grid{grid-template-columns:1fr;}
     .hero-stats{flex-wrap:wrap;}
     .hero-stats div{flex:50%;border-right:none;border-bottom:1px solid rgba(255,255,255,.2);}
@@ -281,11 +288,13 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <body>
 
 <header id="siteHeader">
-<a href="#home" class="logo">Aqua<span>Craft</span></a>
+<a href="#home" class="logo"><img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="logo-img"></a>
 <nav>
     <ul>
     <li><a href="#services">Services</a></li>
-    <li><a href="#shop">Shop</a></li>
+    <li><a href="{% url 'shop' %}">
+        Shop
+    </a></li>
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#clients">Clients</a></li>
     <li><a href="#reviews">Reviews</a></li>
@@ -300,6 +309,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </header>
 
 <div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close menu">✕</button>
   <a href="#services">Services</a>
   <a href="#shop">Shop</a>
   <a href="#gallery">Gallery</a>
@@ -321,7 +331,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                 <h1>{{ hero.heading|safe }}</h1>
                 <p>{{ hero.sub }}</p>
                 <div class="hero-cta">
-                    <a href="https://wa.me/{{ settings.admin_whatsapp }}?text=Hi!%20I%27d%20like%20a%20free%20pool%20design%20consultation." id="heroConsultBtn" class="btn btn-outline" target="_blank">Get Free Consultation</a>
+                    <a href="#shop" class="btn btn-primary">Shop Accessories ↓</a>
+                    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20a%20free%20pool%20design%20consultation." id="heroConsultBtn" class="btn btn-outline" target="_blank">Get Free Consultation</a>
                 </div>
                 <div class="hero-stats">
                     {% for s in hero.stats %}
@@ -372,11 +383,15 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <p>Whether it's a new build, a refit, or just the right pump for your filtration — one team handles the whole job.</p>
     </div>
     <div class="services-grid">
-    <div class="service-card"><div class="ic">🏗</div><h3>Custom Pool Construction</h3><p>Site survey, structural design and full build for residential & commercial pools.</p></div>
-    <div class="service-card"><div class="ic">🔧</div><h3>Renovation & Resurfacing</h3><p>Tile relays, deck repairs, and waterproofing for tired or ageing pools.</p></div>
-    <div class="service-card"><div class="ic">💧</div><h3>Filtration & Water Treatment</h3><p>Pumps, filters and automated dosing systems sized correctly for your pool.</p></div>
-    <div class="service-card"><div class="ic">🛠</div><h3>Annual Maintenance</h3><p>Scheduled cleaning, chemical balancing and equipment servicing plans.</p></div>
+    <div class="service-card"><div class="ic">🏗</div><h3>Custom Swimming pool construction</h3><p>From design to digging to the final finish, we build pools tailored to your space, budget and style — homes, villas and resorts alike.</p></div>
+    <div class="service-card"><div class="ic">🔧</div><h3>Maintainance</h3><p>Regular cleaning, equipment checks and water balancing so your pool stays safe, clear and ready to use all year round.</p></div>
+    <div class="service-card"><div class="ic">💧</div><h3>Accessories &  Pool water treatment chemicals</h3><p>Pumps, filters, lighting and genuine water-treatment chemicals — everything you need to keep your pool running right.</p></div>
+    <div class="service-card"><div class="ic">🛠</div><h3>Guidelines</h3><p>Not sure where to start? Our team offers honest guidance on design, upkeep and safety so you can make the right call for your pool.</p></div>
     </div>
+    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20pool%20construction%2C%20maintenance%20and%20accessory%20services." class="services-wa" target="_blank">
+        <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.42.71 4.673 1.933 6.568L4 29l7.617-1.897A11.93 11.93 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.7c-2.11 0-4.08-.62-5.735-1.687l-.411-.257-4.522 1.127 1.208-4.406-.27-.428A9.66 9.66 0 0 1 6.3 15c0-5.35 4.352-9.7 9.701-9.7 5.35 0 9.699 4.35 9.699 9.7 0 5.35-4.35 9.7-9.699 9.7zm5.316-7.268c-.29-.145-1.717-.848-1.983-.945-.266-.097-.46-.145-.653.145-.194.29-.75.945-.92 1.14-.169.194-.338.218-.628.073-.29-.145-1.223-.451-2.33-1.437-.861-.768-1.443-1.716-1.612-2.006-.169-.29-.018-.447.127-.591.13-.13.29-.339.435-.508.145-.169.194-.29.29-.484.097-.194.048-.363-.024-.508-.073-.145-.653-1.575-.896-2.156-.236-.567-.475-.49-.653-.499l-.556-.01c-.194 0-.508.073-.774.363-.266.29-1.014.99-1.014 2.42 0 1.428 1.038 2.808 1.183 3.002.145.194 2.043 3.12 4.951 4.376.692.299 1.232.477 1.653.61.694.221 1.326.19 1.826.115.557-.083 1.717-.702 1.96-1.38.242-.678.242-1.259.169-1.38-.073-.121-.266-.194-.556-.339z"/></svg>
+        Chat with us on WhatsApp
+    </a>
 </div>
 </section>
 
@@ -494,7 +509,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <div class="contact-row"><div class="ic">📍</div><div><h4>Workshop & Showroom</h4><p>NH66, Near Marine Drive, Kochi, Kerala — 682001</p></div></div>
         <div class="contact-row"><div class="ic">📞</div><div><h4>Call us</h4><p>+91 98765 43210 · Mon–Sat, 9am–7pm</p></div></div>
         <div class="contact-row"><div class="ic">💬</div><div><h4>WhatsApp</h4><p>Fastest way to reach us — tap the green button</p></div></div>
-        <div class="contact-row"><div class="ic">✉️</div><div><h4>Email</h4><p>hello@aquacraftpools.com</p></div></div>
+        <div class="contact-row"><div class="ic">✉️</div><div><h4>Email</h4><p>hello@masterpools.com</p></div></div>
         <div class="map-box"><iframe loading="lazy" src="https://www.google.com/maps?q=Kochi,Kerala&output=embed"></iframe></div>
     </div>
     <div class="contact-form">
@@ -512,21 +527,21 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <div class="wrap">
     <div class="footer-grid">
     <div>
-        <div class="f-logo">Aqua<span>Craft</span></div>
-        <p style="font-size:.88rem;max-width:280px;">Custom swimming pools and premium pool accessories, designed and built across Kerala.</p>
+        <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="logo-img" style="margin-bottom:14px;">
+        <p style="font-size:.88rem;max-width:280px;">Master Pools designs and builds custom swimming pools and premium pool accessories across Kerala.</p>
     </div>
     <div><h4>Shop</h4><ul><li><a href="#shop">Pool Designs</a></li><li><a href="#shop">Pumps & Filters</a></li><li><a href="#shop">Lighting</a></li><li><a href="#shop">Cleaning</a></li></ul></div>
     <div><h4>Company</h4><ul><li><a href="#services">Services</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#reviews">Reviews</a></li><li><a href="#contact">Contact</a></li></ul></div>
-    <div><h4>Contact</h4><ul><li><a id="footerWA" href="https://wa.me/{{ settings.admin_whatsapp }}">WhatsApp</a></li><li><a href="mailto:hello@aquacraftpools.com">hello@aquacraftpools.com</a></li><li>Kochi, Kerala — 682001</li></ul></div>
+    <div><h4>Contact</h4><ul><li><a id="footerWA" href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}">WhatsApp</a></li><li><a href="mailto:hello@masterpools.com">hello@masterpools.com</a></li><li>Kochi, Kerala — 682001</li></ul></div>
     </div>
     <div class="footer-bottom">
-    <span>© 2026 AquaCraft Pools. All rights reserved.</span>
+    <span>© 2026 Master Pools. All rights reserved.</span>
     <span>Made with 💙 in Kerala, India</span>
     </div>
 </div>
 </footer>
 
-<a class="float-wa" id="floatWA" href="https://wa.me/{{ settings.admin_whatsapp }}?text=Hello%20I%20would%20like%20to%20know%20more%20about%20your%20services." target="_blank" title="Chat on WhatsApp">📱</a>
+<a class="float-wa" id="floatWA" href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hello%20I%20would%20like%20to%20know%20more%20about%20your%20services." target="_blank" title="Chat on WhatsApp">📱</a>
 
 <div class="overlay" id="overlay"></div>
 <div class="cart-drawer" id="cartDrawer">
@@ -559,7 +574,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 {% csrf_token %}
 
 <script>
-const WHATSAPP_NUMBER = "{{ settings.admin_whatsapp }}";
+const WHATSAPP_NUMBER = "{{ settings.admin_whatsapp|default:'917356462150' }}";
 const CSRF_TOKEN = document.querySelector('input[name=csrfmiddlewaretoken]').value;
 const ORDER_URL = "{% url 'submit_order' %}";
 const REVIEW_URL = "{% url 'submit_review' %}";
@@ -569,6 +584,7 @@ const header = document.getElementById('siteHeader');
 window.addEventListener('scroll', ()=>{ header.classList.toggle('scrolled', window.scrollY > 40); });
 const mobileNav = document.getElementById('mobileNav');
 document.getElementById('menuToggle').addEventListener('click', ()=>mobileNav.classList.toggle('open'));
+document.getElementById('mobileNavClose').addEventListener('click', ()=>mobileNav.classList.remove('open'));
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileNav.classList.remove('open')));
 
 /* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
@@ -666,7 +682,7 @@ document.getElementById('sendOrder').addEventListener('click', async ()=>{
     const data = await res.json();
     if(!data.ok){ showToast(data.error || "Could not save order"); sendBtn.disabled=false; sendBtn.textContent="Send Order on WhatsApp"; return; }
 
-    let msg = `Hi! I'd like to place an order from AquaCraft Pools (Order #${data.order_id}):%0A%0A`;
+    let msg = `Hi! I'd like to place an order from Master Pools (Order #${data.order_id}):%0A%0A`;
     cart.forEach(c=>{ msg += `• ${c.name} (${c.size}) x${c.qty} - ${fmt(c.price*c.qty)}%0A`; });
     msg += `%0ATotal: ${fmt(total)}%0A%0AName: ${name}%0AMobile: ${mobile}%0AState: ${state}%0APincode: ${pincode}%0AAddress: ${address}`;
 
@@ -731,7 +747,7 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
     rvPreview.innerHTML=''; reviewFiles=[]; pickedRating=5; paintStars();
     showToast("Thanks! Your review is pending approval.");
 
-    const waMsg = `New review submitted on AquaCraft site:%0A%0AName: ${name}%0ARating: ${pickedRating}/5%0AReview: ${text}%0A%0APlease check the admin dashboard to approve or reject.`;
+    const waMsg = `New review submitted on Master Pools site:%0A%0AName: ${name}%0ARating: ${pickedRating}/5%0AReview: ${text}%0A%0APlease check the admin dashboard to approve or reject.`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`, '_blank');
   }catch(err){
     showToast("Network error — please try again");

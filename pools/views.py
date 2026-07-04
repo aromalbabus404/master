@@ -1,4 +1,5 @@
 import json
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -257,3 +258,23 @@ def review_set_status(request, pk, status):
     review.save()
     messages.success(request, f"Review marked {status}.")
     return redirect("dashboard")
+
+
+def shop(request):
+    query = request.GET.get("q", "")
+
+    products = Product.objects.all()
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(category__icontains=query) |
+            Q(badge__icontains=query) |
+            Q(sizes__icontains=query)
+        )
+
+    return render(request, "pools/shop.html", {
+        "products": products,
+        "query": query,
+        "settings": SiteSettings.load(),
+    })
