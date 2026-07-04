@@ -309,3 +309,26 @@ def shop(request):
         "query": query,
         "settings": SiteSettings.load(),
     })
+    
+    
+@login_required
+@require_POST
+def product_edit(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    product.name = request.POST.get("name")
+    product.category = request.POST.get("category")
+    product.badge = request.POST.get("badge")
+    product.price = request.POST.get("price")
+    product.mrp = request.POST.get("mrp") or None
+    product.sizes = request.POST.get("sizes")
+    product.image_url = request.POST.get("image_url")
+
+    if request.FILES.get("image_file"):
+        product.image_file = request.FILES["image_file"]
+
+    product.save()
+
+    messages.success(request, "Product updated successfully.")
+    return redirect("dashboard")
+    

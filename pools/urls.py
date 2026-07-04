@@ -7,6 +7,8 @@ urlpatterns = [
     path("shop/", views.shop, name="shop"),
     path("api/orders/", views.submit_order, name="submit_order"),
     path("api/reviews/", views.submit_review, name="submit_review"),
+    
+    path("product/<int:pk>/edit/",views.product_edit,name="product_edit"),
 
     # Admin dashboard
     path("dashboard/", views.dashboard, name="dashboard"),
