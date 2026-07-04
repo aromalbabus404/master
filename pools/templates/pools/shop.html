@@ -86,6 +86,8 @@ nav a:hover,nav a.active{opacity:1;color:var(--seafoam);}
 .qty-box{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;}
 .qty-box button{width:32px;height:34px;border:none;background:var(--sand);cursor:pointer;font-weight:800;color:var(--ink);}
 .qty-box span{width:30px;text-align:center;font-weight:700;font-size:.9rem;}
+.size-row select.size-select{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font-family:'Manrope',sans-serif;font-size:.82rem;background:var(--white);color:var(--ink);cursor:pointer;flex:1;}
+.size-row select.size-select:focus{outline:none;border-color:var(--brass);}
 .btn-row{display:flex;gap:10px;margin-top:8px;}
 .add-cart-btn,.buy-now-btn{flex:1;border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;font-size:.85rem;}
 .add-cart-btn{background:var(--deep);color:var(--white);}
@@ -152,6 +154,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .price-row .mrp{font-size:.7rem;}
     .info{font-size:.68rem;}
     .opt-row label{font-size:.62rem;}
+    .size-row select.size-select{font-size:.7rem;padding:5px 6px;}
     .qty-box button{width:24px;height:26px;}
     .qty-box span{width:22px;font-size:.75rem;}
     .btn-row{flex-direction:column;gap:6px;}
@@ -214,7 +217,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <div class="product-card"
      data-id="{{ product.id }}"
      data-name="{{ product.name|escapejs }}"
-     data-price="{{ product.price }}">
+     data-price="{{ product.price }}"
+     data-sizes="{{ product.sizes|escapejs }}">
 
     <div class="product-img">
         {% if product.badge %}<span class="badge">{{ product.badge }}</span>{% endif %}
@@ -229,12 +233,20 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <h2>{{ product.name }}</h2>
 
         <div class="price-row">
-            <span class="price">₹{{ product.price }}</span>
+            <span class="price price-display">₹{{ product.price }}</span>
             {% if product.mrp %}<span class="mrp">₹{{ product.mrp }}</span>{% endif %}
         </div>
 
         <p class="info"><strong>Category:</strong> {{ product.category }}</p>
-        <p class="info"><strong>Sizes:</strong> {{ product.sizes }}</p>
+
+        <!-- Shown only if product.sizes is in "Label:Price, Label:Price" format -->
+        <div class="opt-row size-row" style="display:none;">
+            <label>Size</label>
+            <select class="size-select"></select>
+        </div>
+
+        <!-- Fallback: shown as plain text if sizes isn't in Label:Price format -->
+        <p class="info size-fallback"><strong>Sizes:</strong> {{ product.sizes }}</p>
 
         <div class="opt-row">
             <label>Qty</label>
@@ -321,7 +333,23 @@ document.getElementById('menuToggle').addEventListener('click', ()=>document.get
 document.getElementById('mobileNavClose').addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open'));
 document.querySelectorAll('.mobile-nav a').forEach(a=>a.addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open')));
 
-/* ---------- product card qty / add to cart / buy now ---------- */
+/* ---------- parse "6 inch:1000, 8 inch:1500" into [{label, price}] ---------- */
+function parseSizeOptions(str){
+    if(!str) return [];
+    return str.split(',')
+        .map(s=>s.trim())
+        .filter(Boolean)
+        .map(part=>{
+            const idx = part.lastIndexOf(':');
+            if(idx === -1) return null;
+            const label = part.slice(0, idx).trim();
+            const price = parseFloat(part.slice(idx+1).trim());
+            return (label && !isNaN(price)) ? { label, price } : null;
+        })
+        .filter(Boolean);
+}
+
+/* ---------- product card qty / size select / add to cart / buy now ---------- */
 document.querySelectorAll('#productGrid .product-card').forEach(card=>{
     const qtyVal = card.querySelector('.qty-val');
     let qty = 1;
@@ -329,21 +357,60 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
     card.querySelector('.qty-plus').addEventListener('click', ()=>{ qty = Math.min(20, qty+1); qtyVal.textContent = qty; });
 
     const imgEl = card.querySelector('.prod-img-src');
-    const product = {
-        id: card.dataset.id,
-        name: card.dataset.name,
-        price: parseFloat(card.dataset.price),
-        image: imgEl ? imgEl.src : ''
-    };
+    const priceDisplay = card.querySelector('.price-display');
+    const basePrice = parseFloat(card.dataset.price) || 0;
+
+    let currentPrice = basePrice;
+    let currentSizeLabel = '';
+
+    const sizeOptions = parseSizeOptions(card.dataset.sizes);
+
+    if(sizeOptions.length > 0){
+        // Valid "Label:Price" sizes found -> show dropdown, hide plain text
+        const sizeRow = card.querySelector('.size-row');
+        const sizeFallback = card.querySelector('.size-fallback');
+        const select = card.querySelector('.size-select');
+
+        sizeFallback.style.display = 'none';
+        sizeRow.style.display = 'flex';
+
+        select.innerHTML = sizeOptions.map((o,i)=>
+            `<option value="${i}">${o.label} — ${fmt(o.price)}</option>`
+        ).join('');
+
+        // default to first size
+        currentPrice = sizeOptions[0].price;
+        currentSizeLabel = sizeOptions[0].label;
+        priceDisplay.textContent = fmt(currentPrice);
+
+        select.addEventListener('change', function(){
+            const opt = sizeOptions[parseInt(this.value)];
+            if(!opt) return;
+            currentPrice = opt.price;
+            currentSizeLabel = opt.label;
+            priceDisplay.textContent = fmt(currentPrice);
+        });
+    }
+    // else: no valid Label:Price pairs -> keep plain "Sizes:" text as-is, price stays base price
+
+    function buildProduct(){
+        return {
+            id: card.dataset.id + (currentSizeLabel ? '-' + currentSizeLabel.replace(/\s+/g,'') : ''),
+            name: card.dataset.name,
+            size: currentSizeLabel,
+            price: currentPrice,
+            image: imgEl ? imgEl.src : ''
+        };
+    }
 
     card.querySelector('.add-cart-btn').addEventListener('click', function(){
-        addToCart(product, qty);
+        addToCart(buildProduct(), qty);
         this.textContent = "Added ✓"; this.classList.add('added');
         setTimeout(()=>{ this.textContent = "Add to Cart"; this.classList.remove('added'); }, 1300);
     });
 
     card.querySelector('.buy-now-btn').addEventListener('click', ()=>{
-        buyNow(product, qty);
+        buyNow(buildProduct(), qty);
     });
 });
 
@@ -398,7 +465,7 @@ function renderCart(){
             <div class="cart-item">
                 <img src="${item.image || ''}" alt="${item.name}">
                 <div class="ci-info">
-                    <h4>${item.name}</h4>
+                    <h4>${item.name}${item.size ? ' — ' + item.size : ''}</h4>
                     <small>${fmt(item.price)} each</small>
                     <div class="ci-qty">
                         <button onclick="changeQty('${item.id}', -1)">-</button>
@@ -418,7 +485,7 @@ function buyNow(product, qty){
     const total = (product.price * qty).toFixed(2);
     const message =
         "Hello, I want to buy:\n\n" +
-        `${product.name}\n` +
+        `${product.name}${product.size ? ' (' + product.size + ')' : ''}\n` +
         `Quantity: ${qty}\n` +
         `Price: ${fmt(product.price)} each\n` +
         `Total: ${fmt(total)}`;
@@ -432,7 +499,7 @@ document.getElementById('checkoutBtn').addEventListener('click', ()=>{
     const lines = cart.map(item=>{
         const lineTotal = item.price * item.qty;
         total += lineTotal;
-        return `${item.name}  x${item.qty}  -  ${fmt(lineTotal)}`;
+        return `${item.name}${item.size ? ' (' + item.size + ')' : ''}  x${item.qty}  -  ${fmt(lineTotal)}`;
     });
     const message = "Hello, I want to place an order:\n\n" + lines.join("\n") + `\n\nTotal: ${fmt(total)}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
