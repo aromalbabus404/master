@@ -8,416 +8,836 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#0B3247; --deep:#072433; --aqua:#1FC8C2; --aqua-deep:#0FA39E;
-    --gold:#F2A93B; --sand:#F7F2E7; --foam:#EAF7F6;
+    --navy:#0B3C5D;        /* Deep Navy — sidebar */
+    --navy-deep:#082C44;   /* darker navy, sidebar hover/panels */
+    --teal:#1FA2B8;        /* Teal, for gradient + accents */
+    --aqua:#1FA2B8;        /* Aqua — links, icons, highlights */
+    --aqua-deep:#17839A;   /* darker aqua, for hovers */
+    --aqua-tint:#E6F5F8;   /* pale aqua, icon chip bg */
+    --gold:#E8B84B;        /* Sandy Gold — primary CTA / active pill */
+    --gold-deep:#D9A331;   /* Sandy Gold hover */
+    --gold-tint:#FBF0DA;   /* pale gold, icon chip bg */
+    --bg:#F7FAFC;          /* Off-white page background */
+    --card:#FFFFFF;        /* White card background */
+    --text:#1E2A32;        /* Charcoal text */
+    --text-muted:#6B7C89;
+    --border:#E7ECF1;
+    --danger:#D45353;
+    --topbar-h:64px;
   }
-  body{font-family:'Inter',sans-serif;background:var(--sand);}
-  .sidebar{background:var(--navy); min-height:100vh; color:#fff; padding-top:24px;}
-  .sidebar .brand{font-family:'Archivo Black'; font-size:1.2rem; padding:0 20px 24px; }
-  .sidebar .brand span{color:var(--aqua);}
-  .sidebar .nav-link{
-    color:rgba(255,255,255,.78); padding:12px 22px; font-weight:600; font-size:.92rem;
-    border-left:3px solid transparent; cursor:pointer;
-  }
-  .sidebar .nav-link.active, .sidebar .nav-link:hover{
-    background:rgba(255,255,255,.07); color:#fff; border-left-color:var(--aqua);
-  }
-  .topbar{background:#fff; padding:16px 28px; border-bottom:1px solid #e3dcc9; display:flex; justify-content:space-between; align-items:center;}
-  .panel{display:none;}
-  .panel.active{display:block;}
-  .card-section{background:#fff;border-radius:14px;padding:24px;box-shadow:0 10px 26px rgba(7,36,51,.08);margin-bottom:24px;}
-  .card-section h5{font-family:'Archivo Black';font-size:1.05rem;margin-bottom:18px;}
-  .table thead{background:var(--foam);}
-  .badge-pending{background:#F2A93B;}
-  .badge-approved{background:#1FC8C2;}
-  .badge-rejected{background:#D45353;}
-  .thumb{width:54px;height:54px;object-fit:cover;border-radius:8px;}
-  .gallery-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;}
-  .gallery-item{position:relative;}
-  .gallery-item .del-btn{
-    position:absolute;top:6px;right:6px;background:#D45353;color:#fff;border:none;
-    border-radius:50%;width:26px;height:26px;font-size:.8rem;line-height:1;
-  }
-  .stat-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 10px 26px rgba(7,36,51,.08);}
-  .stat-card strong{font-family:'Archivo Black';font-size:1.6rem;display:block;color:var(--navy);}
-  .stat-card small{color:#5C7282;text-transform:uppercase;font-size:.72rem;font-weight:700;}
+  *{box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+  a{color:var(--aqua);text-decoration:none;transition:color .18s ease;}
+  a:hover{color:var(--aqua-deep);}
 
-  /* ---- Preview panel ---- */
+  /* ===== Global animation helpers ===== */
+  @keyframes fadeInUp{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes popIn{
+    from{opacity:0;transform:scale(.96);}
+    to{opacity:1;transform:scale(1);}
+  }
+  @keyframes slideDown{
+    from{opacity:0;transform:translateY(-8px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fadeInUp .35s ease both;}
+
+  /* ===== Layout shell ===== */
+  .shell{display:flex;min-height:100vh;}
+
+  /* ===== Sidebar (desktop) ===== */
+  .sidebar{
+    width:264px;flex:0 0 264px;background:var(--navy);color:#fff;
+    padding:22px 16px;display:flex;flex-direction:column;gap:6px;
+  }
+  .sidebar .brand-row{display:flex;align-items:center;gap:10px;padding:4px 10px 20px;}
+  .brand-mark{
+    width:38px;height:38px;border-radius:11px;background:var(--gold);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:1rem;flex:0 0 38px;
+    transition:transform .25s ease;
+  }
+  .sidebar .brand-row:hover .brand-mark{transform:rotate(-6deg) scale(1.05);}
+  .brand-text{line-height:1.15;}
+  .brand-text .b1{font-family:'Archivo Black';font-size:1rem;}
+  .brand-text .b2{font-size:.72rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.04em;}
+
+  .nav-section-label{
+    font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:rgba(255,255,255,.42);padding:14px 14px 6px;
+  }
+  .nav-link{
+    display:flex;align-items:center;gap:11px;color:rgba(255,255,255,.8);
+    padding:10px 14px;font-weight:600;font-size:.9rem;border-radius:999px;cursor:pointer;
+    transition:background-color .2s ease, color .2s ease, transform .2s ease;
+  }
+  .nav-link .nav-icon{
+    width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+    font-size:.95rem;flex:0 0 26px;transition:transform .2s ease;
+  }
+  .nav-link:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateX(3px);}
+  .nav-link:hover .nav-icon{transform:scale(1.12);}
+  .nav-link.active{background:var(--gold);color:var(--navy);}
+  .nav-link.logout-link{color:#F3B6B6;}
+  .sidebar .nav-link.logout-link{margin-top:auto;}
+  .nav-link.logout-link:hover{background:rgba(212,83,83,.18);color:#fff;}
+  .sidebar .spacer{flex:1;}
+
+  /* ===== Main column ===== */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{
+    background:var(--card);padding:14px 30px;border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;gap:14px;
+    position:sticky;top:0;z-index:20;min-height:var(--topbar-h);
+  }
+  .topbar-left{display:flex;align-items:center;gap:14px;min-width:0;}
+  .welcome-eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);font-weight:700;}
+  .topbar h5{margin:2px 0 0;font-family:'Archivo Black';font-size:1.05rem;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .content{padding:28px 30px;}
+
+  /* ===== Hamburger (mobile only) ===== */
+  .hamburger-btn{
+    display:none;flex-direction:column;justify-content:center;align-items:center;gap:4px;
+    width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--bg);
+    cursor:pointer;flex:0 0 38px;transition:background-color .18s ease;
+  }
+  .hamburger-btn:hover{background:var(--aqua-tint);}
+  .hamburger-btn span{display:block;width:18px;height:2px;background:var(--navy);border-radius:2px;transition:transform .25s ease, opacity .2s ease;}
+  .hamburger-btn.open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+  .hamburger-btn.open span:nth-child(2){opacity:0;}
+  .hamburger-btn.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+
+  .mobile-brand-inline{display:none;align-items:center;gap:8px;flex:0 0 auto;}
+  .mobile-brand-inline .brand-mark{width:32px;height:32px;font-size:.85rem;border-radius:9px;}
+  .mobile-brand-inline .mb-text{font-family:'Archivo Black';font-size:.9rem;color:var(--navy);}
+
+  /* ===== Mobile nav dropdown ===== */
+  .mobile-nav-menu{
+    display:none;position:fixed;top:var(--topbar-h);left:0;right:0;bottom:0;
+    background:rgba(7,44,68,.35);z-index:40;
+  }
+  .mobile-nav-menu.open{display:block;animation:fadeIn .2s ease both;}
+  .mobile-nav-menu .sheet{
+    background:var(--navy);padding:14px 14px 22px;border-radius:0 0 20px 20px;
+    max-height:calc(100vh - var(--topbar-h));overflow-y:auto;
+    animation:slideDown .22s ease both;box-shadow:0 18px 34px rgba(0,0,0,.25);
+  }
+  .mobile-nav-menu .nav-section-label{padding-top:12px;}
+  .mobile-nav-menu .nav-link{font-size:.95rem;}
+
+  /* ===== Topbar profile dropdown ===== */
+  .topbar-right{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
+  .profile-dropdown{position:relative;}
+  .profile-btn{
+    display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);
+    border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;transition:background-color .2s ease, box-shadow .2s ease;
+  }
+  .profile-btn:hover{background:var(--aqua-tint);box-shadow:0 4px 14px rgba(11,60,93,.08);}
+  .profile-btn .avatar-circle{
+    width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex:0 0 32px;
+  }
+  .profile-btn .profile-name{font-weight:600;font-size:.88rem;color:var(--navy);}
+  .profile-btn .caret{font-size:.65rem;color:var(--text-muted);transition:transform .2s ease;}
+  .profile-dropdown.open .profile-btn .caret{transform:rotate(180deg);}
+  .profile-menu{
+    position:absolute;right:0;top:calc(100% + 10px);min-width:210px;background:var(--card);
+    border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 34px rgba(11,60,93,.14);
+    padding:8px;display:none;z-index:30;
+  }
+  .profile-dropdown.open .profile-menu{display:block;animation:popIn .18s ease both;transform-origin:top right;}
+  .profile-menu a, .profile-menu button{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;
+    padding:9px 12px;border-radius:9px;font-size:.87rem;font-weight:600;color:var(--text);cursor:pointer;
+    transition:background-color .15s ease;
+  }
+  .profile-menu a:hover, .profile-menu button:hover{background:var(--bg);color:var(--navy);}
+  .profile-menu .danger-item{color:var(--danger);}
+  .profile-menu .danger-item:hover{background:#FBEAEA;color:var(--danger);}
+  .profile-menu hr{margin:6px 4px;border-color:var(--border);}
+
+  /* ===== Cards ===== */
+  .card-section{
+    background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;
+    box-shadow:0 8px 24px rgba(11,60,93,.05);margin-bottom:22px;
+    transition:box-shadow .25s ease, transform .25s ease;
+  }
+  .card-section:hover{box-shadow:0 12px 30px rgba(11,60,93,.09);}
+  .card-section .section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .card-section .section-head .head-icon{
+    width:32px;height:32px;border-radius:9px;background:var(--aqua-tint);color:var(--aqua-deep);
+    display:flex;align-items:center;justify-content:center;font-size:.95rem;
+  }
+  .card-section h5{font-family:'Archivo Black';font-size:1rem;margin:0;color:var(--navy);}
+
+  /* ===== Stat cards ===== */
+  .stat-card{
+    background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;
+    box-shadow:0 8px 24px rgba(11,60,93,.05);display:flex;align-items:center;gap:14px;height:100%;
+    transition:transform .22s ease, box-shadow .22s ease;
+    animation:fadeInUp .4s ease both;
+  }
+  .stat-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(11,60,93,.12);}
+  .row.g-3.mb-4 .col-6:nth-child(1) .stat-card{animation-delay:.02s;}
+  .row.g-3.mb-4 .col-6:nth-child(2) .stat-card{animation-delay:.08s;}
+  .row.g-3.mb-4 .col-6:nth-child(3) .stat-card{animation-delay:.14s;}
+  .row.g-3.mb-4 .col-6:nth-child(4) .stat-card{animation-delay:.2s;}
+  .stat-card .stat-icon{
+    width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+    font-size:1.25rem;flex:0 0 46px;transition:transform .22s ease;
+  }
+  .stat-card:hover .stat-icon{transform:scale(1.08) rotate(-4deg);}
+  .stat-card:nth-child(1) .stat-icon{background:var(--gold-tint);}
+  .stat-card:nth-child(2) .stat-icon{background:var(--aqua-tint);}
+  .stat-card:nth-child(3) .stat-icon{background:#FBEAEA;}
+  .stat-card:nth-child(4) .stat-icon{background:var(--gold-tint);}
+  .stat-card strong{font-family:'Archivo Black';font-size:1.5rem;display:block;color:var(--navy);line-height:1;}
+  .stat-card small{color:var(--text-muted);text-transform:uppercase;font-size:.68rem;font-weight:700;letter-spacing:.03em;}
+
+  /* ===== Highlight / CTA card (Quick Notes) ===== */
+  .highlight-card{
+    background:linear-gradient(135deg, var(--navy), var(--navy-deep));border-radius:18px;padding:26px;color:#fff;
+    box-shadow:0 8px 24px rgba(11,60,93,.18);transition:box-shadow .25s ease, transform .25s ease;
+  }
+  .highlight-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(11,60,93,.26);}
+  .highlight-card h5{color:#fff;font-family:'Archivo Black';font-size:1rem;margin-bottom:10px;}
+  .highlight-card p{color:rgba(255,255,255,.78);margin-bottom:16px;}
+  .highlight-card .btn-gold{
+    background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700;border-radius:999px;padding:9px 20px;
+  }
+  .highlight-card .btn-gold:hover{background:var(--gold-deep);border-color:var(--gold-deep);}
+
+  /* ===== Tables ===== */
+  .table thead{background:var(--bg);}
+  .table thead th{font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:700;border-bottom:1px solid var(--border);}
+  .table td{border-color:var(--border);vertical-align:middle;}
+  .table tbody tr{transition:background-color .15s ease;}
+  .table tbody tr:hover{background:var(--bg);}
+
+  /* ===== Badges (pill style) ===== */
+  .badge{border-radius:999px;font-weight:600;padding:.4em .8em;}
+  .badge-pending{background:var(--gold-tint);color:#8A6412;}
+  .badge-approved{background:var(--aqua-tint);color:var(--aqua-deep);}
+  .badge-rejected{background:#FBEAEA;color:var(--danger);}
+
+  .thumb{width:52px;height:52px;object-fit:cover;border-radius:12px;}
+  .gallery-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;transition:transform .25s ease;}
+  .gallery-item{position:relative;overflow:hidden;border-radius:14px;}
+  .gallery-item:hover .gallery-thumb{transform:scale(1.06);}
+  .gallery-item .del-btn{
+    position:absolute;top:8px;right:8px;background:var(--danger);color:#fff;border:none;
+    border-radius:50%;width:26px;height:26px;font-size:.8rem;line-height:1;transition:transform .18s ease, opacity .18s ease;
+  }
+  .gallery-item .del-btn:hover{transform:scale(1.12);}
+
+  /* ===== Buttons ===== */
+  .btn{border-radius:999px;font-weight:600;transition:background-color .18s ease, border-color .18s ease, color .18s ease, transform .12s ease, box-shadow .18s ease;}
+  .btn:active{transform:scale(.97);}
+  .btn-primary, .btn-dark{
+    background-color:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700;
+  }
+  .btn-primary:hover, .btn-primary:focus, .btn-dark:hover, .btn-dark:focus{
+    background-color:var(--gold-deep);border-color:var(--gold-deep);color:var(--navy);
+    box-shadow:0 6px 16px rgba(217,163,49,.3);
+  }
+  .btn-outline-dark{color:var(--navy);border-color:var(--navy);}
+  .btn-outline-dark:hover{background-color:var(--navy);border-color:var(--navy);color:#fff;}
+  .btn-outline-primary{color:var(--aqua);border-color:var(--aqua);}
+  .btn-outline-primary:hover{background-color:var(--aqua);border-color:var(--aqua);color:#fff;}
+  .btn-outline-danger{border-color:#EFC6C6;color:var(--danger);}
+  .btn-outline-danger:hover{background-color:var(--danger);border-color:var(--danger);}
+  .btn-success{background-color:var(--aqua);border-color:var(--aqua);}
+  .btn-success:hover{background-color:var(--aqua-deep);border-color:var(--aqua-deep);}
+  .btn-outline-secondary{border-color:var(--border);color:var(--text-muted);}
+  .btn-outline-secondary:hover{background-color:var(--bg);border-color:var(--text-muted);color:var(--text);}
+  .form-control,.form-select{border-radius:10px;border-color:var(--border);transition:border-color .18s ease, box-shadow .18s ease;}
+  .form-control:focus,.form-select:focus{border-color:var(--aqua);box-shadow:0 0 0 .2rem rgba(31,162,184,.15);}
+  .form-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+  /* ===== Preview panel ===== */
   .preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
   .preview-toolbar .url-pill{
-    background:var(--foam);color:var(--navy);font-weight:600;font-size:.82rem;
-    padding:8px 14px;border-radius:999px;display:flex;align-items:center;gap:8px;
+    background:var(--bg);color:var(--navy);font-weight:600;font-size:.82rem;
+    padding:8px 14px;border-radius:999px;display:flex;align-items:center;gap:8px;max-width:100%;overflow:hidden;
   }
-  .preview-toolbar .url-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--aqua-deep);display:inline-block;}
+  .preview-toolbar .url-pill span.url-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .preview-toolbar .url-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--aqua-deep);display:inline-block;flex:0 0 8px;animation:pulseDot 1.8s ease infinite;}
+  @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:.35;}}
   .preview-frame-wrap{
-    position:relative;border:1px solid #e3dcc9;border-radius:14px;overflow:hidden;
-    box-shadow:0 10px 26px rgba(7,36,51,.08);background:#fff;
+    position:relative;border:1px solid var(--border);border-radius:16px;overflow:hidden;
+    box-shadow:0 8px 24px rgba(11,60,93,.05);background:#fff;transition:max-width .3s ease;
   }
   .preview-frame-wrap iframe{width:100%;height:80vh;border:0;display:block;background:#fff;}
   .preview-loading{
     position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    background:#fff;color:#5C7282;font-weight:600;font-size:.9rem;gap:10px;transition:opacity .25s ease;
+    background:#fff;color:var(--text-muted);font-weight:600;font-size:.9rem;gap:10px;transition:opacity .25s ease;
   }
   .preview-loading.hidden{opacity:0;pointer-events:none;}
-  .spinner-dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--foam);border-top-color:var(--aqua-deep);animation:spin .8s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .device-btn{border:1px solid #e3dcc9;background:#fff;color:var(--navy);border-radius:8px;padding:7px 12px;font-size:.85rem;font-weight:600;}
+  .spinner-dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--bg);border-top-color:var(--aqua-deep);animation:spin .8s linear infinite;}
+  .device-btn{border:1px solid var(--border);background:#fff;color:var(--navy);border-radius:999px;padding:7px 14px;font-size:.85rem;font-weight:600;transition:background-color .18s ease, color .18s ease;}
   .device-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
   .preview-frame-wrap.mobile-size{max-width:420px;margin:0 auto;}
 
-  @media(max-width:768px){ .sidebar{min-height:auto;} .preview-frame-wrap iframe{height:70vh;} }
+  /* ===== Modal animation polish ===== */
+  .modal.fade .modal-dialog{transition:transform .25s ease, opacity .25s ease;}
+
+  /* ===== Alerts ===== */
+  .alert{animation:fadeInUp .3s ease both;}
+
+  /* =========================================================
+     RESPONSIVE / MOBILE
+     ========================================================= */
+  @media(max-width:900px){
+    .sidebar{display:none;}                 /* sidebar replaced by hamburger + dropdown */
+    .hamburger-btn{display:flex;}
+    .mobile-brand-inline{display:flex;}
+    .welcome-eyebrow{display:none;}
+    .topbar h5{font-size:.95rem;max-width:38vw;}
+    .topbar{padding:12px 16px;}
+    .content{padding:18px 14px;}
+
+    .profile-btn .profile-name{display:none;}
+    .profile-btn{padding:6px;}
+    .profile-menu{min-width:190px;}
+
+    .card-section{padding:18px;border-radius:16px;}
+    .stat-card{padding:16px;border-radius:16px;}
+    .preview-frame-wrap iframe{height:65vh;}
+    .preview-toolbar .url-pill{order:3;width:100%;}
+    .preview-toolbar{gap:8px;}
+
+    .highlight-card{padding:20px;}
+  }
+
+  @media(max-width:480px){
+    .topbar h5{max-width:32vw;}
+    .content{padding:14px 10px;}
+    .stat-card{gap:10px;padding:14px;}
+    .stat-card .stat-icon{width:38px;height:38px;font-size:1.05rem;flex-basis:38px;}
+    .stat-card strong{font-size:1.2rem;}
+    .device-btn{padding:6px 10px;font-size:.78rem;}
+    .form-actions .btn{flex:1 1 auto;}
+  }
 </style>
 </head>
 <body>
-<div class="container-fluid">
-  <div class="row">
-    <!-- SIDEBAR -->
-    <div class="col-lg-2 col-md-3 sidebar p-0">
-      <div class="brand">Aqua<span>Craft</span> Admin</div>
-      <div class="nav flex-column">
-        <a class="nav-link active" data-panel="overview">📊 Overview</a>
-        <a class="nav-link" data-panel="preview">👁 Preview Site</a>
-        <a class="nav-link" data-panel="hero">🌊 Hero Section</a>
-        <a class="nav-link" data-panel="products">🛒 Products</a>
-        <a class="nav-link" data-panel="gallery">🖼 Gallery</a>
-        <a class="nav-link" data-panel="reviews">⭐ Reviews</a>
-        <a class="nav-link" data-panel="orders">📦 Orders</a>
-        <a class="nav-link" data-panel="settings">⚙️ Settings</a>
-        <a href="{% url 'admin_logout' %}" class="nav-link text-danger mt-3">🚪 Logout</a>
+<div class="shell">
+
+  <!-- SIDEBAR (desktop) -->
+  <div class="sidebar">
+    <div class="brand-row">
+      <div class="brand-mark">AC</div>
+      <div class="brand-text">
+        <div class="b1">AquaCraft</div>
+        <div class="b2">Admin</div>
       </div>
     </div>
 
-    <!-- MAIN -->
-    <div class="col-lg-10 col-md-9 p-0">
-      <div class="topbar">
-        <h5 class="mb-0" style="font-family:'Archivo Black';">Welcome, {{ request.user.username }}</h5>
-        <a href="{% url 'index' %}" target="_blank" class="btn btn-sm btn-outline-dark">View Live Site ↗</a>
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-link active" data-panel="overview"><span class="nav-icon">📊</span> Overview</a>
+    <a class="nav-link" data-panel="preview"><span class="nav-icon">👁</span> Preview Site</a>
+
+    <div class="nav-section-label">Storefront</div>
+    <a class="nav-link" data-panel="hero"><span class="nav-icon">🌊</span> Hero Section</a>
+    <a class="nav-link" data-panel="products"><span class="nav-icon">🛒</span> Products</a>
+    <a class="nav-link" data-panel="gallery"><span class="nav-icon">🖼</span> Gallery</a>
+    <a class="nav-link" data-panel="reviews"><span class="nav-icon">⭐</span> Reviews</a>
+
+    <div class="nav-section-label">Business</div>
+    <a class="nav-link" data-panel="orders"><span class="nav-icon">📦</span> Orders</a>
+    <a class="nav-link" data-panel="settings"><span class="nav-icon">⚙️</span> Settings</a>
+
+    <div class="spacer"></div>
+    <a href="{% url 'admin_logout' %}" class="nav-link logout-link"><span class="nav-icon">🚪</span> Logout</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-brand-inline">
+          <div class="brand-mark">AC</div>
+          <span class="mb-text">AquaCraft</span>
+        </div>
+        <div>
+          <div class="welcome-eyebrow">Welcome back</div>
+          <h5>{{ request.user.username }}</h5>
+        </div>
       </div>
 
-      <div class="p-4">
+      <div class="topbar-right">
+        <a href="{% url 'index' %}" target="_blank" class="btn btn-sm btn-outline-dark">View Live Site ↗</a>
 
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
-
-        <!-- OVERVIEW -->
-        <div class="panel active" id="panel-overview">
-          <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_products }}</strong><small>Products</small></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_gallery }}</strong><small>Gallery Images</small></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_pending }}</strong><small>Pending Reviews</small></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card"><strong>{{ stat_orders }}</strong><small>Orders Received</small></div></div>
+        <!-- Profile dropdown -->
+        <div class="profile-dropdown" id="profileDropdown">
+          <button type="button" class="profile-btn" id="profileBtn" aria-expanded="false">
+            <span class="avatar-circle">{{ request.user.username|slice:":1"|upper }}</span>
+            <span class="profile-name">{{ request.user.username }}</span>
+            <span class="caret">▼</span>
+          </button>
+          <div class="profile-menu" id="profileMenu">
+            <a href="{% url 'index' %}" target="_blank">🔗 View Live Site</a>
+            <button type="button" data-panel="settings" class="dropdown-panel-link">⚙️ Settings</button>
+            <button type="button" data-panel="overview" class="dropdown-panel-link">📊 Overview</button>
+            <hr>
+            <a href="{% url 'admin_logout' %}" class="danger-item">🚪 Logout</a>
           </div>
-          <div class="card-section">
-            <h5>Quick Notes</h5>
-            <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — hero text, products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp. Use <strong>Preview Site</strong> in the sidebar to see the live storefront update in real time, right here in the dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE NAV DROPDOWN (hamburger menu) -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+      <div class="sheet">
+        <div class="nav-section-label">Overview</div>
+        <a class="nav-link active" data-panel="overview"><span class="nav-icon">📊</span> Overview</a>
+        <a class="nav-link" data-panel="preview"><span class="nav-icon">👁</span> Preview Site</a>
+
+        <div class="nav-section-label">Storefront</div>
+        <a class="nav-link" data-panel="hero"><span class="nav-icon">🌊</span> Hero Section</a>
+        <a class="nav-link" data-panel="products"><span class="nav-icon">🛒</span> Products</a>
+        <a class="nav-link" data-panel="gallery"><span class="nav-icon">🖼</span> Gallery</a>
+        <a class="nav-link" data-panel="reviews"><span class="nav-icon">⭐</span> Reviews</a>
+
+        <div class="nav-section-label">Business</div>
+        <a class="nav-link" data-panel="orders"><span class="nav-icon">📦</span> Orders</a>
+        <a class="nav-link" data-panel="settings"><span class="nav-icon">⚙️</span> Settings</a>
+
+        <div class="nav-section-label">Account</div>
+        <a href="{% url 'admin_logout' %}" class="nav-link logout-link"><span class="nav-icon">🚪</span> Logout</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- OVERVIEW -->
+      <div class="panel active" id="panel-overview">
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon">🛒</div>
+              <div><strong>{{ stat_products }}</strong><small>Products</small></div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon">🖼</div>
+              <div><strong>{{ stat_gallery }}</strong><small>Gallery Images</small></div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon">⭐</div>
+              <div><strong>{{ stat_pending }}</strong><small>Pending Reviews</small></div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon">📦</div>
+              <div><strong>{{ stat_orders }}</strong><small>Orders Received</small></div>
+            </div>
           </div>
         </div>
 
-        <!-- PREVIEW SITE (working live index page, embedded) -->
-        <div class="panel" id="panel-preview">
-          <div class="card-section">
-            <div class="preview-toolbar">
-              <h5 class="mb-0">Live Site Preview</h5>
-              <div class="d-flex align-items-center gap-2 flex-wrap">
-                <span class="url-pill"><span class="dot"></span>{{ request.scheme }}://{{ request.get_host }}{% url 'index' %}</span>
-                <button type="button" class="device-btn active" id="btnDesktop">🖥 Desktop</button>
-                <button type="button" class="device-btn" id="btnMobile">📱 Mobile</button>
-                <button type="button" class="btn btn-sm btn-primary" id="btnRefreshPreview">↻ Refresh</button>
-                <a href="{% url 'index' %}" target="_blank" class="btn btn-sm btn-outline-dark">Open Full Tab ↗</a>
-              </div>
+        <div class="row g-3">
+          <div class="col-lg-8">
+            <div class="card-section h-100">
+              <div class="section-head"><span class="head-icon">📋</span><h5>Quick Notes</h5></div>
+              <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — hero text, products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp. Use <strong>Preview Site</strong> in the sidebar to see the live storefront update in real time, right here in the dashboard.</p>
             </div>
-            <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Hero, Products, Gallery or Reviews, then hit Refresh to see them update below.</p>
-            <div class="preview-frame-wrap" id="previewFrameWrap">
-              <div class="preview-loading" id="previewLoading"><span class="spinner-dot"></span>Loading live site…</div>
-              <iframe id="previewFrame" src="{% url 'index' %}" title="AquaCraft Pools — live storefront preview"></iframe>
+          </div>
+          <div class="col-lg-4">
+            <div class="highlight-card h-100">
+              <h5>Live Site Preview</h5>
+              <p>See your storefront exactly as visitors do — cart, checkout, and reviews all working — without leaving this dashboard.</p>
+              <button type="button" class="btn btn-gold" onclick="activatePanel('preview');">Open Preview</button>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- HERO -->
-        <div class="panel" id="panel-hero">
-          <div class="card-section">
-            <h5>Hero Section</h5>
-            <form method="post"
-      action="{% url 'hero_save' %}"
-      enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Eyebrow text</label>
-                  {{ hero_form.eyebrow }}
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Heading (use &lt;br&gt; for a line break)</label>
-                  {{ hero_form.heading }}
-                </div>
-                <div class="col-12">
-                  <label class="form-label fw-bold">Subtext</label>
-                  {{ hero_form.sub }}
-                </div>
-               <div class="col-md-6">
-    <label class="form-label fw-bold">Upload Background Video (MP4)</label>
-    {{ hero_form.video_file }}
-</div>
+      <!-- PREVIEW SITE (working live index page, embedded) -->
+      <div class="panel" id="panel-preview">
+        <div class="card-section">
+          <div class="preview-toolbar">
+            <div class="section-head mb-0"><span class="head-icon">👁</span><h5>Live Site Preview</h5></div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button type="button" class="device-btn active" id="btnDesktop">🖥 Desktop</button>
+              <button type="button" class="device-btn" id="btnMobile">📱 Mobile</button>
+              <button type="button" class="btn btn-sm btn-primary" id="btnRefreshPreview">↻ Refresh</button>
+              <a href="{% url 'index' %}" target="_blank" class="btn btn-sm btn-outline-dark">Open Full Tab ↗</a>
+            </div>
+            <span class="url-pill"><span class="dot"></span><span class="url-text">{{ request.scheme }}://{{ request.get_host }}{% url 'index' %}</span></span>
+          </div>
+          <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Hero, Products, Gallery or Reviews, then hit Refresh to see them update below.</p>
+          <div class="preview-frame-wrap" id="previewFrameWrap">
+            <div class="preview-loading" id="previewLoading"><span class="spinner-dot"></span>Loading live site…</div>
+            <iframe id="previewFrame" src="{% url 'index' %}" title="AquaCraft Pools — live storefront preview"></iframe>
+          </div>
+        </div>
+      </div>
 
-<div class="col-md-6">
-    <label class="form-label fw-bold">Upload Background Image</label>
-    {{ hero_form.poster_image_file }}
-</div>
-<div class="col-md-6">
-    {% if hero.video_file %}
-        <small class="text-success">
-            Current Video Uploaded
-        </small>
-    {% endif %}
-</div>
-
-<div class="col-md-6">
-    {% if hero.poster_image_file %}
-        <img src="{{ hero.poster_image_file.url }}"
-             class="img-fluid rounded mt-2"
-             style="max-height:120px;">
-    {% endif %}
-</div>
-                <div class="col-md-3"><label class="form-label fw-bold">Stat 1</label>{{ hero_form.stat1_value }}<div class="mt-1">{{ hero_form.stat1_label }}</div></div>
-                <div class="col-md-3"><label class="form-label fw-bold">Stat 2</label>{{ hero_form.stat2_value }}<div class="mt-1">{{ hero_form.stat2_label }}</div></div>
-                <div class="col-md-3"><label class="form-label fw-bold">Stat 3</label>{{ hero_form.stat3_value }}<div class="mt-1">{{ hero_form.stat3_label }}</div></div>
-                <div class="col-md-3"><label class="form-label fw-bold">Stat 4</label>{{ hero_form.stat4_value }}<div class="mt-1">{{ hero_form.stat4_label }}</div></div>
+      <!-- HERO -->
+      <div class="panel" id="panel-hero">
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">🌊</span><h5>Hero Section</h5></div>
+          <form method="post"
+    action="{% url 'hero_save' %}"
+    enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Eyebrow text</label>
+                {{ hero_form.eyebrow }}
               </div>
-              <button class="btn btn-dark mt-3" type="submit">Save Hero Section</button>
-            </form>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Heading (use &lt;br&gt; for a line break)</label>
+                {{ hero_form.heading }}
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold">Subtext</label>
+                {{ hero_form.sub }}
+              </div>
+             <div class="col-md-6">
+  <label class="form-label fw-bold">Upload Background Video (MP4)</label>
+  {{ hero_form.video_file }}
+</div>
+
+<div class="col-md-6">
+  <label class="form-label fw-bold">Upload Background Image</label>
+  {{ hero_form.poster_image_file }}
+</div>
+<div class="col-md-6">
+  {% if hero.video_file %}
+      <small class="text-success">
+          Current Video Uploaded
+      </small>
+  {% endif %}
+</div>
+
+<div class="col-md-6">
+  {% if hero.poster_image_file %}
+      <img src="{{ hero.poster_image_file.url }}"
+           class="img-fluid rounded mt-2"
+           style="max-height:120px;">
+  {% endif %}
+</div>
+              <div class="col-md-3"><label class="form-label fw-bold">Stat 1</label>{{ hero_form.stat1_value }}<div class="mt-1">{{ hero_form.stat1_label }}</div></div>
+              <div class="col-md-3"><label class="form-label fw-bold">Stat 2</label>{{ hero_form.stat2_value }}<div class="mt-1">{{ hero_form.stat2_label }}</div></div>
+              <div class="col-md-3"><label class="form-label fw-bold">Stat 3</label>{{ hero_form.stat3_value }}<div class="mt-1">{{ hero_form.stat3_label }}</div></div>
+              <div class="col-md-3"><label class="form-label fw-bold">Stat 4</label>{{ hero_form.stat4_value }}<div class="mt-1">{{ hero_form.stat4_label }}</div></div>
+            </div>
+            <div class="form-actions mt-3">
+              <button class="btn btn-dark" type="submit">Save Hero Section</button>
+              <button class="btn btn-outline-secondary" type="reset">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="panel" id="panel-products">
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">🛒</span><h5>Add Product</h5></div>
+          <form method="post" action="{% url 'product_add' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label fw-bold">Name</label>{{ product_form.name }}</div>
+              <div class="col-md-3"><label class="form-label fw-bold">Category</label>{{ product_form.category }}</div>
+              <div class="col-md-3"><label class="form-label fw-bold">Badge (optional)</label>{{ product_form.badge }}</div>
+              <div class="col-md-3"><label class="form-label fw-bold">Price (₹)</label>{{ product_form.price }}</div>
+              <div class="col-md-3"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
+              <div class="col-md-6"><label class="form-label fw-bold">Sizes (comma separated)</label>{{ product_form.sizes }}</div>
+              <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
+              <div class="col-md-4"><label class="form-label fw-bold">…or upload image</label>{{ product_form.image_file }}</div>
+            </div>
+            <div class="form-actions mt-3">
+              <button class="btn btn-primary" type="submit">Add Product</button>
+              <button class="btn btn-outline-secondary" type="reset">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">📁</span><h5>All Products</h5></div>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th></th></tr></thead>
+              <tbody>
+              {% for p in products %}
+                <tr>
+                  <td><img class="thumb" src="{{ p.image }}"></td>
+                  <td>{{ p.name }}{% if p.badge %} <span class="badge bg-warning text-dark">{{ p.badge }}</span>{% endif %}</td>
+                  <td class="text-capitalize">{{ p.get_category_display }}</td>
+                  <td>₹{{ p.price|floatformat:0 }}{% if p.mrp %} <small class="text-muted text-decoration-line-through">₹{{ p.mrp|floatformat:0 }}</small>{% endif %}</td>
+                  <td>{{ p.sizes }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary edit-prod-btn"
+                      data-id="{{ p.id }}" data-name="{{ p.name }}" data-category="{{ p.category }}"
+                      data-badge="{{ p.badge|default:'' }}" data-price="{{ p.price }}" data-mrp="{{ p.mrp|default:'' }}"
+                      data-sizes="{{ p.sizes }}" data-imgurl="{{ p.image_url|default:'' }}"
+                      data-action="{% url 'product_edit' p.id %}" type="button">Edit</button>
+                    <form method="post" action="{% url 'product_delete' p.id %}" style="display:inline;" onsubmit="return confirm('Delete this product?');">
+                      {% csrf_token %}
+                      <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="6" class="text-muted text-center py-4">No products yet.</td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- PRODUCTS -->
-        <div class="panel" id="panel-products">
-          <div class="card-section">
-            <h5>Add Product</h5>
-            <form method="post" action="{% url 'product_add' %}" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="row g-3">
-                <div class="col-md-6"><label class="form-label fw-bold">Name</label>{{ product_form.name }}</div>
-                <div class="col-md-3"><label class="form-label fw-bold">Category</label>{{ product_form.category }}</div>
-                <div class="col-md-3"><label class="form-label fw-bold">Badge (optional)</label>{{ product_form.badge }}</div>
-                <div class="col-md-3"><label class="form-label fw-bold">Price (₹)</label>{{ product_form.price }}</div>
-                <div class="col-md-3"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
-                <div class="col-md-6"><label class="form-label fw-bold">Sizes (comma separated)</label>{{ product_form.sizes }}</div>
-                <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
-                <div class="col-md-4"><label class="form-label fw-bold">…or upload image</label>{{ product_form.image_file }}</div>
-              </div>
-              <button class="btn btn-primary mt-3" type="submit">Add Product</button>
-            </form>
-          </div>
-
-          <div class="card-section">
-            <h5>All Products</h5>
-            <div class="table-responsive">
-              <table class="table align-middle">
-                <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th></th></tr></thead>
-                <tbody>
-                {% for p in products %}
-                  <tr>
-                    <td><img class="thumb" src="{{ p.image }}"></td>
-                    <td>{{ p.name }}{% if p.badge %} <span class="badge bg-warning text-dark">{{ p.badge }}</span>{% endif %}</td>
-                    <td class="text-capitalize">{{ p.get_category_display }}</td>
-                    <td>₹{{ p.price|floatformat:0 }}{% if p.mrp %} <small class="text-muted text-decoration-line-through">₹{{ p.mrp|floatformat:0 }}</small>{% endif %}</td>
-                    <td>{{ p.sizes }}</td>
-                    <td>
-                      <button class="btn btn-sm btn-outline-primary edit-prod-btn"
-                        data-id="{{ p.id }}" data-name="{{ p.name }}" data-category="{{ p.category }}"
-                        data-badge="{{ p.badge|default:'' }}" data-price="{{ p.price }}" data-mrp="{{ p.mrp|default:'' }}"
-                        data-sizes="{{ p.sizes }}" data-imgurl="{{ p.image_url|default:'' }}"
-                        data-action="{% url 'product_edit' p.id %}" type="button">Edit</button>
-                      <form method="post" action="{% url 'product_delete' p.id %}" style="display:inline;" onsubmit="return confirm('Delete this product?');">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-                      </form>
-                    </td>
-                  </tr>
-                {% empty %}
-                  <tr><td colspan="6" class="text-muted text-center py-4">No products yet.</td></tr>
-                {% endfor %}
-                </tbody>
-              </table>
+        <!-- Edit modal -->
+        <div class="modal fade" id="editProductModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="post" enctype="multipart/form-data" id="editProductForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                  <h5 class="modal-title">Edit Product</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row g-3">
+                  <div class="col-md-8"><label class="form-label fw-bold">Name</label><input class="form-control" name="name" id="ed_name"></div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-bold">Category</label>
+                    <select class="form-select" name="category" id="ed_category">
+                      {% for key, label in categories %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-6"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
+                  <div class="col-md-3"><label class="form-label fw-bold">Price</label><input type="number" class="form-control" name="price" id="ed_price"></div>
+                  <div class="col-md-3"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
+                  <div class="col-12"><label class="form-label fw-bold">Sizes (comma separated)</label><input class="form-control" name="sizes" id="ed_sizes"></div>
+                  <div class="col-md-8"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" id="ed_imgurl"></div>
+                  <div class="col-md-4"><label class="form-label fw-bold">…or upload new</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Update Product</button>
+                </div>
+              </form>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Edit modal -->
-          <div class="modal fade" id="editProductModal" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <form method="post" enctype="multipart/form-data" id="editProductForm">
+      <!-- GALLERY -->
+      <div class="panel" id="panel-gallery">
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">🖼</span><h5>Add Gallery Image</h5></div>
+          <form method="post" action="{% url 'gallery_add' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3 align-items-end">
+              <div class="col-md-7"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" placeholder="https://..."></div>
+              <div class="col-md-3"><label class="form-label fw-bold">…or upload</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
+              <div class="col-md-2 d-flex gap-2">
+                <button class="btn btn-primary w-100" type="submit">Add</button>
+              </div>
+            </div>
+            <div class="form-actions mt-3">
+              <button class="btn btn-outline-secondary" type="reset">Cancel</button>
+            </div>
+          </form>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">🗂</span><h5>Gallery</h5></div>
+          <div class="row g-3">
+            {% for g in gallery %}
+            <div class="col-6 col-md-3">
+              <div class="gallery-item">
+                <img class="gallery-thumb" src="{{ g.image }}">
+                <form method="post" action="{% url 'gallery_delete' g.id %}" onsubmit="return confirm('Delete this image?');">
                   {% csrf_token %}
-                  <div class="modal-header">
-                    <h5 class="modal-title">Edit Product</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                  </div>
-                  <div class="modal-body row g-3">
-                    <div class="col-md-8"><label class="form-label fw-bold">Name</label><input class="form-control" name="name" id="ed_name"></div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-bold">Category</label>
-                      <select class="form-select" name="category" id="ed_category">
-                        {% for key, label in categories %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
-                      </select>
-                    </div>
-                    <div class="col-md-6"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
-                    <div class="col-md-3"><label class="form-label fw-bold">Price</label><input type="number" class="form-control" name="price" id="ed_price"></div>
-                    <div class="col-md-3"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
-                    <div class="col-12"><label class="form-label fw-bold">Sizes (comma separated)</label><input class="form-control" name="sizes" id="ed_sizes"></div>
-                    <div class="col-md-8"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" id="ed_imgurl"></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">…or upload new</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Product</button>
-                  </div>
+                  <button class="del-btn" type="submit">✕</button>
                 </form>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- GALLERY -->
-        <div class="panel" id="panel-gallery">
-          <div class="card-section">
-            <h5>Add Gallery Image</h5>
-            <form method="post" action="{% url 'gallery_add' %}" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="row g-3 align-items-end">
-                <div class="col-md-7"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" placeholder="https://..."></div>
-                <div class="col-md-3"><label class="form-label fw-bold">…or upload</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
-                <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Add</button></div>
-              </div>
-            </form>
-          </div>
-          <div class="card-section">
-            <h5>Gallery</h5>
-            <div class="row g-3">
-              {% for g in gallery %}
-              <div class="col-6 col-md-3">
-                <div class="gallery-item">
-                  <img class="gallery-thumb" src="{{ g.image }}">
-                  <form method="post" action="{% url 'gallery_delete' g.id %}" onsubmit="return confirm('Delete this image?');">
-                    {% csrf_token %}
-                    <button class="del-btn" type="submit">✕</button>
-                  </form>
-                </div>
-              </div>
-              {% empty %}
-              <p class="text-muted">No gallery images yet.</p>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- REVIEWS -->
-        <div class="panel" id="panel-reviews">
-          <div class="card-section">
-            <h5>Customer Reviews</h5>
-            <p class="text-muted">New reviews submitted on the storefront start as <span class="badge badge-pending">Pending</span>. Approve to publish them live, or reject to hide.</p>
-            {% for r in reviews %}
-            <div class="d-flex gap-3 align-items-start border-bottom py-3">
-              <img src="{{ r.avatar_url }}" class="thumb rounded-circle">
-              <div class="flex-grow-1">
-                <div class="d-flex justify-content-between">
-                  <strong>{{ r.name }}</strong>
-                  <span class="badge {% if r.status == 'approved' %}badge-approved{% elif r.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">{{ r.status }}</span>
-                </div>
-                <div class="text-warning small mb-1">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
-                <p class="mb-2">{{ r.text }}</p>
-                {% if r.status == 'pending' %}
-                  <form method="post" action="{% url 'review_set_status' r.id 'approved' %}" style="display:inline;">
-                    {% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Approve</button>
-                  </form>
-                  <form method="post" action="{% url 'review_set_status' r.id 'rejected' %}" style="display:inline;">
-                    {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Reject</button>
-                  </form>
-                {% else %}
-                  <form method="post" action="{% url 'review_set_status' r.id 'pending' %}">
-                    {% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Mark Pending</button>
-                  </form>
-                {% endif %}
-              </div>
-            </div>
             {% empty %}
-            <p class="text-muted">No reviews submitted yet.</p>
+            <p class="text-muted">No gallery images yet.</p>
             {% endfor %}
           </div>
         </div>
+      </div>
 
-        <!-- ORDERS -->
-        <div class="panel" id="panel-orders">
-          <div class="card-section">
-            <h5>Orders</h5>
-            <p class="text-muted">Orders placed on the storefront are saved here instantly and also sent to your WhatsApp.</p>
-            <div class="table-responsive">
-              <table class="table align-middle">
-                <thead><tr><th>Date</th><th>Name</th><th>Mobile</th><th>State</th><th>Pincode</th><th>Address</th><th>Items</th><th>Total</th></tr></thead>
-                <tbody>
-                {% for o in orders %}
-                  <tr>
-                    <td>{{ o.created_at|date:"d M Y, H:i" }}</td>
-                    <td>{{ o.name }}</td>
-                    <td>{{ o.mobile }}</td>
-                    <td>{{ o.state }}</td>
-                    <td>{{ o.pincode }}</td>
-                    <td>{{ o.address }}</td>
-                    <td>{% for it in o.items.all %}{{ it.name }} ({{ it.size }}) x{{ it.qty }}<br>{% endfor %}</td>
-                    <td>₹{{ o.total|floatformat:0 }}</td>
-                  </tr>
-                {% empty %}
-                  <tr><td colspan="8" class="text-muted text-center py-4">No orders yet.</td></tr>
-                {% endfor %}
-                </tbody>
-              </table>
+      <!-- REVIEWS -->
+      <div class="panel" id="panel-reviews">
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">⭐</span><h5>Customer Reviews</h5></div>
+          <p class="text-muted">New reviews submitted on the storefront start as <span class="badge badge-pending">Pending</span>. Approve to publish them live, or reject to hide.</p>
+          {% for r in reviews %}
+          <div class="d-flex gap-3 align-items-start border-bottom py-3">
+            <img src="{{ r.avatar_url }}" class="thumb rounded-circle">
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between">
+                <strong>{{ r.name }}</strong>
+                <span class="badge {% if r.status == 'approved' %}badge-approved{% elif r.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">{{ r.status }}</span>
+              </div>
+              <div class="text-warning small mb-1">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
+              <p class="mb-2">{{ r.text }}</p>
+              {% if r.status == 'pending' %}
+                <form method="post" action="{% url 'review_set_status' r.id 'approved' %}" style="display:inline;">
+                  {% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Approve</button>
+                </form>
+                <form method="post" action="{% url 'review_set_status' r.id 'rejected' %}" style="display:inline;">
+                  {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Reject</button>
+                </form>
+              {% else %}
+                <form method="post" action="{% url 'review_set_status' r.id 'pending' %}">
+                  {% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Mark Pending</button>
+                </form>
+              {% endif %}
             </div>
           </div>
+          {% empty %}
+          <p class="text-muted">No reviews submitted yet.</p>
+          {% endfor %}
         </div>
+      </div>
 
-        <!-- SETTINGS -->
-        <div class="panel" id="panel-settings">
-          <div class="card-section">
-            <h5>WhatsApp Notification Settings</h5>
-            <p class="text-muted">Orders and new reviews from the storefront open a WhatsApp chat to this number automatically.</p>
-            <form method="post" action="{% url 'settings_save' %}">
-              {% csrf_token %}
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">Admin WhatsApp number (with country code, no +)</label>
-                  {{ settings_form.admin_whatsapp }}
-                </div>
-              </div>
-              <button class="btn btn-dark mt-3" type="submit">Save Settings</button>
-            </form>
-            <hr class="my-4">
-            <h5>About this admin</h5>
-            <p class="text-muted mb-0">This dashboard reads and writes a real SQLite database via Django models — every save here is permanent and shared across all admins and devices. Log-ins are real Django user accounts; create more admins with <code>python manage.py createsuperuser</code>. Django's own built-in admin is also available at <code>/admin/</code> for bulk edits.</p>
+      <!-- ORDERS -->
+      <div class="panel" id="panel-orders">
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">📦</span><h5>Orders</h5></div>
+          <p class="text-muted">Orders placed on the storefront are saved here instantly and also sent to your WhatsApp.</p>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead><tr><th>Date</th><th>Name</th><th>Mobile</th><th>State</th><th>Pincode</th><th>Address</th><th>Items</th><th>Total</th></tr></thead>
+              <tbody>
+              {% for o in orders %}
+                <tr>
+                  <td>{{ o.created_at|date:"d M Y, H:i" }}</td>
+                  <td>{{ o.name }}</td>
+                  <td>{{ o.mobile }}</td>
+                  <td>{{ o.state }}</td>
+                  <td>{{ o.pincode }}</td>
+                  <td>{{ o.address }}</td>
+                  <td>{% for it in o.items.all %}{{ it.name }} ({{ it.size }}) x{{ it.qty }}<br>{% endfor %}</td>
+                  <td>₹{{ o.total|floatformat:0 }}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="8" class="text-muted text-center py-4">No orders yet.</td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
-
       </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">⚙️</span><h5>WhatsApp Notification Settings</h5></div>
+          <p class="text-muted">Orders and new reviews from the storefront open a WhatsApp chat to this number automatically.</p>
+          <form method="post" action="{% url 'settings_save' %}">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Admin WhatsApp number (with country code, no +)</label>
+                {{ settings_form.admin_whatsapp }}
+              </div>
+            </div>
+            <div class="form-actions mt-3">
+              <button class="btn btn-dark" type="submit">Save Settings</button>
+              <button class="btn btn-outline-secondary" type="reset">Cancel</button>
+            </div>
+          </form>
+          <hr class="my-4">
+          <h5 style="font-family:'Archivo Black';font-size:1rem;color:var(--navy);">About this admin</h5>
+          <p class="text-muted mb-0">This dashboard reads and writes a real SQLite database via Django models — every save here is permanent and shared across all admins and devices. Log-ins are real Django user accounts; create more admins with <code>python manage.py createsuperuser</code>. Django's own built-in admin is also available at <code>/admin/</code> for bulk edits.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-/* ---- Sidebar tab switching (pure UI, no data logic — data already came from the DB) ---- */
-document.querySelectorAll('.sidebar .nav-link[data-panel]').forEach(link=>{
-  link.addEventListener('click', ()=>{
-    document.querySelectorAll('.sidebar .nav-link').forEach(l=>l.classList.remove('active'));
-    link.classList.add('active');
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    document.getElementById('panel-'+link.dataset.panel).classList.add('active');
+/* ---- Panel switching (pure UI, no data logic — data already came from the DB) ---- */
+function activatePanel(panelName){
+  document.querySelectorAll('.nav-link[data-panel]').forEach(l=>l.classList.remove('active'));
+  document.querySelectorAll('.nav-link[data-panel="'+panelName+'"]').forEach(l=>l.classList.add('active'));
 
-    // Lazily (re)load the preview iframe the first time its panel is opened,
-    // so it always reflects the latest saved content rather than a stale load from page-open.
-    if(link.dataset.panel === 'preview' && !previewFrame.dataset.loadedOnce){
-      reloadPreview();
-    }
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const target = document.getElementById('panel-'+panelName);
+  if(target) target.classList.add('active');
+
+  if(panelName === 'preview' && !previewFrame.dataset.loadedOnce){
+    reloadPreview();
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.querySelectorAll('.nav-link[data-panel]').forEach(link=>{
+  link.addEventListener('click', ()=>{
+    activatePanel(link.dataset.panel);
+    closeMobileMenu();
+  });
+});
+
+/* ---- Mobile hamburger nav dropdown ---- */
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const mobileNavMenu = document.getElementById('mobileNavMenu');
+
+function openMobileMenu(){
+  mobileNavMenu.classList.add('open');
+  hamburgerBtn.classList.add('open');
+  hamburgerBtn.setAttribute('aria-expanded','true');
+}
+function closeMobileMenu(){
+  mobileNavMenu.classList.remove('open');
+  hamburgerBtn.classList.remove('open');
+  hamburgerBtn.setAttribute('aria-expanded','false');
+}
+hamburgerBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if(mobileNavMenu.classList.contains('open')){ closeMobileMenu(); } else { openMobileMenu(); }
+});
+mobileNavMenu.addEventListener('click', (e)=>{
+  if(e.target === mobileNavMenu){ closeMobileMenu(); } // click on the dimmed backdrop
+});
+window.addEventListener('resize', ()=>{
+  if(window.innerWidth > 900){ closeMobileMenu(); }
+});
+
+/* ---- Topbar profile dropdown ---- */
+const profileDropdown = document.getElementById('profileDropdown');
+const profileBtn = document.getElementById('profileBtn');
+profileBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  profileDropdown.classList.toggle('open');
+  profileBtn.setAttribute('aria-expanded', profileDropdown.classList.contains('open'));
+});
+document.addEventListener('click', (e)=>{
+  if(!profileDropdown.contains(e.target)){
+    profileDropdown.classList.remove('open');
+    profileBtn.setAttribute('aria-expanded','false');
+  }
+});
+document.querySelectorAll('.dropdown-panel-link').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    activatePanel(btn.dataset.panel);
+    profileDropdown.classList.remove('open');
   });
 });
 

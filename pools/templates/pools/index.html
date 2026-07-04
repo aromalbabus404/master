@@ -311,7 +311,9 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <div class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close menu">✕</button>
   <a href="#services">Services</a>
-  <a href="#shop">Shop</a>
+  <a href="{% url 'shop' %}">
+        Shop
+    </a>
   <a href="#gallery">Gallery</a>
   <a href="#clients">Clients</a>
   <a href="#reviews">Reviews</a>
