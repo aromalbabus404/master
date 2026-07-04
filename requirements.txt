@@ -8,7 +8,8 @@ django-cloudinary-storage==0.3.0
 gunicorn==23.0.0
 idna==3.18
 packaging==26.2
-pillow==11.3.0
+Pillow==11.3.0
+pillow-heif==0.18.0
 psycopg==3.3.4
 psycopg-binary==3.3.4
 psycopg2-binary==2.9.12

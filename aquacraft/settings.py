@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 # -----------------------------------------------------------------------------
 # Base Directory
 # -----------------------------------------------------------------------------
+from pillow_heif import register_heif_opener
+
+register_heif_opener()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 cloudinary.config(
