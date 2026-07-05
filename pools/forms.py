@@ -30,9 +30,7 @@ class ProductForm(forms.ModelForm):
             "name",
             "category",
             "badge",
-            "price",
             "mrp",
-            "sizes",
             "image_url",
             "image_file",
         ]
@@ -44,12 +42,7 @@ class ProductForm(forms.ModelForm):
                 "class": "form-control",
                 "placeholder": "e.g. Bestseller",
             }),
-            "price": forms.NumberInput(attrs={"class": "form-control"}),
             "mrp": forms.NumberInput(attrs={"class": "form-control"}),
-            "sizes": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": "20x10 ft, 25x12 ft",
-            }),
             "image_url": forms.URLInput(attrs={
                 "class": "form-control",
                 "placeholder": "https://...",

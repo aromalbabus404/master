@@ -1,7 +1,6 @@
 from django.db import models
-from django.db import models
 from cloudinary.models import CloudinaryField
-
+import json
 
 
 class HeroSection(models.Model):
@@ -92,6 +91,7 @@ class HeroSection(models.Model):
     def __str__(self):
         return "Hero Section"
 
+
 class SiteSettings(models.Model):
     """Singleton row (pk=1) holding site-wide settings."""
     admin_whatsapp = models.CharField(
@@ -131,6 +131,12 @@ class Product(models.Model):
     price = models.PositiveIntegerField()
     mrp = models.PositiveIntegerField(blank=True, null=True, verbose_name="MRP (strikethrough price)")
     sizes = models.CharField(max_length=300, help_text="Comma separated, e.g. 20x10 ft, 25x12 ft")
+
+    # NEW: per-size pricing, e.g. {"6": 300, "8": 500} — size (inches) -> price (₹).
+    # `price` above is kept in sync automatically (set to the lowest size price)
+    # so anything still reading `product.price` continues to work.
+    size_prices = models.JSONField(default=dict, blank=True)
+
     image_url = models.URLField(blank=True, null=True, help_text="Use this OR upload a file below.")
     image_file = models.ImageField(upload_to="products/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -147,6 +153,23 @@ class Product(models.Model):
 
     def size_list(self):
         return [s.strip() for s in self.sizes.split(",") if s.strip()]
+
+    @property
+    def sorted_sizes(self):
+        """[('6', 300), ('8', 500)] sorted by size number — for storefront
+        display, so sizes always list smallest to largest."""
+        if not self.size_prices:
+            return []
+        try:
+            return sorted(self.size_prices.items(), key=lambda kv: float(kv[0]))
+        except (ValueError, TypeError):
+            return list(self.size_prices.items())
+
+    @property
+    def size_prices_json(self):
+        """JSON string version, safe to drop into a data-* attribute in
+        templates for the admin dashboard's Edit modal."""
+        return json.dumps(self.size_prices or {})
 
     def __str__(self):
         return self.name
@@ -181,6 +204,7 @@ class GalleryImage(models.Model):
 
     def __str__(self):
         return f"Gallery Image #{self.pk}"
+
 
 STATUS_CHOICES = [
     ("pending", "Pending"),

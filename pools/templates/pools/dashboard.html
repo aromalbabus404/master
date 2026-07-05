@@ -8,18 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#0B3C5D;        /* Deep Navy — sidebar */
-    --navy-deep:#082C44;   /* darker navy, sidebar hover/panels */
-    --teal:#1FA2B8;        /* Teal, for gradient + accents */
-    --aqua:#1FA2B8;        /* Aqua — links, icons, highlights */
-    --aqua-deep:#17839A;   /* darker aqua, for hovers */
-    --aqua-tint:#E6F5F8;   /* pale aqua, icon chip bg */
-    --gold:#E8B84B;        /* Sandy Gold — primary CTA / active pill */
-    --gold-deep:#D9A331;   /* Sandy Gold hover */
-    --gold-tint:#FBF0DA;   /* pale gold, icon chip bg */
-    --bg:#F7FAFC;          /* Off-white page background */
-    --card:#FFFFFF;        /* White card background */
-    --text:#1E2A32;        /* Charcoal text */
+    --navy:#0B3C5D;
+    --navy-deep:#082C44;
+    --teal:#1FA2B8;
+    --aqua:#1FA2B8;
+    --aqua-deep:#17839A;
+    --aqua-tint:#E6F5F8;
+    --gold:#E8B84B;
+    --gold-deep:#D9A331;
+    --gold-tint:#FBF0DA;
+    --bg:#F7FAFC;
+    --card:#FFFFFF;
+    --text:#1E2A32;
     --text-muted:#6B7C89;
     --border:#E7ECF1;
     --danger:#D45353;
@@ -30,7 +30,6 @@
   a{color:var(--aqua);text-decoration:none;transition:color .18s ease;}
   a:hover{color:var(--aqua-deep);}
 
-  /* ===== Global animation helpers ===== */
   @keyframes fadeInUp{
     from{opacity:0;transform:translateY(10px);}
     to{opacity:1;transform:translateY(0);}
@@ -49,10 +48,8 @@
   .panel{display:none;}
   .panel.active{display:block;animation:fadeInUp .35s ease both;}
 
-  /* ===== Layout shell ===== */
   .shell{display:flex;min-height:100vh;}
 
-  /* ===== Sidebar (desktop) ===== */
   .sidebar{
     width:264px;flex:0 0 264px;background:var(--navy);color:#fff;
     padding:22px 16px;display:flex;flex-direction:column;gap:6px;
@@ -89,7 +86,6 @@
   .nav-link.logout-link:hover{background:rgba(212,83,83,.18);color:#fff;}
   .sidebar .spacer{flex:1;}
 
-  /* ===== Main column ===== */
   .main{flex:1;min-width:0;display:flex;flex-direction:column;}
   .topbar{
     background:var(--card);padding:14px 30px;border-bottom:1px solid var(--border);
@@ -101,7 +97,6 @@
   .topbar h5{margin:2px 0 0;font-family:'Archivo Black';font-size:1.05rem;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .content{padding:28px 30px;}
 
-  /* ===== Hamburger (mobile only) ===== */
   .hamburger-btn{
     display:none;flex-direction:column;justify-content:center;align-items:center;gap:4px;
     width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--bg);
@@ -117,7 +112,6 @@
   .mobile-brand-inline .brand-mark{width:32px;height:32px;font-size:.85rem;border-radius:9px;}
   .mobile-brand-inline .mb-text{font-family:'Archivo Black';font-size:.9rem;color:var(--navy);}
 
-  /* ===== Mobile nav dropdown ===== */
   .mobile-nav-menu{
     display:none;position:fixed;top:var(--topbar-h);left:0;right:0;bottom:0;
     background:rgba(7,44,68,.35);z-index:40;
@@ -131,7 +125,6 @@
   .mobile-nav-menu .nav-section-label{padding-top:12px;}
   .mobile-nav-menu .nav-link{font-size:.95rem;}
 
-  /* ===== Topbar profile dropdown ===== */
   .topbar-right{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
   .profile-dropdown{position:relative;}
   .profile-btn{
@@ -162,7 +155,6 @@
   .profile-menu .danger-item:hover{background:#FBEAEA;color:var(--danger);}
   .profile-menu hr{margin:6px 4px;border-color:var(--border);}
 
-  /* ===== Cards ===== */
   .card-section{
     background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;
     box-shadow:0 8px 24px rgba(11,60,93,.05);margin-bottom:22px;
@@ -176,7 +168,6 @@
   }
   .card-section h5{font-family:'Archivo Black';font-size:1rem;margin:0;color:var(--navy);}
 
-  /* ===== Stat cards ===== */
   .stat-card{
     background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;
     box-shadow:0 8px 24px rgba(11,60,93,.05);display:flex;align-items:center;gap:14px;height:100%;
@@ -200,7 +191,6 @@
   .stat-card strong{font-family:'Archivo Black';font-size:1.5rem;display:block;color:var(--navy);line-height:1;}
   .stat-card small{color:var(--text-muted);text-transform:uppercase;font-size:.68rem;font-weight:700;letter-spacing:.03em;}
 
-  /* ===== Highlight / CTA card (Quick Notes) ===== */
   .highlight-card{
     background:linear-gradient(135deg, var(--navy), var(--navy-deep));border-radius:18px;padding:26px;color:#fff;
     box-shadow:0 8px 24px rgba(11,60,93,.18);transition:box-shadow .25s ease, transform .25s ease;
@@ -213,14 +203,12 @@
   }
   .highlight-card .btn-gold:hover{background:var(--gold-deep);border-color:var(--gold-deep);}
 
-  /* ===== Tables ===== */
   .table thead{background:var(--bg);}
   .table thead th{font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:700;border-bottom:1px solid var(--border);}
   .table td{border-color:var(--border);vertical-align:middle;}
   .table tbody tr{transition:background-color .15s ease;}
   .table tbody tr:hover{background:var(--bg);}
 
-  /* ===== Badges (pill style) ===== */
   .badge{border-radius:999px;font-weight:600;padding:.4em .8em;}
   .badge-pending{background:var(--gold-tint);color:#8A6412;}
   .badge-approved{background:var(--aqua-tint);color:var(--aqua-deep);}
@@ -236,7 +224,6 @@
   }
   .gallery-item .del-btn:hover{transform:scale(1.12);}
 
-  /* ===== Buttons ===== */
   .btn{border-radius:999px;font-weight:600;transition:background-color .18s ease, border-color .18s ease, color .18s ease, transform .12s ease, box-shadow .18s ease;}
   .btn:active{transform:scale(.97);}
   .btn-primary, .btn-dark{
@@ -260,7 +247,6 @@
   .form-control:focus,.form-select:focus{border-color:var(--aqua);box-shadow:0 0 0 .2rem rgba(31,162,184,.15);}
   .form-actions{display:flex;gap:10px;flex-wrap:wrap;}
 
-  /* ===== Preview panel ===== */
   .preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
   .preview-toolbar .url-pill{
     background:var(--bg);color:var(--navy);font-weight:600;font-size:.82rem;
@@ -284,10 +270,8 @@
   .device-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
   .preview-frame-wrap.mobile-size{max-width:420px;margin:0 auto;}
 
-  /* ===== Modal animation polish ===== */
   .modal.fade .modal-dialog{transition:transform .25s ease, opacity .25s ease;}
 
-  /* ===== Edit Product modal ===== */
   @media (max-width:575.98px){
 
     #editProductModal{
@@ -356,7 +340,6 @@
     to{transform:translateY(0);opacity:1;}
   }
 
-  /* Desktop / tablet (>=576px): centered, height-capped, internally scrolling dialog. */
   @media(min-width:576px){
     #editProductModal .modal-content{
       display:flex;
@@ -382,14 +365,18 @@
     }
   }
 
-  /* ===== Alerts ===== */
   .alert{animation:fadeInUp .3s ease both;}
 
-  /* =========================================================
-     RESPONSIVE / MOBILE
-     ========================================================= */
+  /* ===== NEW: size/price dynamic rows ===== */
+  .size-price-row{
+    background:var(--bg);border:1px solid var(--border);border-radius:12px;
+    padding:8px 10px;align-items:center;
+  }
+  .size-price-row input{max-width:150px;}
+  .size-price-row .size-unit{color:var(--text-muted);font-weight:600;font-size:.85rem;}
+
   @media(max-width:900px){
-    .sidebar{display:none;}                 /* sidebar replaced by hamburger + dropdown */
+    .sidebar{display:none;}
     .hamburger-btn{display:flex;}
     .mobile-brand-inline{display:flex;}
     .welcome-eyebrow{display:none;}
@@ -418,6 +405,7 @@
     .stat-card strong{font-size:1.2rem;}
     .device-btn{padding:6px 10px;font-size:.78rem;}
     .form-actions .btn{flex:1 1 auto;}
+    .size-price-row input{max-width:110px;}
   }
 </style>
 </head>
@@ -472,7 +460,6 @@
       <div class="topbar-right">
         <a href="{% url 'index' %}" target="_blank" class="btn btn-sm btn-outline-dark">View Live Site ↗</a>
 
-        <!-- Profile dropdown -->
         <div class="profile-dropdown" id="profileDropdown">
           <button type="button" class="profile-btn" id="profileBtn" aria-expanded="false">
             <span class="avatar-circle">{{ request.user.username|slice:":1"|upper }}</span>
@@ -490,7 +477,6 @@
       </div>
     </div>
 
-    <!-- MOBILE NAV DROPDOWN (hamburger menu) -->
     <div class="mobile-nav-menu" id="mobileNavMenu">
       <div class="sheet">
         <div class="nav-section-label">Overview</div>
@@ -655,9 +641,16 @@
               <div class="col-md-6"><label class="form-label fw-bold">Name</label>{{ product_form.name }}</div>
               <div class="col-md-3"><label class="form-label fw-bold">Category</label>{{ product_form.category }}</div>
               <div class="col-md-3"><label class="form-label fw-bold">Badge (optional)</label>{{ product_form.badge }}</div>
-              <div class="col-md-3"><label class="form-label fw-bold">Price (₹)</label>{{ product_form.price }}</div>
               <div class="col-md-3"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
-              <div class="col-md-6"><label class="form-label fw-bold">Sizes (comma separated)</label>{{ product_form.sizes }}</div>
+
+              <!-- NEW: dynamic Size + Price rows -->
+              <div class="col-12">
+                <label class="form-label fw-bold">Sizes & Prices (inches → ₹)</label>
+                <div id="sizeRowsAdd"></div>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSizeRowBtn">+ Add Size</button>
+                <div class="form-text">e.g. 6 inch → ₹300, 8 inch → ₹500. Customers pick a size on the storefront and the price updates automatically.</div>
+              </div>
+
               <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
               <div class="col-md-4"><label class="form-label fw-bold">…or upload image</label>{{ product_form.image_file }}</div>
             </div>
@@ -684,8 +677,9 @@
                   <td>
                     <button class="btn btn-sm btn-outline-primary edit-prod-btn"
                       data-id="{{ p.id }}" data-name="{{ p.name }}" data-category="{{ p.category }}"
-                      data-badge="{{ p.badge|default:'' }}" data-price="{{ p.price }}" data-mrp="{{ p.mrp|default:'' }}"
-                      data-sizes="{{ p.sizes }}" data-imgurl="{{ p.image_url|default:'' }}"
+                      data-badge="{{ p.badge|default:'' }}" data-mrp="{{ p.mrp|default:'' }}"
+                      data-sizeprices='{{ p.size_prices_json }}'
+                      data-imgurl="{{ p.image_url|default:'' }}"
                       data-action="{% url 'product_edit' p.id %}" type="button">Edit</button>
                     <form method="post" action="{% url 'product_delete' p.id %}" style="display:inline;" onsubmit="return confirm('Delete this product?');">
                       {% csrf_token %}
@@ -832,8 +826,7 @@
   </div>
 </div>
 
-<!-- Edit Product modal: intentionally placed OUTSIDE .shell / .panel so it is never a
-     descendant of an animated element (transform on an ancestor breaks position:fixed) -->
+<!-- Edit Product modal -->
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -852,9 +845,15 @@
             </select>
           </div>
           <div class="col-md-6"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
-          <div class="col-md-3"><label class="form-label fw-bold">Price</label><input type="number" class="form-control" name="price" id="ed_price"></div>
-          <div class="col-md-3"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
-          <div class="col-12"><label class="form-label fw-bold">Sizes (comma separated)</label><input class="form-control" name="sizes" id="ed_sizes"></div>
+          <div class="col-md-6"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
+
+          <!-- NEW: dynamic Size + Price rows for editing -->
+          <div class="col-12">
+            <label class="form-label fw-bold">Sizes & Prices (inches → ₹)</label>
+            <div id="sizeRowsEdit"></div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSizeRowEditBtn">+ Add Size</button>
+          </div>
+
           <div class="col-md-8"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" id="ed_imgurl"></div>
           <div class="col-md-4"><label class="form-label fw-bold">…or upload new</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
         </div>
@@ -910,7 +909,7 @@ hamburgerBtn.addEventListener('click', (e)=>{
   if(mobileNavMenu.classList.contains('open')){ closeMobileMenu(); } else { openMobileMenu(); }
 });
 mobileNavMenu.addEventListener('click', (e)=>{
-  if(e.target === mobileNavMenu){ closeMobileMenu(); } // click on the dimmed backdrop
+  if(e.target === mobileNavMenu){ closeMobileMenu(); }
 });
 window.addEventListener('resize', ()=>{
   if(window.innerWidth > 900){ closeMobileMenu(); }
@@ -944,7 +943,6 @@ const previewFrameWrap = document.getElementById('previewFrameWrap');
 
 function reloadPreview(){
   previewLoading.classList.remove('hidden');
-  // Cache-bust so edits saved in other panels are reflected immediately
   const base = "{% url 'index' %}";
   previewFrame.src = base + (base.includes('?') ? '&' : '?') + '_preview=' + Date.now();
 }
@@ -965,6 +963,29 @@ document.getElementById('btnMobile').addEventListener('click', function(){
   document.getElementById('btnDesktop').classList.remove('active');
 });
 
+/* ---- NEW: dynamic Size + Price row builder ---- */
+function makeSizeRow(container, size = "", price = "") {
+  const row = document.createElement("div");
+  row.className = "d-flex gap-2 mb-2 size-price-row";
+  row.innerHTML = `
+    <input type="number" step="0.5" class="form-control" name="size[]" placeholder="Size" value="${size}">
+    <span class="size-unit align-self-center">in</span>
+    <input type="number" step="1" class="form-control" name="price[]" placeholder="Price (₹)" value="${price}">
+    <button type="button" class="btn btn-outline-danger remove-size-row">✕</button>
+  `;
+  row.querySelector(".remove-size-row").addEventListener("click", () => row.remove());
+  container.appendChild(row);
+}
+
+/* Add Product form: start with one empty row, allow adding more */
+const sizeRowsAdd = document.getElementById("sizeRowsAdd");
+document.getElementById("addSizeRowBtn").addEventListener("click", () => makeSizeRow(sizeRowsAdd));
+makeSizeRow(sizeRowsAdd);
+
+/* Edit Product modal: add-row button */
+const sizeRowsEdit = document.getElementById("sizeRowsEdit");
+document.getElementById("addSizeRowEditBtn").addEventListener("click", () => makeSizeRow(sizeRowsEdit));
+
 /* ---- Edit product modal: fill fields from the row's data-* attrs, set form action ---- */
 const editModalEl = document.getElementById('editProductModal');
 const editModal = bootstrap.Modal.getOrCreateInstance(editModalEl);
@@ -975,16 +996,25 @@ document.querySelectorAll('.edit-prod-btn').forEach(btn=>{
     document.getElementById('ed_name').value = btn.dataset.name;
     document.getElementById('ed_category').value = btn.dataset.category;
     document.getElementById('ed_badge').value = btn.dataset.badge;
-    document.getElementById('ed_price').value = btn.dataset.price;
     document.getElementById('ed_mrp').value = btn.dataset.mrp;
-    document.getElementById('ed_sizes').value = btn.dataset.sizes;
     document.getElementById('ed_imgurl').value = btn.dataset.imgurl;
+
+    // Rebuild the size/price rows from this product's saved data
+    sizeRowsEdit.innerHTML = "";
+    let sizePrices = {};
+    try { sizePrices = JSON.parse(btn.dataset.sizeprices || "{}"); } catch (e) {}
+    const entries = Object.entries(sizePrices);
+    if (entries.length === 0) {
+      makeSizeRow(sizeRowsEdit);
+    } else {
+      entries.forEach(([size, price]) => makeSizeRow(sizeRowsEdit, size, price));
+    }
+
     editModal.show();
   });
 });
 
-/* Safety net: if a backdrop is ever left behind (e.g. page navigated away mid-animation),
-   clear it on load so the UI can never get permanently stuck. */
+/* Safety net: clear any stuck modal backdrop on load */
 window.addEventListener('DOMContentLoaded', ()=>{
   document.querySelectorAll('.modal-backdrop').forEach(el=>el.remove());
   document.body.classList.remove('modal-open');

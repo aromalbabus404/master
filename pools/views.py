@@ -48,9 +48,25 @@ def submit_order(request):
         if not all([name, mobile, state, pincode, address]) or not items:
             return JsonResponse({"ok": False, "error": "Missing fields"}, status=400)
 
+        # Re-validate each item's price against the product's real size_prices,
+        # so a tampered price from devtools can never be saved as an order.
+        validated_total = 0
+        for it in items:
+            product = Product.objects.filter(name=it["name"]).first()
+            size = str(it.get("size", "")).strip()
+            claimed_price = int(it["price"])
+
+            if product and product.size_prices:
+                real_price = product.size_prices.get(size)
+                if real_price is not None:
+                    claimed_price = int(real_price)
+
+            it["price"] = claimed_price
+            validated_total += claimed_price * int(it["qty"])
+
         order = Order.objects.create(
             name=name, mobile=mobile, state=state, pincode=pincode,
-            address=address, total=total,
+            address=address, total=validated_total,
         )
         for it in items:
             OrderItem.objects.create(
@@ -144,6 +160,8 @@ def admin_login(request):
 def admin_logout(request):
     logout(request)
     return redirect("admin_login")
+
+
 @login_required
 @require_POST
 def hero_save(request):
@@ -191,6 +209,7 @@ def hero_save(request):
 
     return redirect("dashboard")
 
+
 @login_required
 @require_POST
 def settings_save(request):
@@ -204,13 +223,45 @@ def settings_save(request):
     return redirect("dashboard")
 
 
+def _parse_size_prices(request):
+    """Reads size[] and price[] arrays submitted from the dynamic
+    'Add Size' rows and returns a clean dict like {"6": 300.0, "8": 500.0},
+    skipping any incomplete rows."""
+    sizes = request.POST.getlist("size[]")
+    prices = request.POST.getlist("price[]")
+    size_prices = {}
+    for size, price in zip(sizes, prices):
+        size = size.strip()
+        price = price.strip()
+        if not size or not price:
+            continue
+        try:
+            size_prices[size] = float(price)
+        except ValueError:
+            continue
+    return size_prices
+
+
 @login_required
 @require_POST
 def product_save(request, pk=None):
+    """Handles both Add Product (pk=None) and any legacy full-form edit."""
     instance = get_object_or_404(Product, pk=pk) if pk else None
     form = ProductForm(request.POST, request.FILES, instance=instance)
     if form.is_valid():
-        form.save()
+        product = form.save(commit=False)
+
+        size_prices = _parse_size_prices(request)
+        if size_prices:
+            product.size_prices = size_prices
+            # Keep legacy fields in sync so any old code/templates still work
+            product.sizes = ", ".join(f'{s}"' for s in size_prices.keys())
+            product.price = min(size_prices.values())
+        elif not pk:
+            messages.error(request, "Please add at least one size and price.")
+            return redirect("dashboard")
+
+        product.save()
         messages.success(request, "Product updated." if pk else "Product added.")
     else:
         messages.error(request, f"Could not save product: {form.errors.as_text()}")
@@ -223,6 +274,7 @@ def product_delete(request, pk):
     get_object_or_404(Product, pk=pk).delete()
     messages.success(request, "Product deleted.")
     return redirect("dashboard")
+
 
 import os
 
@@ -270,6 +322,7 @@ def gallery_add(request):
     messages.success(request, "Gallery image uploaded.")
     return redirect("dashboard")
 
+
 @login_required
 @require_POST
 def gallery_delete(request, pk):
@@ -309,8 +362,8 @@ def shop(request):
         "query": query,
         "settings": SiteSettings.load(),
     })
-    
-    
+
+
 @login_required
 @require_POST
 def product_edit(request, pk):
@@ -319,10 +372,14 @@ def product_edit(request, pk):
     product.name = request.POST.get("name")
     product.category = request.POST.get("category")
     product.badge = request.POST.get("badge")
-    product.price = request.POST.get("price")
     product.mrp = request.POST.get("mrp") or None
-    product.sizes = request.POST.get("sizes")
     product.image_url = request.POST.get("image_url")
+
+    size_prices = _parse_size_prices(request)
+    if size_prices:
+        product.size_prices = size_prices
+        product.sizes = ", ".join(f'{s}"' for s in size_prices.keys())
+        product.price = min(size_prices.values())
 
     if request.FILES.get("image_file"):
         product.image_file = request.FILES["image_file"]
@@ -331,4 +388,3 @@ def product_edit(request, pk):
 
     messages.success(request, "Product updated successfully.")
     return redirect("dashboard")
-    
