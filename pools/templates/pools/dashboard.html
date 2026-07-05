@@ -419,6 +419,13 @@
   .variant-type-toggle input{display:none;}
   .variant-type-toggle input:checked + label{background:var(--navy);color:#fff;}
 
+  /* ===== NEW: hero video preview + upload size feedback ===== */
+  .hero-video-preview{
+    width:100%;max-height:160px;border-radius:12px;object-fit:cover;
+    background:#000;display:block;
+  }
+  .hero-upload-hint{font-size:.78rem;margin-top:4px;}
+
   @media(max-width:900px){
     .sidebar{display:none;}
     .hamburger-btn{display:flex;}
@@ -640,30 +647,44 @@
                 <label class="form-label fw-bold">Subtext</label>
                 {{ hero_form.sub }}
               </div>
-             <div class="col-md-6">
-  <label class="form-label fw-bold">Upload Background Video (MP4)</label>
-  {{ hero_form.video_file }}
-</div>
 
-<div class="col-md-6">
-  <label class="form-label fw-bold">Upload Background Image</label>
-  {{ hero_form.poster_image_file }}
-</div>
-<div class="col-md-6">
-  {% if hero.video_file %}
-      <small class="text-success">
-          Current Video Uploaded
-      </small>
-  {% endif %}
-</div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Upload Background Video (MP4, max 100MB)</label>
+                {{ hero_form.video_file }}
+                <!-- Live client-side size feedback: warns BEFORE upload if the
+                     chosen file is over the server's 100MB limit, instead of
+                     silently failing after a long upload with no explanation. -->
+                <div class="hero-upload-hint text-muted" id="heroVideoSizeInfo"></div>
+              </div>
 
-<div class="col-md-6">
-  {% if hero.poster_image_file %}
-      <img src="{{ hero.poster_image_file.url }}"
-           class="img-fluid rounded mt-2"
-           style="max-height:120px;">
-  {% endif %}
-</div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Upload Background Image</label>
+                {{ hero_form.poster_image_file }}
+              </div>
+
+              <div class="col-md-6">
+                {% if hero.video_file %}
+                  <small class="text-success d-block mb-2">Current video (updates immediately after a successful save):</small>
+                  <!-- Visible proof the video actually changed — previously this
+                       just said "Current Video Uploaded" as plain text with no
+                       way to confirm a save really took effect. -->
+                  <video class="hero-video-preview" src="{{ hero.video_url }}" muted autoplay loop playsinline></video>
+                {% else %}
+                  <small class="text-muted">No video uploaded yet.</small>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                {% if hero.poster_image_file %}
+                  <small class="text-success d-block mb-2">Current poster image:</small>
+                  <img src="{{ hero.poster_image_file.url }}"
+                       class="img-fluid rounded"
+                       style="max-height:160px;">
+                {% else %}
+                  <small class="text-muted">No poster image uploaded yet.</small>
+                {% endif %}
+              </div>
+
               <div class="col-md-3"><label class="form-label fw-bold">Stat 1</label>{{ hero_form.stat1_value }}<div class="mt-1">{{ hero_form.stat1_label }}</div></div>
               <div class="col-md-3"><label class="form-label fw-bold">Stat 2</label>{{ hero_form.stat2_value }}<div class="mt-1">{{ hero_form.stat2_label }}</div></div>
               <div class="col-md-3"><label class="form-label fw-bold">Stat 3</label>{{ hero_form.stat3_value }}<div class="mt-1">{{ hero_form.stat3_label }}</div></div>
@@ -1071,7 +1092,32 @@ function submitAjaxForm(form){
     headers: {'X-Requested-With': 'XMLHttpRequest'},
     credentials: 'same-origin'
   })
-  .then(res => res.text())
+  .then(async (res) => {
+    const text = await res.text();
+
+    // FIX: previously this block never checked res.ok, so any non-200
+    // response (413 Request Entity Too Large from a reverse proxy body
+    // limit, a 500 from the server, a 504 timeout on a slow upload,
+    // etc.) fell straight through to updateContentFromHTML(). That
+    // function looks for a ".content" element inside the response —
+    // which doesn't exist on a raw error page — so it silently did
+    // nothing. Net effect: a failed video upload looked exactly like
+    // "nothing happened", with zero indication of what actually broke.
+    if(!res.ok){
+      let detail = 'HTTP ' + res.status;
+      if(res.status === 413){
+        detail += ' — the file is too large for the server/proxy to accept. Try a smaller or shorter video.';
+      } else if(res.status === 504 || res.status === 502){
+        detail += ' — the server took too long to respond or is unreachable. Try again, or use a smaller file.';
+      } else if(text){
+        const snippet = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+        if(snippet) detail += ' — ' + snippet;
+      }
+      throw new Error(detail);
+    }
+
+    return text;
+  })
   .then(html => {
     updateContentFromHTML(html);
     if(wasInModal){
@@ -1082,7 +1128,8 @@ function submitAjaxForm(form){
   })
   .catch(err => {
     console.error(err);
-    alert('Something went wrong saving your changes. Please check your connection and try again.');
+    const msg = (err && err.message) ? err.message : 'Please check your connection and try again.';
+    alert('Could not save your changes.\n\n' + msg);
   })
   .finally(()=>{
     restoreForm(btn);
@@ -1404,6 +1451,33 @@ function reloadPreview(){
   previewFrame.src = base + (base.includes('?') ? '&' : '?') + '_preview=' + Date.now();
 }
 
+/* ---- NEW: hero video upload — instant client-side size feedback.
+   The server (see HeroForm.clean_video_file) rejects videos over
+   100MB, but previously the admin had no idea until AFTER a long
+   upload finished (or silently failed — see the fetch fix above).
+   This warns immediately when a file is picked. ---- */
+function bindHeroVideoSizeCheck(){
+  const videoInput = document.getElementById('id_video_file');
+  const info = document.getElementById('heroVideoSizeInfo');
+  if(!videoInput || !info || videoInput.dataset.bound) return;
+  videoInput.dataset.bound = "1";
+
+  const MAX_BYTES = 100 * 1024 * 1024; // matches HeroForm.clean_video_file
+
+  videoInput.addEventListener('change', ()=>{
+    const file = videoInput.files && videoInput.files[0];
+    if(!file){ info.textContent = ""; return; }
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    if(file.size > MAX_BYTES){
+      info.className = 'hero-upload-hint text-danger';
+      info.textContent = `"${file.name}" is ${sizeMB}MB — over the 100MB limit. Please trim or compress it before uploading.`;
+    } else {
+      info.className = 'hero-upload-hint text-muted';
+      info.textContent = `Selected: ${file.name} (${sizeMB}MB)`;
+    }
+  });
+}
+
 function initDynamicHandlers(){
   bindAjaxForms();
   bindEditProductButtons();
@@ -1411,6 +1485,7 @@ function initDynamicHandlers(){
   bindColorRowButtons();
   bindVariantTypeToggle();
   bindPreviewControls();
+  bindHeroVideoSizeCheck();
 }
 
 /* Initial bind on first page load */
