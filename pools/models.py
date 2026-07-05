@@ -1,5 +1,6 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
+import cloudinary.uploader
 import json
 
 
@@ -61,6 +62,41 @@ class HeroSection(models.Model):
 
     def save(self, *args, **kwargs):
         self.pk = 1
+
+        # ------------------------------------------------------------
+        # STEP 1 — figure out (BEFORE saving) whether video_file /
+        # poster_image_file are being REPLACED with something new, and
+        # if so, remember the OLD Cloudinary public_id so we can delete
+        # it afterwards. We compare against whatever is currently in
+        # the database, not just in-memory state, so this is reliable
+        # regardless of how `self` was constructed (form save, admin,
+        # shell, etc).
+        # ------------------------------------------------------------
+        old_video_public_id = None
+        old_poster_public_id = None
+
+        try:
+            old = HeroSection.objects.get(pk=self.pk)
+
+            old_video_pid = old.video_file.public_id if old.video_file else None
+            new_video_pid = self.video_file.public_id if self.video_file else None
+            if old_video_pid and old_video_pid != new_video_pid:
+                old_video_public_id = old_video_pid
+
+            old_poster_pid = old.poster_image_file.public_id if old.poster_image_file else None
+            new_poster_pid = self.poster_image_file.public_id if self.poster_image_file else None
+            if old_poster_pid and old_poster_pid != new_poster_pid:
+                old_poster_public_id = old_poster_pid
+
+        except HeroSection.DoesNotExist:
+            # First-ever save (no existing row yet) — nothing old to delete.
+            pass
+
+        # ------------------------------------------------------------
+        # STEP 2 — save the new data first. We never delete the old
+        # Cloudinary asset before this succeeds, so a failed save can
+        # never leave you with neither the old nor the new file.
+        # ------------------------------------------------------------
         super().save(*args, **kwargs)
 
         update_fields = []
@@ -93,6 +129,34 @@ class HeroSection(models.Model):
         # avoids an unnecessary extra query on every plain text-field save.
         if update_fields:
             super().save(update_fields=update_fields)
+
+        # ------------------------------------------------------------
+        # STEP 3 — now that the new file is safely committed, delete
+        # whatever old video/poster it just replaced, so Cloudinary
+        # storage doesn't quietly fill up with orphaned files every
+        # time an admin uploads a new hero video or image.
+        # ------------------------------------------------------------
+        if old_video_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    old_video_public_id,
+                    resource_type="video",
+                )
+            except Exception:
+                # Never let a Cloudinary cleanup failure break the save —
+                # worst case an old file lingers, which is recoverable
+                # manually; a raised exception here would be worse (it
+                # would look like the whole hero-section save failed).
+                pass
+
+        if old_poster_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    old_poster_public_id,
+                    resource_type="image",
+                )
+            except Exception:
+                pass
 
     def delete(self, *args, **kwargs):
         pass
