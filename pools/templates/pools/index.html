@@ -79,7 +79,8 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
   mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
 }
-.carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 20s linear infinite;}
+/* Slowed down: was 20s, now 45s for a calmer, slower slide */
+.carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 45s linear infinite;}
 .carousel-wrap:hover .carousel-track{animation-play-state:paused;}
 .plant-card{
   display:block;
@@ -128,6 +129,8 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 }
 @media(max-width:600px){
   .hero{padding:140px 0 50px;}
+  .carousel-wrap {
+        margin-top: 50px;
   .carousel-wrap{max-width:100%;}
   .plant-card{width:200px;}
   .plant-card img{height:130px;}
@@ -150,14 +153,17 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .shop-tabs{display:flex;gap:10px;margin-bottom:40px;flex-wrap:wrap;}
 .tab-btn{padding:11px 22px;border-radius:999px;border:1.5px solid var(--line);background:var(--white);font-weight:700;font-size:.84rem;cursor:pointer;color:var(--muted);font-family:'Manrope',sans-serif;}
 .tab-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
-.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
-.product-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;}
-.product-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--sand);}
+.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+.product-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.3s;}
+.product-card:hover{transform:translateY(-6px);}
+.product-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--sand);cursor:pointer;}
 .product-img img{width:100%;height:100%;object-fit:cover;transition:.5s;}
 .product-card:hover .product-img img{transform:scale(1.06);}
 .badge{position:absolute;top:14px;left:14px;background:var(--brass);color:var(--ink);font-size:.68rem;font-weight:800;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;}
 .product-body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:11px;flex:1;}
 .product-body h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.08rem;}
+.product-title-link{cursor:pointer;}
+.product-title-link:hover{color:var(--seafoam-deep);}
 .product-body .price{color:var(--seafoam-deep);font-weight:800;font-size:1.14rem;font-family:'Manrope',sans-serif;}
 .price del{color:var(--muted);font-weight:500;font-size:.85rem;margin-right:6px;}
 .opt-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;}
@@ -169,6 +175,8 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
 .add-cart-btn{margin-top:10px;background:var(--deep);color:var(--white);border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;}
 .add-cart-btn:hover{background:var(--ink);}
 .add-cart-btn.added{background:var(--brass);color:var(--ink);}
+.shop-more-wrap{display:flex;justify-content:center;margin-top:44px;}
+.services-wa{ } /* keep existing rule above unaffected */
 
 /* ============ CART DRAWER ============ */
 .cart-drawer{position:fixed;top:0;right:-440px;width:420px;max-width:92vw;height:100%;background:var(--white);z-index:300;box-shadow:-14px 0 44px rgba(0,0,0,.22);transition:right .35s ease;display:flex;flex-direction:column;}
@@ -348,14 +356,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                 <div class="carousel-mask">
                     <div class="carousel-track" id="track">
                         {% for p in products %}
-                        <a href="#shop" class="plant-card">
+                        <a href="{% url 'shop' %}" class="plant-card">
                             <img src="{{ p.image }}" alt="{{ p.name }}">
                             <div class="name">{{ p.name }}</div>
                             <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
                         </a>
                         {% endfor %}
                         {% for p in products %}
-                        <a href="#shop" class="plant-card" aria-hidden="true" tabindex="-1">
+                        <a href="{% url 'shop' %}" class="plant-card" aria-hidden="true" tabindex="-1">
                             <img src="{{ p.image }}" alt="">
                             <div class="name">{{ p.name }}</div>
                             <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
@@ -366,7 +374,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
                 <div class="carousel-dots"><span></span><span></span><span></span></div>
 
-                <a href="#shop" class="btn-pill">
+                <a href="{% url 'shop' %}" class="btn-pill">
                     Open Catalog
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
                 </a>
@@ -401,8 +409,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <div class="wrap">
     <div class="section-head">
     <div class="eyebrow">Pool Shop</div>
-    <h2>Pool designs & accessories</h2>
-    <p>Pick a size, choose quantity, add to cart — checkout sends your order straight to us on WhatsApp and saves it to our system.</p>
+    <h2>Pools & accessories</h2>
+    <p>A quick look at our pool designs and accessories — pick a size, choose quantity, add to cart. Click any product, or tap "Shop All" below, to see our full catalog.</p>
     </div>
     <div class="shop-tabs" id="shopTabs">
     <button class="tab-btn active" data-cat="all">All</button>
@@ -410,19 +418,35 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <button class="tab-btn" data-cat="{{ key }}">{{ label }}</button>
     {% endfor %}
     </div>
+
+    <!-- Only the first 4 products are shown on the homepage; the rest live on the full Shop page -->
     <div class="product-grid" id="productGrid">
-    {% for p in products %}
+    {% for p in products|slice:":4" %}
         <div class="product-card" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
-        <div class="product-img">
+
+        <!-- Clicking the image goes straight to the Shop page -->
+        <a href="{% url 'shop' %}" class="product-img">
             {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
             <img src="{{ p.image }}" alt="{{ p.name }}">
-        </div>
+        </a>
+
         <div class="product-body">
-            <h3>{{ p.name }}</h3>
-            <div class="price">{% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}₹{{ p.price|floatformat:0 }}</div>
+            <!-- Clicking the name also goes to the Shop page -->
+            <a href="{% url 'shop' %}"><h3 class="product-title-link">{{ p.name }}</h3></a>
+
+            <!-- Price now updates live based on the size picked below -->
+            <div class="price" id="price-{{ p.id }}">
+                {% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}<span class="price-value">₹{{ p.price|floatformat:0 }}</span>
+            </div>
+
             <div class="opt-row"><label>Size</label><select class="opt-select size-select">
-                {% for s in p.size_list %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+                {% if p.sorted_sizes %}
+                    {% for s, pr in p.sorted_sizes %}<option value="{{ s }}" data-price="{{ pr|floatformat:0 }}">{{ s }}</option>{% endfor %}
+                {% else %}
+                    {% for s in p.size_list %}<option value="{{ s }}" data-price="{{ p.price }}">{{ s }}</option>{% endfor %}
+                {% endif %}
             </select></div>
+
             <div class="opt-row"><label>Qty</label><div class="qty-box"><button class="qty-minus" type="button">−</button><span class="qty-val">1</span><button class="qty-plus" type="button">+</button></div></div>
             <button class="add-cart-btn" type="button">Add to Cart</button>
         </div>
@@ -430,6 +454,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     {% empty %}
         <p style="grid-column:1/-1;color:var(--muted);text-align:center;padding:40px 0;">No products yet.</p>
     {% endfor %}
+    </div>
+
+    <!-- See more / Shop button below the 4 preview products -->
+    <div class="shop-more-wrap">
+        <a href="{% url 'shop' %}" class="btn btn-primary">See More — Shop All Products →</a>
     </div>
 </div>
 </section>
@@ -532,7 +561,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="logo-img" style="margin-bottom:14px;">
         <p style="font-size:.88rem;max-width:280px;">Master Pools designs and builds custom swimming pools and premium pool accessories across Kerala.</p>
     </div>
-    <div><h4>Shop</h4><ul><li><a href="#shop">Pool Designs</a></li><li><a href="#shop">Pumps & Filters</a></li><li><a href="#shop">Lighting</a></li><li><a href="#shop">Cleaning</a></li></ul></div>
+    <div><h4>Shop</h4><ul><li><a href="{% url 'shop' %}">Pool Designs</a></li><li><a href="{% url 'shop' %}">Pumps & Filters</a></li><li><a href="{% url 'shop' %}">Lighting</a></li><li><a href="{% url 'shop' %}">Cleaning</a></li></ul></div>
     <div><h4>Company</h4><ul><li><a href="#services">Services</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#reviews">Reviews</a></li><li><a href="#contact">Contact</a></li></ul></div>
     <div><h4>Contact</h4><ul><li><a id="footerWA" href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}">WhatsApp</a></li><li><a href="mailto:hello@masterpools.com">hello@masterpools.com</a></li><li>Kochi, Kerala — 682001</li></ul></div>
     </div>
@@ -602,19 +631,39 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
   });
 });
 
-/* ============ PRODUCT QTY / ADD TO CART ============ */
+/* ============ PRODUCT QTY / SIZE→PRICE / ADD TO CART ============ */
 document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   const qtyVal = card.querySelector('.qty-val');
+  const sizeSelect = card.querySelector('.size-select');
+  const priceValueEl = card.querySelector('.price-value');
   let qty = 1;
+
+  // Update the displayed price whenever the customer picks a different size
+  function updatePriceDisplay(){
+    const opt = sizeSelect.options[sizeSelect.selectedIndex];
+    if(opt && priceValueEl){
+      priceValueEl.textContent = fmt(opt.dataset.price);
+    }
+  }
+  if(sizeSelect){
+    sizeSelect.addEventListener('change', updatePriceDisplay);
+    updatePriceDisplay(); // set correct price for whichever size is selected by default
+  }
+
   card.querySelector('.qty-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty-1); qtyVal.textContent = qty; });
   card.querySelector('.qty-plus').addEventListener('click', ()=>{ qty = Math.min(20, qty+1); qtyVal.textContent = qty; });
+
   const addBtn = card.querySelector('.add-cart-btn');
   addBtn.addEventListener('click', ()=>{
-    const size = card.querySelector('.size-select').value;
+    const opt = sizeSelect ? sizeSelect.options[sizeSelect.selectedIndex] : null;
+    const size = opt ? opt.value : '';
+    const price = opt ? parseInt(opt.dataset.price) : parseInt(card.dataset.price);
+
     addToCart({
       id: card.dataset.id, name: card.dataset.name,
-      img: card.dataset.img, price: parseInt(card.dataset.price)
+      img: card.dataset.img, price: price
     }, size, qty);
+
     addBtn.textContent = "Added ✓"; addBtn.classList.add('added');
     setTimeout(()=>{ addBtn.textContent="Add to Cart"; addBtn.classList.remove('added'); }, 1300);
     showToast(`${card.dataset.name} added to cart`);

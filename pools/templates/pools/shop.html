@@ -218,7 +218,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
      data-id="{{ product.id }}"
      data-name="{{ product.name|escapejs }}"
      data-price="{{ product.price }}"
-     data-sizes="{{ product.sizes|escapejs }}">
+     data-img="{% if product.image_file %}{{ product.image_file.url }}{% elif product.image_url %}{{ product.image_url }}{% endif %}">
 
     <div class="product-img">
         {% if product.badge %}<span class="badge">{{ product.badge }}</span>{% endif %}
@@ -232,21 +232,26 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <div class="product-body">
         <h2>{{ product.name }}</h2>
 
+        <!-- Price now updates live based on the size picked below (same pattern as index.html) -->
         <div class="price-row">
-            <span class="price price-display">₹{{ product.price }}</span>
-            {% if product.mrp %}<span class="mrp">₹{{ product.mrp }}</span>{% endif %}
+            <span class="price price-display" id="price-{{ product.id }}">
+                {% if product.mrp %}<span class="mrp">₹{{ product.mrp|floatformat:0 }}</span>{% endif %}₹{{ product.price|floatformat:0 }}
+            </span>
         </div>
 
         <p class="info"><strong>Category:</strong> {{ product.category }}</p>
 
-        <!-- Shown only if product.sizes is in "Label:Price, Label:Price" format -->
-        <div class="opt-row size-row" style="display:none;">
+        <!-- Size select — server-rendered from sorted_sizes / size_list, exactly like index.html -->
+        <div class="opt-row size-row">
             <label>Size</label>
-            <select class="size-select"></select>
+            <select class="opt-select size-select">
+                {% if product.sorted_sizes %}
+                    {% for s, pr in product.sorted_sizes %}<option value="{{ s }}" data-price="{{ pr|floatformat:0 }}">{{ s }}</option>{% endfor %}
+                {% else %}
+                    {% for s in product.size_list %}<option value="{{ s }}" data-price="{{ product.price|floatformat:0 }}">{{ s }}</option>{% endfor %}
+                {% endif %}
+            </select>
         </div>
-
-        <!-- Fallback: shown as plain text if sizes isn't in Label:Price format -->
-        <p class="info size-fallback"><strong>Sizes:</strong> {{ product.sizes }}</p>
 
         <div class="opt-row">
             <label>Qty</label>
@@ -333,73 +338,39 @@ document.getElementById('menuToggle').addEventListener('click', ()=>document.get
 document.getElementById('mobileNavClose').addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open'));
 document.querySelectorAll('.mobile-nav a').forEach(a=>a.addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open')));
 
-/* ---------- parse "6 inch:1000, 8 inch:1500" into [{label, price}] ---------- */
-function parseSizeOptions(str){
-    if(!str) return [];
-    return str.split(',')
-        .map(s=>s.trim())
-        .filter(Boolean)
-        .map(part=>{
-            const idx = part.lastIndexOf(':');
-            if(idx === -1) return null;
-            const label = part.slice(0, idx).trim();
-            const price = parseFloat(part.slice(idx+1).trim());
-            return (label && !isNaN(price)) ? { label, price } : null;
-        })
-        .filter(Boolean);
-}
-
-/* ---------- product card qty / size select / add to cart / buy now ---------- */
+/* ---------- product card qty / size select (data-price on <option>, same as index.html) / add to cart / buy now ---------- */
 document.querySelectorAll('#productGrid .product-card').forEach(card=>{
     const qtyVal = card.querySelector('.qty-val');
     let qty = 1;
     card.querySelector('.qty-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty-1); qtyVal.textContent = qty; });
     card.querySelector('.qty-plus').addEventListener('click', ()=>{ qty = Math.min(20, qty+1); qtyVal.textContent = qty; });
 
-    const imgEl = card.querySelector('.prod-img-src');
+    const sizeSelect = card.querySelector('.size-select');
     const priceDisplay = card.querySelector('.price-display');
-    const basePrice = parseFloat(card.dataset.price) || 0;
+    const imgEl = card.querySelector('.prod-img-src');
 
-    let currentPrice = basePrice;
-    let currentSizeLabel = '';
-
-    const sizeOptions = parseSizeOptions(card.dataset.sizes);
-
-    if(sizeOptions.length > 0){
-        // Valid "Label:Price" sizes found -> show dropdown, hide plain text
-        const sizeRow = card.querySelector('.size-row');
-        const sizeFallback = card.querySelector('.size-fallback');
-        const select = card.querySelector('.size-select');
-
-        sizeFallback.style.display = 'none';
-        sizeRow.style.display = 'flex';
-
-        select.innerHTML = sizeOptions.map((o,i)=>
-            `<option value="${i}">${o.label} — ${fmt(o.price)}</option>`
-        ).join('');
-
-        // default to first size
-        currentPrice = sizeOptions[0].price;
-        currentSizeLabel = sizeOptions[0].label;
-        priceDisplay.textContent = fmt(currentPrice);
-
-        select.addEventListener('change', function(){
-            const opt = sizeOptions[parseInt(this.value)];
-            if(!opt) return;
-            currentPrice = opt.price;
-            currentSizeLabel = opt.label;
-            priceDisplay.textContent = fmt(currentPrice);
-        });
+    // Update the displayed price whenever the customer picks a different size
+    function updatePriceDisplay(){
+        const opt = sizeSelect.options[sizeSelect.selectedIndex];
+        if(opt && priceDisplay){
+            priceDisplay.textContent = fmt(opt.dataset.price);
+        }
     }
-    // else: no valid Label:Price pairs -> keep plain "Sizes:" text as-is, price stays base price
+    if(sizeSelect){
+        sizeSelect.addEventListener('change', updatePriceDisplay);
+        updatePriceDisplay(); // set correct price for whichever size is selected by default
+    }
 
     function buildProduct(){
+        const opt = sizeSelect ? sizeSelect.options[sizeSelect.selectedIndex] : null;
+        const size = opt ? opt.value : '';
+        const price = opt ? parseInt(opt.dataset.price) : parseFloat(card.dataset.price);
         return {
-            id: card.dataset.id + (currentSizeLabel ? '-' + currentSizeLabel.replace(/\s+/g,'') : ''),
+            id: card.dataset.id + (size ? '-' + size.replace(/\s+/g,'') : ''),
             name: card.dataset.name,
-            size: currentSizeLabel,
-            price: currentPrice,
-            image: imgEl ? imgEl.src : ''
+            size: size,
+            price: price,
+            image: imgEl ? imgEl.src : card.dataset.img
         };
     }
 
