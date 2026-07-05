@@ -242,6 +242,28 @@ def _parse_size_prices(request):
     return size_prices
 
 
+def _parse_colors(request):
+    """Reads the color[] array submitted from the dynamic 'Add Color' rows.
+    Colors are entirely OPTIONAL — empty/blank rows are silently skipped,
+    duplicates are dropped, and if nothing was entered this simply returns
+    an empty list (which is a perfectly valid, expected result)."""
+    raw_colors = request.POST.getlist("color[]")
+    colors = []
+    for c in raw_colors:
+        c = c.strip()
+        if not c:
+            continue
+        if c not in colors:
+            colors.append(c)
+    return colors
+
+
+def _parse_variant_type(request):
+    """'inches' or 'sizes' — defaults to 'inches' if not sent/invalid."""
+    vtype = request.POST.get("variant_type", "inches").strip().lower()
+    return vtype if vtype in ("inches", "sizes") else "inches"
+
+
 @login_required
 @require_POST
 def product_save(request, pk=None):
@@ -260,6 +282,11 @@ def product_save(request, pk=None):
         elif not pk:
             messages.error(request, "Please add at least one size and price.")
             return redirect("dashboard")
+
+        product.variant_type = _parse_variant_type(request)
+
+        # Colors are optional — an empty list is a valid, expected value.
+        product.colors = _parse_colors(request)
 
         product.save()
         messages.success(request, "Product updated." if pk else "Product added.")
@@ -380,6 +407,11 @@ def product_edit(request, pk):
         product.size_prices = size_prices
         product.sizes = ", ".join(f'{s}"' for s in size_prices.keys())
         product.price = min(size_prices.values())
+
+    product.variant_type = _parse_variant_type(request)
+
+    # Colors are optional — saving an empty list clears any previously set colors.
+    product.colors = _parse_colors(request)
 
     if request.FILES.get("image_file"):
         product.image_file = request.FILES["image_file"]

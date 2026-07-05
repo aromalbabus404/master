@@ -123,6 +123,11 @@ CATEGORY_CHOICES = [
     ("clean", "Cleaning"),
 ]
 
+VARIANT_TYPE_CHOICES = [
+    ("inches", "Inches"),
+    ("sizes", "Sizes"),
+]
+
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
@@ -136,6 +141,19 @@ class Product(models.Model):
     # `price` above is kept in sync automatically (set to the lowest size price)
     # so anything still reading `product.price` continues to work.
     size_prices = models.JSONField(default=dict, blank=True)
+
+    # Whether the sizes above represent "inches" (numeric, e.g. 6, 8, 10)
+    # or "sizes" (text, e.g. S, M, L, XL). Purely drives how the admin
+    # dashboard renders/edits the size rows and picks an input type.
+    variant_type = models.CharField(
+        max_length=10, choices=VARIANT_TYPE_CHOICES, default="inches"
+    )
+
+    # NEW: optional colors this product is available in, e.g. ["Blue", "Red"].
+    # Completely optional — defaults to an empty list, meaning "no color
+    # options", and the storefront simply hides the color swatches row
+    # for any product with no colors.
+    colors = models.JSONField(default=list, blank=True)
 
     image_url = models.URLField(blank=True, null=True, help_text="Use this OR upload a file below.")
     image_file = models.ImageField(upload_to="products/", blank=True, null=True)
@@ -170,6 +188,19 @@ class Product(models.Model):
         """JSON string version, safe to drop into a data-* attribute in
         templates for the admin dashboard's Edit modal."""
         return json.dumps(self.size_prices or {})
+
+    @property
+    def color_list(self):
+        """Plain Python list of color names, e.g. ["Blue", "Red"].
+        Empty list if this product has no colors — always safe to
+        iterate over in a template with {% if product.color_list %}."""
+        return self.colors or []
+
+    @property
+    def colors_json(self):
+        """JSON string version, safe to drop into a data-* attribute in
+        templates for the admin dashboard's Edit modal."""
+        return json.dumps(self.colors or [])
 
     def __str__(self):
         return self.name

@@ -88,6 +88,20 @@ nav a:hover,nav a.active{opacity:1;color:var(--seafoam);}
 .qty-box span{width:30px;text-align:center;font-weight:700;font-size:.9rem;}
 .size-row select.size-select{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font-family:'Manrope',sans-serif;font-size:.82rem;background:var(--white);color:var(--ink);cursor:pointer;flex:1;}
 .size-row select.size-select:focus{outline:none;border-color:var(--brass);}
+
+/* ============ COLOR SWATCHES (small rounded shape, sits below the price) ============ */
+.color-row{align-items:flex-start;}
+.color-row label{padding-top:4px;}
+.color-swatches{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.color-swatch{
+    width:24px;height:24px;border-radius:50%;flex:0 0 24px;
+    border:2px solid var(--white);outline:1.5px solid var(--line);
+    cursor:pointer;transition:.2s ease;position:relative;
+}
+.color-swatch:hover{transform:scale(1.12);}
+.color-swatch.selected{outline-color:var(--brass);box-shadow:0 0 0 2px var(--brass-light);}
+.color-name{font-size:.74rem;color:var(--muted);font-weight:700;margin-left:2px;}
+
 .btn-row{display:flex;gap:10px;margin-top:8px;}
 .add-cart-btn,.buy-now-btn{flex:1;border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;font-size:.85rem;}
 .add-cart-btn{background:var(--deep);color:var(--white);}
@@ -155,6 +169,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .info{font-size:.68rem;}
     .opt-row label{font-size:.62rem;}
     .size-row select.size-select{font-size:.7rem;padding:5px 6px;}
+    .color-swatch{width:20px;height:20px;flex-basis:20px;}
+    .color-name{font-size:.66rem;}
     .qty-box button{width:24px;height:26px;}
     .qty-box span{width:22px;font-size:.75rem;}
     .btn-row{flex-direction:column;gap:6px;}
@@ -238,6 +254,22 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                 {% if product.mrp %}<span class="mrp">₹{{ product.mrp|floatformat:0 }}</span>{% endif %}₹{{ product.price|floatformat:0 }}
             </span>
         </div>
+
+        <!-- Colors — small rounded swatches, shown right under the price. Fully optional: row is skipped entirely if the product has no colors. -->
+        {% if product.color_list %}
+        <div class="opt-row color-row">
+            <label>Color</label>
+            <div class="color-swatches">
+                {% for c in product.color_list %}
+                <span class="color-swatch{% if forloop.first %} selected{% endif %}"
+                      style="background-color:{{ c|lower }};"
+                      data-color="{{ c }}"
+                      title="{{ c }}"></span>
+                {% endfor %}
+                <span class="color-name">{{ product.color_list.0 }}</span>
+            </div>
+        </div>
+        {% endif %}
 
         <p class="info"><strong>Category:</strong> {{ product.category }}</p>
 
@@ -338,7 +370,7 @@ document.getElementById('menuToggle').addEventListener('click', ()=>document.get
 document.getElementById('mobileNavClose').addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open'));
 document.querySelectorAll('.mobile-nav a').forEach(a=>a.addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open')));
 
-/* ---------- product card qty / size select (data-price on <option>, same as index.html) / add to cart / buy now ---------- */
+/* ---------- product card qty / size select / color swatch / add to cart / buy now ---------- */
 document.querySelectorAll('#productGrid .product-card').forEach(card=>{
     const qtyVal = card.querySelector('.qty-val');
     let qty = 1;
@@ -361,14 +393,32 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
         updatePriceDisplay(); // set correct price for whichever size is selected by default
     }
 
+    // Colors — optional. If present, first swatch is pre-selected; clicking another swatch swaps the selection.
+    const colorSwatches = card.querySelectorAll('.color-swatch');
+    const colorNameEl = card.querySelector('.color-name');
+    let selectedColor = colorSwatches.length ? colorSwatches[0].dataset.color : '';
+
+    colorSwatches.forEach(sw=>{
+        sw.addEventListener('click', ()=>{
+            colorSwatches.forEach(s=>s.classList.remove('selected'));
+            sw.classList.add('selected');
+            selectedColor = sw.dataset.color;
+            if(colorNameEl) colorNameEl.textContent = selectedColor;
+        });
+    });
+
     function buildProduct(){
         const opt = sizeSelect ? sizeSelect.options[sizeSelect.selectedIndex] : null;
         const size = opt ? opt.value : '';
         const price = opt ? parseInt(opt.dataset.price) : parseFloat(card.dataset.price);
+        const idParts = [card.dataset.id];
+        if(size) idParts.push(size.replace(/\s+/g,''));
+        if(selectedColor) idParts.push(selectedColor.replace(/\s+/g,''));
         return {
-            id: card.dataset.id + (size ? '-' + size.replace(/\s+/g,'') : ''),
+            id: idParts.join('-'),
             name: card.dataset.name,
             size: size,
+            color: selectedColor,
             price: price,
             image: imgEl ? imgEl.src : card.dataset.img
         };
@@ -415,6 +465,15 @@ function changeQty(id, delta){
     renderCart();
 }
 
+function itemLabel(item){
+    let label = item.name;
+    const extras = [];
+    if(item.size) extras.push(item.size);
+    if(item.color) extras.push(item.color);
+    if(extras.length) label += ' — ' + extras.join(', ');
+    return label;
+}
+
 function renderCart(){
     const cart = loadCart();
     const itemsEl = document.getElementById('cartItems');
@@ -436,7 +495,7 @@ function renderCart(){
             <div class="cart-item">
                 <img src="${item.image || ''}" alt="${item.name}">
                 <div class="ci-info">
-                    <h4>${item.name}${item.size ? ' — ' + item.size : ''}</h4>
+                    <h4>${itemLabel(item)}</h4>
                     <small>${fmt(item.price)} each</small>
                     <div class="ci-qty">
                         <button onclick="changeQty('${item.id}', -1)">-</button>
@@ -456,7 +515,7 @@ function buyNow(product, qty){
     const total = (product.price * qty).toFixed(2);
     const message =
         "Hello, I want to buy:\n\n" +
-        `${product.name}${product.size ? ' (' + product.size + ')' : ''}\n` +
+        `${itemLabel(product)}\n` +
         `Quantity: ${qty}\n` +
         `Price: ${fmt(product.price)} each\n` +
         `Total: ${fmt(total)}`;
@@ -470,7 +529,7 @@ document.getElementById('checkoutBtn').addEventListener('click', ()=>{
     const lines = cart.map(item=>{
         const lineTotal = item.price * item.qty;
         total += lineTotal;
-        return `${item.name}${item.size ? ' (' + item.size + ')' : ''}  x${item.qty}  -  ${fmt(lineTotal)}`;
+        return `${itemLabel(item)}  x${item.qty}  -  ${fmt(lineTotal)}`;
     });
     const message = "Hello, I want to place an order:\n\n" + lines.join("\n") + `\n\nTotal: ${fmt(total)}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');

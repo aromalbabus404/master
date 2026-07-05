@@ -213,6 +213,7 @@
   .badge-pending{background:var(--gold-tint);color:#8A6412;}
   .badge-approved{background:var(--aqua-tint);color:var(--aqua-deep);}
   .badge-rejected{background:#FBEAEA;color:var(--danger);}
+  .badge-color-chip{background:var(--aqua-tint);color:var(--aqua-deep);margin:2px;display:inline-block;}
 
   .thumb{width:52px;height:52px;object-fit:cover;border-radius:12px;}
   .gallery-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;transition:transform .25s ease;}
@@ -375,6 +376,13 @@
   .size-price-row input{max-width:150px;}
   .size-price-row .size-unit{color:var(--text-muted);font-weight:600;font-size:.85rem;min-width:38px;}
 
+  /* ===== color dynamic rows (optional, multiple) ===== */
+  .color-row{
+    background:var(--bg);border:1px solid var(--border);border-radius:12px;
+    padding:8px 10px;align-items:center;
+  }
+  .color-row input{max-width:220px;}
+
   /* ===== NEW: variant type toggle ===== */
   .variant-type-toggle{
     display:flex;gap:8px;background:var(--bg);border:1px solid var(--border);
@@ -418,6 +426,7 @@
     .device-btn{padding:6px 10px;font-size:.78rem;}
     .form-actions .btn{flex:1 1 auto;}
     .size-price-row input{max-width:110px;}
+    .color-row input{max-width:160px;}
   }
 </style>
 </head>
@@ -654,16 +663,10 @@
               <div class="col-md-3"><label class="form-label fw-bold">Category</label>{{ product_form.category }}</div>
               <div class="col-md-3"><label class="form-label fw-bold">Badge (optional)</label>{{ product_form.badge }}</div>
 
-              <div class="col-md-4"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
+              <div class="col-md-6"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
 
-              <!-- NEW: optional Color field -->
-              <div class="col-md-4">
-                <label class="form-label fw-bold">Color (optional)</label>
-                <input type="text" class="form-control" name="color" id="colorAdd" placeholder="e.g. Blue">
-              </div>
-
-              <!-- NEW: Variant Type toggle -->
-              <div class="col-md-4">
+              <!-- Variant Type toggle -->
+              <div class="col-md-6">
                 <label class="form-label fw-bold d-block">Variant Type</label>
                 <div class="variant-type-toggle" id="variantTypeAdd">
                   <input type="radio" name="variant_type" id="vtAddInches" value="inches" checked>
@@ -681,6 +684,14 @@
                 <div class="form-text" id="sizeRowsAddHint">e.g. 6 inch → ₹300, 8 inch → ₹500. Customers pick a size on the storefront and the price updates automatically.</div>
               </div>
 
+              <!-- Colors (optional, multiple) -->
+              <div class="col-12">
+                <label class="form-label fw-bold">Colors (optional)</label>
+                <div id="colorRowsAdd"></div>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addColorRowBtn">+ Add Color</button>
+                <div class="form-text">Add as many colors as this product comes in — e.g. Blue, Red, Green. Entirely optional: leave all rows empty (or remove them) if this product has no color options.</div>
+              </div>
+
               <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
               <div class="col-md-4"><label class="form-label fw-bold">…or upload image</label>{{ product_form.image_file }}</div>
             </div>
@@ -695,7 +706,7 @@
           <div class="section-head"><span class="head-icon">📁</span><h5>All Products</h5></div>
           <div class="table-responsive">
             <table class="table align-middle">
-              <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th>Color</th><th></th></tr></thead>
+              <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th>Colors</th><th></th></tr></thead>
               <tbody>
               {% for p in products %}
                 <tr>
@@ -704,12 +715,18 @@
                   <td class="text-capitalize">{{ p.get_category_display }}</td>
                   <td>₹{{ p.price|floatformat:0 }}{% if p.mrp %} <small class="text-muted text-decoration-line-through">₹{{ p.mrp|floatformat:0 }}</small>{% endif %}</td>
                   <td>{{ p.sizes }}</td>
-                  <td>{{ p.color|default:"—" }}</td>
+                  <td>
+                    {% if p.color_list %}
+                      {% for c in p.color_list %}<span class="badge badge-color-chip">{{ c }}</span>{% endfor %}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
                   <td>
                     <button class="btn btn-sm btn-outline-primary edit-prod-btn"
                       data-id="{{ p.id }}" data-name="{{ p.name }}" data-category="{{ p.category }}"
                       data-badge="{{ p.badge|default:'' }}" data-mrp="{{ p.mrp|default:'' }}"
-                      data-color="{{ p.color|default:'' }}"
+                      data-colors='{{ p.colors_json|default:"[]" }}'
                       data-varianttype="{{ p.variant_type|default:'inches' }}"
                       data-sizeprices='{{ p.size_prices_json }}'
                       data-imgurl="{{ p.image_url|default:'' }}"
@@ -877,16 +894,10 @@
               {% for key, label in categories %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
             </select>
           </div>
-          <div class="col-md-4"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
-          <div class="col-md-4"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
+          <div class="col-md-6"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
+          <div class="col-md-6"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
 
-          <!-- NEW: optional Color field -->
-          <div class="col-md-4">
-            <label class="form-label fw-bold">Color (optional)</label>
-            <input type="text" class="form-control" name="color" id="ed_color" placeholder="e.g. Blue">
-          </div>
-
-          <!-- NEW: Variant Type toggle -->
+          <!-- Variant Type toggle -->
           <div class="col-12">
             <label class="form-label fw-bold d-block">Variant Type</label>
             <div class="variant-type-toggle" id="variantTypeEdit">
@@ -902,6 +913,14 @@
             <label class="form-label fw-bold" id="sizeRowsEditLabel">Sizes & Prices (inches → ₹)</label>
             <div id="sizeRowsEdit"></div>
             <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSizeRowEditBtn">+ Add Size</button>
+          </div>
+
+          <!-- Colors (optional, multiple) -->
+          <div class="col-12">
+            <label class="form-label fw-bold">Colors (optional)</label>
+            <div id="colorRowsEdit"></div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addColorRowEditBtn">+ Add Color</button>
+            <div class="form-text">Leave empty (or remove all rows) if this product has no color options.</div>
           </div>
 
           <div class="col-md-8"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" id="ed_imgurl"></div>
@@ -1110,7 +1129,6 @@ function bindEditProductButtons(){
       document.getElementById('ed_badge').value = btn.dataset.badge;
       document.getElementById('ed_mrp').value = btn.dataset.mrp;
       document.getElementById('ed_imgurl').value = btn.dataset.imgurl;
-      document.getElementById('ed_color').value = btn.dataset.color || '';
 
       // Set the variant type radio (defaults to "inches" if not set)
       const vType = btn.dataset.varianttype === 'sizes' ? 'sizes' : 'inches';
@@ -1127,6 +1145,18 @@ function bindEditProductButtons(){
         makeSizeRow(sizeRowsEdit, "", "", vType);
       } else {
         entries.forEach(([size, price]) => makeSizeRow(sizeRowsEdit, size, price, vType));
+      }
+
+      // Colors — optional, multiple. Populate one row per existing color,
+      // or a single empty row if the product currently has none.
+      const colorRowsEdit = document.getElementById('colorRowsEdit');
+      colorRowsEdit.innerHTML = "";
+      let colorsArr = [];
+      try { colorsArr = JSON.parse(btn.dataset.colors || "[]"); } catch (e) {}
+      if (colorsArr.length === 0) {
+        makeColorRow(colorRowsEdit, "");
+      } else {
+        colorsArr.forEach(c => makeColorRow(colorRowsEdit, c));
       }
 
       const modalEl = document.getElementById('editProductModal');
@@ -1236,6 +1266,39 @@ function bindSizeRowButtons(){
   }
 }
 
+/* ---- Colors: dynamic, optional, unlimited rows ---- */
+
+function makeColorRow(container, color = ""){
+  const row = document.createElement("div");
+  row.className = "d-flex gap-2 mb-2 color-row";
+  row.innerHTML = `
+    <input type="text" class="form-control color-input" name="color[]" placeholder="e.g. Blue" value="${color}">
+    <button type="button" class="btn btn-outline-danger remove-color-row">✕</button>
+  `;
+  row.querySelector(".remove-color-row").addEventListener("click", () => row.remove());
+  container.appendChild(row);
+}
+
+function bindColorRowButtons(){
+  const addBtn = document.getElementById('addColorRowBtn');
+  const colorRowsAdd = document.getElementById('colorRowsAdd');
+  if(addBtn && colorRowsAdd && !addBtn.dataset.bound){
+    addBtn.dataset.bound = "1";
+    addBtn.addEventListener('click', ()=> makeColorRow(colorRowsAdd));
+  }
+  // Start with one empty row purely for UX — it's still optional,
+  // an empty color[] value is ignored/stripped on the backend.
+  if(colorRowsAdd && colorRowsAdd.children.length === 0){
+    makeColorRow(colorRowsAdd);
+  }
+
+  const addEditBtn = document.getElementById('addColorRowEditBtn');
+  if(addEditBtn && !addEditBtn.dataset.bound){
+    addEditBtn.dataset.bound = "1";
+    addEditBtn.addEventListener('click', ()=> makeColorRow(document.getElementById('colorRowsEdit')));
+  }
+}
+
 function bindPreviewControls(){
   const previewFrame = document.getElementById('previewFrame');
   const previewLoading = document.getElementById('previewLoading');
@@ -1286,6 +1349,7 @@ function initDynamicHandlers(){
   bindAjaxForms();
   bindEditProductButtons();
   bindSizeRowButtons();
+  bindColorRowButtons();
   bindVariantTypeToggle();
   bindPreviewControls();
 }
