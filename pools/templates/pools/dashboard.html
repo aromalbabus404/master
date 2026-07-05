@@ -579,7 +579,7 @@
           <div class="section-head"><span class="head-icon">🌊</span><h5>Hero Section</h5></div>
           <form method="post"
     action="{% url 'hero_save' %}"
-    enctype="multipart/form-data">
+    enctype="multipart/form-data" class="ajax-form">
             {% csrf_token %}
             <div class="row g-3">
               <div class="col-md-6">
@@ -635,7 +635,7 @@
       <div class="panel" id="panel-products">
         <div class="card-section">
           <div class="section-head"><span class="head-icon">🛒</span><h5>Add Product</h5></div>
-          <form method="post" action="{% url 'product_add' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'product_add' %}" enctype="multipart/form-data" class="ajax-form">
             {% csrf_token %}
             <div class="row g-3">
               <div class="col-md-6"><label class="form-label fw-bold">Name</label>{{ product_form.name }}</div>
@@ -681,7 +681,7 @@
                       data-sizeprices='{{ p.size_prices_json }}'
                       data-imgurl="{{ p.image_url|default:'' }}"
                       data-action="{% url 'product_edit' p.id %}" type="button">Edit</button>
-                    <form method="post" action="{% url 'product_delete' p.id %}" style="display:inline;" onsubmit="return confirm('Delete this product?');">
+                    <form method="post" action="{% url 'product_delete' p.id %}" style="display:inline;" class="ajax-form" data-confirm="Delete this product?">
                       {% csrf_token %}
                       <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
                     </form>
@@ -700,7 +700,7 @@
       <div class="panel" id="panel-gallery">
         <div class="card-section">
           <div class="section-head"><span class="head-icon">🖼</span><h5>Add Gallery Image</h5></div>
-          <form method="post" action="{% url 'gallery_add' %}" enctype="multipart/form-data">
+          <form method="post" action="{% url 'gallery_add' %}" enctype="multipart/form-data" class="ajax-form">
             {% csrf_token %}
             <div class="row g-3 align-items-end">
               <div class="col-md-7"><label class="form-label fw-bold">Image URL</label><input class="form-control" name="image_url" placeholder="https://..."></div>
@@ -721,7 +721,7 @@
             <div class="col-6 col-md-3">
               <div class="gallery-item">
                 <img class="gallery-thumb" src="{{ g.image }}">
-                <form method="post" action="{% url 'gallery_delete' g.id %}" onsubmit="return confirm('Delete this image?');">
+                <form method="post" action="{% url 'gallery_delete' g.id %}" class="ajax-form" data-confirm="Delete this image?">
                   {% csrf_token %}
                   <button class="del-btn" type="submit">✕</button>
                 </form>
@@ -750,14 +750,14 @@
               <div class="text-warning small mb-1">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
               <p class="mb-2">{{ r.text }}</p>
               {% if r.status == 'pending' %}
-                <form method="post" action="{% url 'review_set_status' r.id 'approved' %}" style="display:inline;">
+                <form method="post" action="{% url 'review_set_status' r.id 'approved' %}" style="display:inline;" class="ajax-form">
                   {% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Approve</button>
                 </form>
-                <form method="post" action="{% url 'review_set_status' r.id 'rejected' %}" style="display:inline;">
+                <form method="post" action="{% url 'review_set_status' r.id 'rejected' %}" style="display:inline;" class="ajax-form">
                   {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Reject</button>
                 </form>
               {% else %}
-                <form method="post" action="{% url 'review_set_status' r.id 'pending' %}">
+                <form method="post" action="{% url 'review_set_status' r.id 'pending' %}" class="ajax-form">
                   {% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Mark Pending</button>
                 </form>
               {% endif %}
@@ -803,7 +803,7 @@
         <div class="card-section">
           <div class="section-head"><span class="head-icon">⚙️</span><h5>WhatsApp Notification Settings</h5></div>
           <p class="text-muted">Orders and new reviews from the storefront open a WhatsApp chat to this number automatically.</p>
-          <form method="post" action="{% url 'settings_save' %}">
+          <form method="post" action="{% url 'settings_save' %}" class="ajax-form">
             {% csrf_token %}
             <div class="row g-3">
               <div class="col-md-6">
@@ -830,7 +830,7 @@
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
-      <form method="post" enctype="multipart/form-data" id="editProductForm">
+      <form method="post" enctype="multipart/form-data" id="editProductForm" class="ajax-form">
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
@@ -868,7 +868,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-/* ---- Panel switching (pure UI, no data logic — data already came from the DB) ---- */
+/* ================================================================
+   PANEL SWITCHING (sidebar / topbar / mobile-menu nav-links live
+   OUTSIDE .content, so they only need to be bound once)
+   ================================================================ */
 function activatePanel(panelName){
   document.querySelectorAll('.nav-link[data-panel]').forEach(l=>l.classList.remove('active'));
   document.querySelectorAll('.nav-link[data-panel="'+panelName+'"]').forEach(l=>l.classList.add('active'));
@@ -877,7 +880,8 @@ function activatePanel(panelName){
   const target = document.getElementById('panel-'+panelName);
   if(target) target.classList.add('active');
 
-  if(panelName === 'preview' && !previewFrame.dataset.loadedOnce){
+  const previewFrame = document.getElementById('previewFrame');
+  if(panelName === 'preview' && previewFrame && !previewFrame.dataset.loadedOnce){
     reloadPreview();
   }
   window.scrollTo({top:0, behavior:'smooth'});
@@ -936,34 +940,145 @@ document.querySelectorAll('.dropdown-panel-link').forEach(btn=>{
   });
 });
 
-/* ---- Live Site Preview panel: working embedded storefront ---- */
-const previewFrame = document.getElementById('previewFrame');
-const previewLoading = document.getElementById('previewLoading');
-const previewFrameWrap = document.getElementById('previewFrameWrap');
+/* ================================================================
+   AJAX FORM HANDLING — every add / edit / delete inside .content
+   submits via fetch() and swaps the updated markup in place, so
+   the page never does a full browser reload.
+   ================================================================ */
 
-function reloadPreview(){
-  previewLoading.classList.remove('hidden');
-  const base = "{% url 'index' %}";
-  previewFrame.src = base + (base.includes('?') ? '&' : '?') + '_preview=' + Date.now();
+function showLoadingOnForm(form){
+  const btn = form.querySelector('button[type="submit"]');
+  if(btn){
+    btn.dataset.originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-dot" style="width:12px;height:12px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Saving…';
+  }
+  return btn;
 }
-previewFrame.addEventListener('load', ()=>{
-  previewFrame.dataset.loadedOnce = "1";
-  previewLoading.classList.add('hidden');
-});
-document.getElementById('btnRefreshPreview').addEventListener('click', reloadPreview);
+function restoreForm(btn){
+  if(btn){
+    btn.disabled = false;
+    if(btn.dataset.originalText) btn.innerHTML = btn.dataset.originalText;
+  }
+}
 
-document.getElementById('btnDesktop').addEventListener('click', function(){
-  previewFrameWrap.classList.remove('mobile-size');
-  this.classList.add('active');
-  document.getElementById('btnMobile').classList.remove('active');
-});
-document.getElementById('btnMobile').addEventListener('click', function(){
-  previewFrameWrap.classList.add('mobile-size');
-  this.classList.add('active');
-  document.getElementById('btnDesktop').classList.remove('active');
-});
+function submitAjaxForm(form){
+  const btn = showLoadingOnForm(form);
+  const wasInModal = !!form.closest('#editProductModal');
+  const formData = new FormData(form);
 
-/* ---- NEW: dynamic Size + Price row builder ---- */
+  fetch(form.action, {
+    method: 'POST',
+    body: formData,
+    headers: {'X-Requested-With': 'XMLHttpRequest'},
+    credentials: 'same-origin'
+  })
+  .then(res => res.text())
+  .then(html => {
+    updateContentFromHTML(html);
+    if(wasInModal){
+      const modalEl = document.getElementById('editProductModal');
+      const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modalInstance.hide();
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Something went wrong saving your changes. Please check your connection and try again.');
+  })
+  .finally(()=>{
+    restoreForm(btn);
+  });
+}
+
+function updateContentFromHTML(html){
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  // Remember which panel is currently open so we stay on it after the swap
+  const activePanelEl = document.querySelector('.panel.active');
+  const activePanelId = activePanelEl ? activePanelEl.id : 'panel-overview';
+
+  const newContent = doc.querySelector('.content');
+  const oldContent = document.querySelector('.content');
+  if(newContent && oldContent){
+    oldContent.innerHTML = newContent.innerHTML;
+  }
+
+  // Keep the same panel visible (fresh server render defaults to "overview" only)
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panelToShow = document.getElementById(activePanelId) || document.getElementById('panel-overview');
+  panelToShow.classList.add('active');
+
+  const panelName = panelToShow.id.replace('panel-','');
+  document.querySelectorAll('.nav-link[data-panel]').forEach(l=>l.classList.remove('active'));
+  document.querySelectorAll('.nav-link[data-panel="'+panelName+'"]').forEach(l=>l.classList.add('active'));
+
+  // Re-bind everything inside the freshly-swapped .content
+  initDynamicHandlers();
+  autoDismissAlerts();
+}
+
+function autoDismissAlerts(){
+  document.querySelectorAll('.content .alert').forEach(al=>{
+    setTimeout(()=>{
+      al.style.transition = 'opacity .4s ease';
+      al.style.opacity = '0';
+      setTimeout(()=>al.remove(), 400);
+    }, 3500);
+  });
+}
+
+/* ================================================================
+   Everything below lives INSIDE .content (or, for the edit modal,
+   persists across swaps) and must be (re)bound every time .content
+   is replaced. initDynamicHandlers() is safe to call repeatedly —
+   it uses a data-bound flag so nothing gets double-attached.
+   ================================================================ */
+
+function bindAjaxForms(){
+  document.querySelectorAll('form.ajax-form').forEach(form=>{
+    if(form.dataset.bound) return;
+    form.dataset.bound = "1";
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const confirmMsg = form.dataset.confirm;
+      if(confirmMsg && !confirm(confirmMsg)) return;
+      submitAjaxForm(form);
+    });
+  });
+}
+
+function bindEditProductButtons(){
+  document.querySelectorAll('.edit-prod-btn').forEach(btn=>{
+    if(btn.dataset.bound) return;
+    btn.dataset.bound = "1";
+    btn.addEventListener('click', ()=>{
+      document.getElementById('editProductForm').action = btn.dataset.action;
+      document.getElementById('ed_name').value = btn.dataset.name;
+      document.getElementById('ed_category').value = btn.dataset.category;
+      document.getElementById('ed_badge').value = btn.dataset.badge;
+      document.getElementById('ed_mrp').value = btn.dataset.mrp;
+      document.getElementById('ed_imgurl').value = btn.dataset.imgurl;
+
+      const sizeRowsEdit = document.getElementById('sizeRowsEdit');
+      sizeRowsEdit.innerHTML = "";
+      let sizePrices = {};
+      try { sizePrices = JSON.parse(btn.dataset.sizeprices || "{}"); } catch (e) {}
+      const entries = Object.entries(sizePrices);
+      if (entries.length === 0) {
+        makeSizeRow(sizeRowsEdit);
+      } else {
+        entries.forEach(([size, price]) => makeSizeRow(sizeRowsEdit, size, price));
+      }
+
+      const modalEl = document.getElementById('editProductModal');
+      const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modalInstance.show();
+    });
+  });
+}
+
 function makeSizeRow(container, size = "", price = "") {
   const row = document.createElement("div");
   row.className = "d-flex gap-2 mb-2 size-price-row";
@@ -977,42 +1092,79 @@ function makeSizeRow(container, size = "", price = "") {
   container.appendChild(row);
 }
 
-/* Add Product form: start with one empty row, allow adding more */
-const sizeRowsAdd = document.getElementById("sizeRowsAdd");
-document.getElementById("addSizeRowBtn").addEventListener("click", () => makeSizeRow(sizeRowsAdd));
-makeSizeRow(sizeRowsAdd);
+function bindSizeRowButtons(){
+  const addBtn = document.getElementById('addSizeRowBtn');
+  const sizeRowsAdd = document.getElementById('sizeRowsAdd');
+  if(addBtn && sizeRowsAdd && !addBtn.dataset.bound){
+    addBtn.dataset.bound = "1";
+    addBtn.addEventListener('click', ()=>makeSizeRow(sizeRowsAdd));
+  }
+  if(sizeRowsAdd && sizeRowsAdd.children.length === 0){
+    makeSizeRow(sizeRowsAdd);
+  }
 
-/* Edit Product modal: add-row button */
-const sizeRowsEdit = document.getElementById("sizeRowsEdit");
-document.getElementById("addSizeRowEditBtn").addEventListener("click", () => makeSizeRow(sizeRowsEdit));
+  const addEditBtn = document.getElementById('addSizeRowEditBtn');
+  if(addEditBtn && !addEditBtn.dataset.bound){
+    addEditBtn.dataset.bound = "1";
+    addEditBtn.addEventListener('click', ()=>makeSizeRow(document.getElementById('sizeRowsEdit')));
+  }
+}
 
-/* ---- Edit product modal: fill fields from the row's data-* attrs, set form action ---- */
-const editModalEl = document.getElementById('editProductModal');
-const editModal = bootstrap.Modal.getOrCreateInstance(editModalEl);
+function bindPreviewControls(){
+  const previewFrame = document.getElementById('previewFrame');
+  const previewLoading = document.getElementById('previewLoading');
+  const previewFrameWrap = document.getElementById('previewFrameWrap');
+  const btnRefresh = document.getElementById('btnRefreshPreview');
+  const btnDesktop = document.getElementById('btnDesktop');
+  const btnMobile = document.getElementById('btnMobile');
 
-document.querySelectorAll('.edit-prod-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.getElementById('editProductForm').action = btn.dataset.action;
-    document.getElementById('ed_name').value = btn.dataset.name;
-    document.getElementById('ed_category').value = btn.dataset.category;
-    document.getElementById('ed_badge').value = btn.dataset.badge;
-    document.getElementById('ed_mrp').value = btn.dataset.mrp;
-    document.getElementById('ed_imgurl').value = btn.dataset.imgurl;
+  if(previewFrame && !previewFrame.dataset.bound){
+    previewFrame.dataset.bound = "1";
+    previewFrame.addEventListener('load', ()=>{
+      previewFrame.dataset.loadedOnce = "1";
+      if(previewLoading) previewLoading.classList.add('hidden');
+    });
+  }
+  if(btnRefresh && !btnRefresh.dataset.bound){
+    btnRefresh.dataset.bound = "1";
+    btnRefresh.addEventListener('click', reloadPreview);
+  }
+  if(btnDesktop && !btnDesktop.dataset.bound){
+    btnDesktop.dataset.bound = "1";
+    btnDesktop.addEventListener('click', function(){
+      previewFrameWrap.classList.remove('mobile-size');
+      this.classList.add('active');
+      document.getElementById('btnMobile').classList.remove('active');
+    });
+  }
+  if(btnMobile && !btnMobile.dataset.bound){
+    btnMobile.dataset.bound = "1";
+    btnMobile.addEventListener('click', function(){
+      previewFrameWrap.classList.add('mobile-size');
+      this.classList.add('active');
+      document.getElementById('btnDesktop').classList.remove('active');
+    });
+  }
+}
 
-    // Rebuild the size/price rows from this product's saved data
-    sizeRowsEdit.innerHTML = "";
-    let sizePrices = {};
-    try { sizePrices = JSON.parse(btn.dataset.sizeprices || "{}"); } catch (e) {}
-    const entries = Object.entries(sizePrices);
-    if (entries.length === 0) {
-      makeSizeRow(sizeRowsEdit);
-    } else {
-      entries.forEach(([size, price]) => makeSizeRow(sizeRowsEdit, size, price));
-    }
+function reloadPreview(){
+  const previewFrame = document.getElementById('previewFrame');
+  const previewLoading = document.getElementById('previewLoading');
+  if(!previewFrame) return;
+  if(previewLoading) previewLoading.classList.remove('hidden');
+  const base = "{% url 'index' %}";
+  previewFrame.src = base + (base.includes('?') ? '&' : '?') + '_preview=' + Date.now();
+}
 
-    editModal.show();
-  });
-});
+function initDynamicHandlers(){
+  bindAjaxForms();
+  bindEditProductButtons();
+  bindSizeRowButtons();
+  bindPreviewControls();
+}
+
+/* Initial bind on first page load */
+initDynamicHandlers();
 
 /* Safety net: clear any stuck modal backdrop on load */
 window.addEventListener('DOMContentLoaded', ()=>{
