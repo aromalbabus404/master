@@ -63,13 +63,36 @@ class HeroSection(models.Model):
         self.pk = 1
         super().save(*args, **kwargs)
 
+        update_fields = []
+
         if self.video_file:
-            self.video_url = self.video_file.build_url(resource_type="video")
+            # Force delivery as .mp4 regardless of the source format the
+            # admin uploaded (iPhones commonly upload .mov, some browsers/
+            # cameras send .mkv/.avi/.3gp). Without forcing the format,
+            # Cloudinary keeps the ORIGINAL container in the delivery URL —
+            # meanwhile the storefront template hard-codes
+            # <source type="video/mp4">. That mismatch is exactly why an
+            # uploaded video can "successfully upload" but never actually
+            # play: the browser is told it's MP4 while the URL serves a
+            # .mov (or other) file.
+            new_video_url = self.video_file.build_url(
+                resource_type="video",
+                format="mp4",
+            )
+            if new_video_url != self.video_url:
+                self.video_url = new_video_url
+                update_fields.append("video_url")
 
         if self.poster_image_file:
-            self.poster_image = self.poster_image_file.build_url()
+            new_poster_url = self.poster_image_file.build_url()
+            if new_poster_url != self.poster_image:
+                self.poster_image = new_poster_url
+                update_fields.append("poster_image")
 
-        super().save(update_fields=["video_url", "poster_image"])
+        # Only issue a second UPDATE if something actually changed —
+        # avoids an unnecessary extra query on every plain text-field save.
+        if update_fields:
+            super().save(update_fields=update_fields)
 
     def delete(self, *args, **kwargs):
         pass

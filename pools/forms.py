@@ -15,7 +15,7 @@ IMAGE_TYPES = [
 VIDEO_TYPES = [
     "video/mp4",
     "video/webm",
-    "video/quicktime",
+    "video/quicktime",  # .mov — very common from iPhones
     "video/x-msvideo",
     "video/mpeg",
     "video/3gpp",
@@ -171,11 +171,17 @@ class HeroForm(forms.ModelForm):
         if not hasattr(video, "size"):
             return video
 
-        max_size = 30 * 1024 * 1024  # 30 MB
+        # Phone-recorded background videos routinely land in the 40-150MB
+        # range even at short lengths, so 30MB was rejecting completely
+        # normal uploads with little/no visible feedback. Bumped to a more
+        # realistic 100MB (matches Cloudinary's free-plan single-file cap).
+        max_size = 100 * 1024 * 1024  # 100 MB
 
         if video.size > max_size:
             raise forms.ValidationError(
-                "Video must be smaller than 30 MB."
+                f"Video must be smaller than 100 MB (yours is "
+                f"{video.size / (1024 * 1024):.1f} MB). Try trimming the "
+                f"clip or compressing it before uploading."
             )
 
         if hasattr(video, "content_type"):
@@ -183,7 +189,7 @@ class HeroForm(forms.ModelForm):
 
             if ct not in VIDEO_TYPES and not ct.startswith("video/"):
                 raise forms.ValidationError(
-                    "Please upload a valid video."
+                    "Please upload a valid video (MP4, MOV, WEBM, AVI, MKV)."
                 )
 
         return video

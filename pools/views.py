@@ -173,34 +173,17 @@ def hero_save(request):
     )
 
     if form.is_valid():
-        hero = form.save(commit=False)
-
-        # Save uploaded video
-        if request.FILES.get("video_file"):
-            hero.video_file = request.FILES["video_file"]
-            hero.video_url = ""
-
-        # Save uploaded poster image
-        if request.FILES.get("poster_image_file"):
-            hero.poster_image_file = request.FILES["poster_image_file"]
-            hero.poster_image = ""
-
-        hero.save()
-
-        # Update URL fields after Cloudinary upload
-        if hero.video_file:
-            hero.video_url = hero.video_file.build_url(resource_type="video")
-
-        if hero.poster_image_file:
-            hero.poster_image = hero.poster_image_file.build_url()
-
-        hero.save(update_fields=[
-            "video_url",
-            "poster_image",
-        ])
-
+        # form.save() already assigns every bound field (including
+        # video_file / poster_image_file from request.FILES) onto the
+        # instance and calls hero.save(), which triggers the model's own
+        # save() override — that override already uploads the file to
+        # Cloudinary and rebuilds video_url / poster_image from the result.
+        # There is no need to repeat any of that logic here: doing it twice
+        # was harmless but confusing, and any future change to the URL/
+        # format logic (e.g. the mp4 fix) then has to be kept in sync in
+        # two places instead of one.
+        form.save()
         messages.success(request, "Hero section updated successfully.")
-
     else:
         for field, errors in form.errors.items():
             for error in errors:
