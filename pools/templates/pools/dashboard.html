@@ -213,7 +213,14 @@
   .badge-pending{background:var(--gold-tint);color:#8A6412;}
   .badge-approved{background:var(--aqua-tint);color:var(--aqua-deep);}
   .badge-rejected{background:#FBEAEA;color:var(--danger);}
-  .badge-color-chip{background:var(--aqua-tint);color:var(--aqua-deep);margin:2px;display:inline-block;}
+  .badge-color-chip{
+    background:var(--aqua-tint);color:var(--aqua-deep);margin:2px;display:inline-flex;
+    align-items:center;gap:6px;
+  }
+  .badge-color-chip .chip-dot{
+    width:10px;height:10px;border-radius:50%;flex:0 0 10px;
+    border:1px solid rgba(0,0,0,.15);display:inline-block;
+  }
 
   .thumb{width:52px;height:52px;object-fit:cover;border-radius:12px;}
   .gallery-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;transition:transform .25s ease;}
@@ -383,6 +390,23 @@
   }
   .color-row input{max-width:220px;}
 
+  /* NEW: rounded live-preview swatch shown next to each color input */
+  .color-swatch{
+    width:34px;height:34px;border-radius:50%;flex:0 0 34px;
+    border:2px solid var(--border);background:#fff;
+    background-image:
+      linear-gradient(45deg, #eee 25%, transparent 25%),
+      linear-gradient(-45deg, #eee 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #eee 75%),
+      linear-gradient(-45deg, transparent 75%, #eee 75%);
+    background-size:10px 10px;
+    background-position:0 0, 0 5px, 5px -5px, -5px 0px;
+    transition:background-color .15s ease, border-color .15s ease;
+  }
+  .color-swatch.has-color{
+    background-image:none;
+  }
+
   /* ===== NEW: variant type toggle ===== */
   .variant-type-toggle{
     display:flex;gap:8px;background:var(--bg);border:1px solid var(--border);
@@ -427,6 +451,7 @@
     .form-actions .btn{flex:1 1 auto;}
     .size-price-row input{max-width:110px;}
     .color-row input{max-width:160px;}
+    .color-swatch{width:28px;height:28px;flex-basis:28px;}
   }
 </style>
 </head>
@@ -689,7 +714,7 @@
                 <label class="form-label fw-bold">Colors (optional)</label>
                 <div id="colorRowsAdd"></div>
                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addColorRowBtn">+ Add Color</button>
-                <div class="form-text">Add as many colors as this product comes in — e.g. Blue, Red, Green. Entirely optional: leave all rows empty (or remove them) if this product has no color options.</div>
+                <div class="form-text">Add as many colors as this product comes in — e.g. Blue, Red, Green, or a hex code like #1FA2B8. Entirely optional: leave all rows empty (or remove them) if this product has no color options.</div>
               </div>
 
               <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
@@ -717,7 +742,11 @@
                   <td>{{ p.sizes }}</td>
                   <td>
                     {% if p.color_list %}
-                      {% for c in p.color_list %}<span class="badge badge-color-chip">{{ c }}</span>{% endfor %}
+                      {% for c in p.color_list %}
+                        <span class="badge badge-color-chip">
+                          <span class="chip-dot" style="background-color:{{ c }};"></span>{{ c }}
+                        </span>
+                      {% endfor %}
                     {% else %}
                       —
                     {% endif %}
@@ -1266,15 +1295,45 @@ function bindSizeRowButtons(){
   }
 }
 
-/* ---- Colors: dynamic, optional, unlimited rows ---- */
+/* ---- Colors: dynamic, optional, unlimited rows, each with a
+   live rounded swatch preview that updates as you type ---- */
+
+/* Uses the browser's own CSS color parser to validate whatever the
+   admin types (color name, hex, rgb(), hsl(), etc.) — if the browser
+   can render it as a background-color, we treat it as valid. */
+function isValidCssColor(value){
+  if(!value) return false;
+  const s = new Option().style;
+  s.color = "";
+  s.color = value;
+  return s.color !== "";
+}
+
+function updateColorSwatch(swatchEl, value){
+  const v = (value || "").trim();
+  if(isValidCssColor(v)){
+    swatchEl.style.backgroundColor = v;
+    swatchEl.classList.add('has-color');
+  } else {
+    swatchEl.style.backgroundColor = "";
+    swatchEl.classList.remove('has-color');
+  }
+}
 
 function makeColorRow(container, color = ""){
   const row = document.createElement("div");
   row.className = "d-flex gap-2 mb-2 color-row";
   row.innerHTML = `
-    <input type="text" class="form-control color-input" name="color[]" placeholder="e.g. Blue" value="${color}">
+    <span class="color-swatch" aria-hidden="true"></span>
+    <input type="text" class="form-control color-input" name="color[]" placeholder="e.g. Blue or #1FA2B8" value="${color}">
     <button type="button" class="btn btn-outline-danger remove-color-row">✕</button>
   `;
+  const swatchEl = row.querySelector('.color-swatch');
+  const inputEl = row.querySelector('.color-input');
+
+  updateColorSwatch(swatchEl, color);
+  inputEl.addEventListener('input', ()=> updateColorSwatch(swatchEl, inputEl.value));
+
   row.querySelector(".remove-color-row").addEventListener("click", () => row.remove());
   container.appendChild(row);
 }

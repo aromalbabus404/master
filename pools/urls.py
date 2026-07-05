@@ -7,8 +7,10 @@ urlpatterns = [
     path("shop/", views.shop, name="shop"),
     path("api/orders/", views.submit_order, name="submit_order"),
     path("api/reviews/", views.submit_review, name="submit_review"),
-    
-    path("product/<int:pk>/edit/",views.product_edit,name="product_edit"),
+
+    # Legacy standalone product edit endpoint (kept for backward compatibility,
+    # renamed so it no longer collides with the dashboard's "product_edit" name)
+    path("product/<int:pk>/edit/", views.product_edit, name="product_edit_legacy"),
 
     # Admin dashboard
     path("dashboard/", views.dashboard, name="dashboard"),

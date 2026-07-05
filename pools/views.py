@@ -129,10 +129,9 @@ def dashboard(request):
     return render(request, "pools/dashboard.html", context)
 
 
-
 def admin_login(request):
     # Already logged in
-    if request.user.is_authenticated:   
+    if request.user.is_authenticated:
         return redirect("dashboard")
 
     if request.method == "POST":

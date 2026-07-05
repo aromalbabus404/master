@@ -129,6 +129,39 @@ VARIANT_TYPE_CHOICES = [
 ]
 
 
+def _safe_json_list(value):
+    """
+    Defensively normalizes any stored value into a clean Python list of
+    non-empty strings — no matter how it actually got into the DB:
+      - a real list (the normal case, e.g. ["Blue", "Red"]) -> cleaned as-is
+      - a JSON string like '["Blue", "Red"]'                -> parsed
+      - a plain comma string like "Blue, Red"                -> split
+      - None / "" / [] / garbage                             -> []
+    This protects color_list/colors_json from ever throwing or silently
+    returning nothing, even if a row was edited manually via /admin/,
+    a fixture, or an older version of this model.
+    """
+    if not value:
+        return []
+
+    if isinstance(value, list):
+        return [str(v).strip() for v in value if str(v).strip()]
+
+    if isinstance(value, str):
+        s = value.strip()
+        if not s:
+            return []
+        try:
+            parsed = json.loads(s)
+            if isinstance(parsed, list):
+                return [str(v).strip() for v in parsed if str(v).strip()]
+        except (ValueError, TypeError):
+            pass
+        return [c.strip() for c in s.split(",") if c.strip()]
+
+    return []
+
+
 class Product(models.Model):
     name = models.CharField(max_length=200)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="pool")
@@ -137,7 +170,7 @@ class Product(models.Model):
     mrp = models.PositiveIntegerField(blank=True, null=True, verbose_name="MRP (strikethrough price)")
     sizes = models.CharField(max_length=300, help_text="Comma separated, e.g. 20x10 ft, 25x12 ft")
 
-    # NEW: per-size pricing, e.g. {"6": 300, "8": 500} — size (inches) -> price (₹).
+    # Per-size pricing, e.g. {"6": 300, "8": 500} — size (inches) -> price (₹).
     # `price` above is kept in sync automatically (set to the lowest size price)
     # so anything still reading `product.price` continues to work.
     size_prices = models.JSONField(default=dict, blank=True)
@@ -149,7 +182,7 @@ class Product(models.Model):
         max_length=10, choices=VARIANT_TYPE_CHOICES, default="inches"
     )
 
-    # NEW: optional colors this product is available in, e.g. ["Blue", "Red"].
+    # Optional colors this product is available in, e.g. ["Blue", "Red"].
     # Completely optional — defaults to an empty list, meaning "no color
     # options", and the storefront simply hides the color swatches row
     # for any product with no colors.
@@ -193,14 +226,16 @@ class Product(models.Model):
     def color_list(self):
         """Plain Python list of color names, e.g. ["Blue", "Red"].
         Empty list if this product has no colors — always safe to
-        iterate over in a template with {% if product.color_list %}."""
-        return self.colors or []
+        iterate over in a template with {% if product.color_list %}.
+        Defensively parses the stored value so this never breaks even
+        if `colors` ever ends up as something other than a clean list."""
+        return _safe_json_list(self.colors)
 
     @property
     def colors_json(self):
         """JSON string version, safe to drop into a data-* attribute in
         templates for the admin dashboard's Edit modal."""
-        return json.dumps(self.colors or [])
+        return json.dumps(self.color_list)
 
     def __str__(self):
         return self.name
