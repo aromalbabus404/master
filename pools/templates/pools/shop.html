@@ -137,6 +137,24 @@ nav a:hover,nav a.active{opacity:1;color:var(--seafoam);}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:15px 28px;border-radius:999px;font-weight:700;font-size:.88rem;z-index:500;opacity:0;pointer-events:none;transition:.3s;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+/* ============ CUSTOMER DETAILS MODAL ============ */
+.details-overlay{position:fixed;inset:0;background:rgba(11,25,23,.6);z-index:390;opacity:0;pointer-events:none;transition:.3s;}
+.details-overlay.show{opacity:1;pointer-events:auto;}
+.details-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.95);width:460px;max-width:92vw;max-height:88vh;overflow-y:auto;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);z-index:400;opacity:0;pointer-events:none;transition:.25s ease;}
+.details-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+.details-head{padding:22px 26px;background:var(--ink);color:var(--white);display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius) var(--radius) 0 0;position:sticky;top:0;z-index:1;}
+.details-head h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;}
+.details-head p{color:rgba(255,255,255,.7);font-size:.78rem;margin-top:3px;}
+.details-close{background:none;border:none;color:var(--white);font-size:1.3rem;cursor:pointer;flex-shrink:0;}
+#detailsForm{padding:24px 26px;}
+.form-row{margin-bottom:14px;display:flex;flex-direction:column;gap:6px;}
+.form-row-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+.form-row input, .form-row textarea{padding:12px 14px;border:1.5px solid var(--line);border-radius:9px;font-family:'Manrope',sans-serif;font-size:.9rem;background:var(--sand);color:var(--ink);resize:vertical;width:100%;}
+.form-row input:focus, .form-row textarea:focus{outline:none;border-color:var(--brass);}
+.details-submit{width:100%;padding:14px;background:#25D366;color:#fff;border:none;border-radius:999px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;margin-top:6px;}
+.details-submit:hover{background:#1fb457;}
+
 /* ============ FOOTER ============ */
 footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.3fr;gap:38px;margin-bottom:48px;}
@@ -176,6 +194,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .btn-row{flex-direction:column;gap:6px;}
     .add-cart-btn,.buy-now-btn{padding:9px;font-size:.72rem;}
     .cart-drawer{max-width:100%;right:-100%;}
+    .form-row-split{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -341,16 +360,61 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 </div>
 
+<!-- ============ CUSTOMER DETAILS MODAL ============ -->
+<div class="details-overlay" id="detailsOverlay"></div>
+<div class="details-modal" id="detailsModal">
+    <div class="details-head">
+        <div>
+            <h3>Delivery Details</h3>
+            <p>We need this to send your order on WhatsApp</p>
+        </div>
+        <button class="details-close" id="detailsClose" type="button">✕</button>
+    </div>
+    <form id="detailsForm">
+        <div class="form-row">
+            <label>Full Name</label>
+            <input type="text" id="custName" required>
+        </div>
+        <div class="form-row">
+            <label>Phone Number</label>
+            <input type="tel" id="custPhone" required pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number">
+        </div>
+        <div class="form-row form-row-split">
+            <div>
+                <label>State</label>
+                <input type="text" id="custState" required>
+            </div>
+            <div>
+                <label>District</label>
+                <input type="text" id="custDistrict" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <label>Pincode</label>
+            <input type="text" id="custPincode" required pattern="[0-9]{6}" maxlength="6" placeholder="6-digit pincode">
+        </div>
+        <div class="form-row">
+            <label>Full Address</label>
+            <textarea id="custAddress" rows="3" required placeholder="House name, street, landmark..."></textarea>
+        </div>
+        <button type="submit" class="details-submit">Continue to WhatsApp</button>
+    </form>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const WHATSAPP_NUMBER = "917356462150"; // 91 = India country code + 7356462150
 const CART_KEY = "masterpools_cart";
+const CUSTOMER_KEY = "masterpools_customer";
 
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
 function loadCart(){ try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }catch(e){ return []; } }
 function saveCart(cart){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+
+function loadCustomer(){ try{ return JSON.parse(localStorage.getItem(CUSTOMER_KEY)) || null; }catch(e){ return null; } }
+function saveCustomer(data){ localStorage.setItem(CUSTOMER_KEY, JSON.stringify(data)); }
 
 function updateCartCount(){
     const cart = loadCart();
@@ -369,6 +433,73 @@ function showToast(msg){
 document.getElementById('menuToggle').addEventListener('click', ()=>document.getElementById('mobileNav').classList.toggle('open'));
 document.getElementById('mobileNavClose').addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open'));
 document.querySelectorAll('.mobile-nav a').forEach(a=>a.addEventListener('click', ()=>document.getElementById('mobileNav').classList.remove('open')));
+
+/* ---------- customer details modal ---------- */
+let pendingAction = null; // { type:'buyNow'|'checkout', product, qty, btn }
+
+const detailsModal = document.getElementById('detailsModal');
+const detailsOverlay = document.getElementById('detailsOverlay');
+const detailsForm = document.getElementById('detailsForm');
+
+function openDetailsModal(){
+    const saved = loadCustomer();
+    if(saved){
+        document.getElementById('custName').value = saved.name || '';
+        document.getElementById('custPhone').value = saved.phone || '';
+        document.getElementById('custState').value = saved.state || '';
+        document.getElementById('custDistrict').value = saved.district || '';
+        document.getElementById('custPincode').value = saved.pincode || '';
+        document.getElementById('custAddress').value = saved.address || '';
+    }
+    detailsModal.classList.add('open');
+    detailsOverlay.classList.add('show');
+}
+
+function closeDetailsModal(){
+    detailsModal.classList.remove('open');
+    detailsOverlay.classList.remove('show');
+    pendingAction = null;
+}
+
+document.getElementById('detailsClose').addEventListener('click', closeDetailsModal);
+detailsOverlay.addEventListener('click', closeDetailsModal);
+
+function formatCustomer(c){
+    return "Customer Details:\n" +
+        `Name: ${c.name}\n` +
+        `Phone: ${c.phone}\n` +
+        `Address: ${c.address}\n` +
+        `District: ${c.district}\n` +
+        `State: ${c.state}\n` +
+        `Pincode: ${c.pincode}`;
+}
+
+detailsForm.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const customer = {
+        name: document.getElementById('custName').value.trim(),
+        phone: document.getElementById('custPhone').value.trim(),
+        state: document.getElementById('custState').value.trim(),
+        district: document.getElementById('custDistrict').value.trim(),
+        pincode: document.getElementById('custPincode').value.trim(),
+        address: document.getElementById('custAddress').value.trim()
+    };
+    saveCustomer(customer);
+
+    detailsModal.classList.remove('open');
+    detailsOverlay.classList.remove('show');
+
+    const action = pendingAction;
+    pendingAction = null;
+    if(!action) return;
+
+    if(action.type === 'buyNow'){
+        buyNow(action.product, action.qty, customer);
+    } else if(action.type === 'checkout'){
+        sendCheckout(customer);
+    }
+});
 
 /* ---------- product card qty / size select / color swatch / add to cart / buy now ---------- */
 document.querySelectorAll('#productGrid .product-card').forEach(card=>{
@@ -424,14 +555,17 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
         };
     }
 
+    // Add to Cart adds the item straight to the cart — no details popup needed here.
     card.querySelector('.add-cart-btn').addEventListener('click', function(){
         addToCart(buildProduct(), qty);
         this.textContent = "Added ✓"; this.classList.add('added');
         setTimeout(()=>{ this.textContent = "Add to Cart"; this.classList.remove('added'); }, 1300);
     });
 
-    card.querySelector('.buy-now-btn').addEventListener('click', ()=>{
-        buyNow(buildProduct(), qty);
+    // Buy Now also opens the details modal first; the WhatsApp message is sent once the form is submitted.
+    card.querySelector('.buy-now-btn').addEventListener('click', function(){
+        pendingAction = { type: 'buyNow', product: buildProduct(), qty, btn: this };
+        openDetailsModal();
     });
 });
 
@@ -510,7 +644,7 @@ function renderCart(){
     totalEl.textContent = fmt(total);
 }
 
-function buyNow(product, qty){
+function buyNow(product, qty, customer){
     qty = parseInt(qty) || 1;
     const total = (product.price * qty).toFixed(2);
     const message =
@@ -518,11 +652,12 @@ function buyNow(product, qty){
         `${itemLabel(product)}\n` +
         `Quantity: ${qty}\n` +
         `Price: ${fmt(product.price)} each\n` +
-        `Total: ${fmt(total)}`;
+        `Total: ${fmt(total)}\n\n` +
+        formatCustomer(customer);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
-document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+function sendCheckout(customer){
     const cart = loadCart();
     if(cart.length === 0) return;
     let total = 0;
@@ -531,8 +666,17 @@ document.getElementById('checkoutBtn').addEventListener('click', ()=>{
         total += lineTotal;
         return `${itemLabel(item)}  x${item.qty}  -  ${fmt(lineTotal)}`;
     });
-    const message = "Hello, I want to place an order:\n\n" + lines.join("\n") + `\n\nTotal: ${fmt(total)}`;
+    const message = "Hello, I want to place an order:\n\n" + lines.join("\n") + `\n\nTotal: ${fmt(total)}\n\n` + formatCustomer(customer);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+// Checkout button opens the details modal first; the message is sent once the form is submitted.
+document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+    const cart = loadCart();
+    if(cart.length === 0) return;
+    pendingAction = { type: 'checkout' };
+    closeCart();
+    openDetailsModal();
 });
 
 /* ---------- drawer open/close ---------- */
