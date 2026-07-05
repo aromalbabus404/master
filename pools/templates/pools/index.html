@@ -80,7 +80,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
 }
 /* Slowed down: was 20s, now 45s for a calmer, slower slide */
-.carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 45s linear infinite;}
+.carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 150s linear infinite;}
 .carousel-wrap:hover .carousel-track{animation-play-state:paused;}
 .plant-card{
   display:block;
@@ -129,9 +129,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 }
 @media(max-width:600px){
   .hero{padding:140px 0 50px;}
-  .carousel-wrap {
-        margin-top: 200px;
-  .carousel-wrap{max-width:100%;}
+  .carousel-wrap{margin-top:40px;max-width:100%;}
   .plant-card{width:200px;}
   .plant-card img{height:130px;}
 }
@@ -264,6 +262,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:24px;display:flex;justify-content:space-between;font-size:.82rem;flex-wrap:wrap;gap:10px;}
 
 .float-wa{position:fixed;bottom:26px;right:26px;width:60px;height:60px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.7rem;box-shadow:0 12px 28px rgba(0,0,0,.28);z-index:250;}
+.float-wa svg{width:32px;height:32px;flex-shrink:0;}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:15px 28px;border-radius:999px;font-weight:700;font-size:.88rem;z-index:500;opacity:0;pointer-events:none;transition:.3s;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
@@ -280,7 +279,13 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 }
 @media(max-width:600px){
     .logo-img{height:36px;}
-    .product-grid{grid-template-columns:1fr;}
+    .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+    .product-body{padding:14px 14px 16px;gap:8px;}
+    .product-body h3{font-size:.92rem;}
+    .product-body .price{font-size:.98rem;}
+    .opt-row label{font-size:.64rem;}
+    select.opt-select{padding:6px 8px;font-size:.76rem;}
+    .add-cart-btn{padding:10px;font-size:.82rem;}
     .hero-stats{flex-wrap:wrap;}
     .hero-stats div{flex:50%;border-right:none;border-bottom:1px solid rgba(255,255,255,.2);}
     .hero-text h1{font-size:2.15rem;}
@@ -572,7 +577,9 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 </footer>
 
-<a class="float-wa" id="floatWA" href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hello%20I%20would%20like%20to%20know%20more%20about%20your%20services." target="_blank" title="Chat on WhatsApp">📱</a>
+<a class="float-wa" id="floatWA" href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hello%20I%20would%20like%20to%20know%20more%20about%20your%20services." target="_blank" title="Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.42.71 4.673 1.933 6.568L4 29l7.617-1.897A11.93 11.93 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.7c-2.11 0-4.08-.62-5.735-1.687l-.411-.257-4.522 1.127 1.208-4.406-.27-.428A9.66 9.66 0 0 1 6.3 15c0-5.35 4.352-9.7 9.701-9.7 5.35 0 9.699 4.35 9.699 9.7 0 5.35-4.35 9.7-9.699 9.7zm5.316-7.268c-.29-.145-1.717-.848-1.983-.945-.266-.097-.46-.145-.653.145-.194.29-.75.945-.92 1.14-.169.194-.338.218-.628.073-.29-.145-1.223-.451-2.33-1.437-.861-.768-1.443-1.716-1.612-2.006-.169-.29-.018-.447.127-.591.13-.13.29-.339.435-.508.145-.169.194-.29.29-.484.097-.194.048-.363-.024-.508-.073-.145-.653-1.575-.896-2.156-.236-.567-.475-.49-.653-.499l-.556-.01c-.194 0-.508.073-.774.363-.266.29-1.014.99-1.014 2.42 0 1.428 1.038 2.808 1.183 3.002.145.194 2.043 3.12 4.951 4.376.692.299 1.232.477 1.653.61.694.221 1.326.19 1.826.115.557-.083 1.717-.702 1.96-1.38.242-.678.242-1.259.169-1.38-.073-.121-.266-.194-.556-.339z"/></svg>
+</a>
 
 <div class="overlay" id="overlay"></div>
 <div class="cart-drawer" id="cartDrawer">
