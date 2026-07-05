@@ -56,7 +56,8 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 
 /* ============ HERO — image background + sliding card carousel ============ */
 .hero{position:relative;padding:170px 0 70px;overflow:hidden;}
-.hero-bg-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);}
+.hero-bg-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
+.hero-bg-poster{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
 .hero-bg-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(11,33,31,.6) 0%, rgba(11,33,31,.5) 45%, rgba(11,33,31,.72) 100%);}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:56px;align-items:center;}
 
@@ -337,7 +338,26 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 
 <section class="hero" id="home">
-    <video class="hero-bg-video" autoplay muted loop playsinline>
+    <!-- Poster image shows instantly and acts as the iOS fallback if the video is ever blocked (e.g. Low Power Mode).
+         Uses hero.poster_url if your model has it; otherwise falls back to nothing extra is needed —
+         the video's own poster="" attribute below covers the same purpose without requiring a new field. -->
+    {% if hero.poster_url %}
+    <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
+    {% else %}
+    <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
+    {% endif %}
+    <video
+        class="hero-bg-video"
+        id="heroVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline="true"
+        preload="auto"
+        disableRemotePlayback
+        x-webkit-airplay="allow"
+        {% if hero.poster_url %}poster="{{ hero.poster_url }}"{% endif %}>
         <source src="{{ hero.video_url }}" type="video/mp4">
     </video>
     <div class="hero-bg-overlay"></div>
@@ -626,6 +646,80 @@ const mobileNav = document.getElementById('mobileNav');
 document.getElementById('menuToggle').addEventListener('click', ()=>mobileNav.classList.toggle('open'));
 document.getElementById('mobileNavClose').addEventListener('click', ()=>mobileNav.classList.remove('open'));
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileNav.classList.remove('open')));
+
+/* ============ HERO VIDEO — iOS/Safari autoplay + resume fix ============
+   iOS Safari will silently pause a background <video> when:
+   - the tab/app goes to the background or the screen locks
+   - Low Power Mode blocks autoplay entirely
+   - the element is reflowed/hidden briefly during scroll
+   The fixes below (a) always attempt play() again on resume events,
+   (b) fall back to a static poster image if playback keeps failing,
+   (c) retry play() on first user touch, since iOS sometimes needs a
+       user gesture even for muted videos in certain power/data-saving states.
+*/
+(function(){
+  const video = document.getElementById('heroVideo');
+  const poster = document.getElementById('heroPoster');
+  if(!video) return;
+
+  let usingFallback = false;
+  function showPosterFallback(){
+    if(usingFallback) return;
+    usingFallback = true;
+    video.style.display = 'none';
+    poster.style.display = 'block';
+  }
+  function hidePosterFallback(){
+    if(!usingFallback) return;
+    usingFallback = false;
+    video.style.display = 'block';
+    poster.style.display = 'none';
+  }
+
+  function attemptPlay(){
+    const playPromise = video.play();
+    if(playPromise !== undefined){
+      playPromise
+        .then(hidePosterFallback)
+        .catch(()=>{
+          // Autoplay blocked (e.g. Low Power Mode) — show the poster instead
+          // of a frozen/paused video, and try again on the next interaction.
+          showPosterFallback();
+        });
+    }
+  }
+
+  // Initial attempt once metadata is ready
+  video.addEventListener('loadedmetadata', attemptPlay);
+  attemptPlay();
+
+  // iOS pauses the video when the page is backgrounded (app switch, lock
+  // screen, tab switch). Resume as soon as the page is visible again.
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState === 'visible') attemptPlay();
+  });
+
+  // bfcache restores (Safari back/forward gesture) can leave the video paused
+  window.addEventListener('pageshow', (e)=>{ attemptPlay(); });
+
+  // Belt-and-braces: if the video ever fires 'pause' unexpectedly while the
+  // tab is active and visible, try to resume it.
+  video.addEventListener('pause', ()=>{
+    if(document.visibilityState === 'visible' && !usingFallback){
+      attemptPlay();
+    }
+  });
+
+  // Some iOS versions only allow (re)play after a user gesture — catch the
+  // very first tap/scroll anywhere on the page and retry once.
+  function firstGestureRetry(){
+    attemptPlay();
+    window.removeEventListener('touchstart', firstGestureRetry);
+    window.removeEventListener('scroll', firstGestureRetry);
+  }
+  window.addEventListener('touchstart', firstGestureRetry, {passive:true});
+  window.addEventListener('scroll', firstGestureRetry, {passive:true});
+})();
 
 /* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
