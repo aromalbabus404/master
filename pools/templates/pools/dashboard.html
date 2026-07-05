@@ -367,13 +367,25 @@
 
   .alert{animation:fadeInUp .3s ease both;}
 
-  /* ===== NEW: size/price dynamic rows ===== */
+  /* ===== size/price dynamic rows ===== */
   .size-price-row{
     background:var(--bg);border:1px solid var(--border);border-radius:12px;
     padding:8px 10px;align-items:center;
   }
   .size-price-row input{max-width:150px;}
-  .size-price-row .size-unit{color:var(--text-muted);font-weight:600;font-size:.85rem;}
+  .size-price-row .size-unit{color:var(--text-muted);font-weight:600;font-size:.85rem;min-width:38px;}
+
+  /* ===== NEW: variant type toggle ===== */
+  .variant-type-toggle{
+    display:flex;gap:8px;background:var(--bg);border:1px solid var(--border);
+    border-radius:999px;padding:4px;width:fit-content;
+  }
+  .variant-type-toggle label{
+    margin:0;padding:7px 16px;border-radius:999px;font-size:.85rem;font-weight:600;
+    color:var(--text-muted);cursor:pointer;transition:background-color .18s ease, color .18s ease;
+  }
+  .variant-type-toggle input{display:none;}
+  .variant-type-toggle input:checked + label{background:var(--navy);color:#fff;}
 
   @media(max-width:900px){
     .sidebar{display:none;}
@@ -641,14 +653,32 @@
               <div class="col-md-6"><label class="form-label fw-bold">Name</label>{{ product_form.name }}</div>
               <div class="col-md-3"><label class="form-label fw-bold">Category</label>{{ product_form.category }}</div>
               <div class="col-md-3"><label class="form-label fw-bold">Badge (optional)</label>{{ product_form.badge }}</div>
-              <div class="col-md-3"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
 
-              <!-- NEW: dynamic Size + Price rows -->
+              <div class="col-md-4"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
+
+              <!-- NEW: optional Color field -->
+              <div class="col-md-4">
+                <label class="form-label fw-bold">Color (optional)</label>
+                <input type="text" class="form-control" name="color" id="colorAdd" placeholder="e.g. Blue">
+              </div>
+
+              <!-- NEW: Variant Type toggle -->
+              <div class="col-md-4">
+                <label class="form-label fw-bold d-block">Variant Type</label>
+                <div class="variant-type-toggle" id="variantTypeAdd">
+                  <input type="radio" name="variant_type" id="vtAddInches" value="inches" checked>
+                  <label for="vtAddInches">Inches</label>
+                  <input type="radio" name="variant_type" id="vtAddSizes" value="sizes">
+                  <label for="vtAddSizes">Sizes</label>
+                </div>
+              </div>
+
+              <!-- Dynamic Size + Price rows (input type follows Variant Type above) -->
               <div class="col-12">
-                <label class="form-label fw-bold">Sizes & Prices (inches → ₹)</label>
+                <label class="form-label fw-bold" id="sizeRowsAddLabel">Sizes & Prices (inches → ₹)</label>
                 <div id="sizeRowsAdd"></div>
                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSizeRowBtn">+ Add Size</button>
-                <div class="form-text">e.g. 6 inch → ₹300, 8 inch → ₹500. Customers pick a size on the storefront and the price updates automatically.</div>
+                <div class="form-text" id="sizeRowsAddHint">e.g. 6 inch → ₹300, 8 inch → ₹500. Customers pick a size on the storefront and the price updates automatically.</div>
               </div>
 
               <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
@@ -665,7 +695,7 @@
           <div class="section-head"><span class="head-icon">📁</span><h5>All Products</h5></div>
           <div class="table-responsive">
             <table class="table align-middle">
-              <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th></th></tr></thead>
+              <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th>Color</th><th></th></tr></thead>
               <tbody>
               {% for p in products %}
                 <tr>
@@ -674,10 +704,13 @@
                   <td class="text-capitalize">{{ p.get_category_display }}</td>
                   <td>₹{{ p.price|floatformat:0 }}{% if p.mrp %} <small class="text-muted text-decoration-line-through">₹{{ p.mrp|floatformat:0 }}</small>{% endif %}</td>
                   <td>{{ p.sizes }}</td>
+                  <td>{{ p.color|default:"—" }}</td>
                   <td>
                     <button class="btn btn-sm btn-outline-primary edit-prod-btn"
                       data-id="{{ p.id }}" data-name="{{ p.name }}" data-category="{{ p.category }}"
                       data-badge="{{ p.badge|default:'' }}" data-mrp="{{ p.mrp|default:'' }}"
+                      data-color="{{ p.color|default:'' }}"
+                      data-varianttype="{{ p.variant_type|default:'inches' }}"
                       data-sizeprices='{{ p.size_prices_json }}'
                       data-imgurl="{{ p.image_url|default:'' }}"
                       data-action="{% url 'product_edit' p.id %}" type="button">Edit</button>
@@ -688,7 +721,7 @@
                   </td>
                 </tr>
               {% empty %}
-                <tr><td colspan="6" class="text-muted text-center py-4">No products yet.</td></tr>
+                <tr><td colspan="7" class="text-muted text-center py-4">No products yet.</td></tr>
               {% endfor %}
               </tbody>
             </table>
@@ -844,12 +877,29 @@
               {% for key, label in categories %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
             </select>
           </div>
-          <div class="col-md-6"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
-          <div class="col-md-6"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
+          <div class="col-md-4"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
+          <div class="col-md-4"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
 
-          <!-- NEW: dynamic Size + Price rows for editing -->
+          <!-- NEW: optional Color field -->
+          <div class="col-md-4">
+            <label class="form-label fw-bold">Color (optional)</label>
+            <input type="text" class="form-control" name="color" id="ed_color" placeholder="e.g. Blue">
+          </div>
+
+          <!-- NEW: Variant Type toggle -->
           <div class="col-12">
-            <label class="form-label fw-bold">Sizes & Prices (inches → ₹)</label>
+            <label class="form-label fw-bold d-block">Variant Type</label>
+            <div class="variant-type-toggle" id="variantTypeEdit">
+              <input type="radio" name="variant_type" id="vtEditInches" value="inches" checked>
+              <label for="vtEditInches">Inches</label>
+              <input type="radio" name="variant_type" id="vtEditSizes" value="sizes">
+              <label for="vtEditSizes">Sizes</label>
+            </div>
+          </div>
+
+          <!-- Dynamic Size + Price rows for editing -->
+          <div class="col-12">
+            <label class="form-label fw-bold" id="sizeRowsEditLabel">Sizes & Prices (inches → ₹)</label>
             <div id="sizeRowsEdit"></div>
             <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSizeRowEditBtn">+ Add Size</button>
           </div>
@@ -1060,6 +1110,13 @@ function bindEditProductButtons(){
       document.getElementById('ed_badge').value = btn.dataset.badge;
       document.getElementById('ed_mrp').value = btn.dataset.mrp;
       document.getElementById('ed_imgurl').value = btn.dataset.imgurl;
+      document.getElementById('ed_color').value = btn.dataset.color || '';
+
+      // Set the variant type radio (defaults to "inches" if not set)
+      const vType = btn.dataset.varianttype === 'sizes' ? 'sizes' : 'inches';
+      const vtRadio = document.querySelector('#variantTypeEdit input[value="'+vType+'"]');
+      if(vtRadio) vtRadio.checked = true;
+      updateSizeRowsLabel('edit', vType);
 
       const sizeRowsEdit = document.getElementById('sizeRowsEdit');
       sizeRowsEdit.innerHTML = "";
@@ -1067,9 +1124,9 @@ function bindEditProductButtons(){
       try { sizePrices = JSON.parse(btn.dataset.sizeprices || "{}"); } catch (e) {}
       const entries = Object.entries(sizePrices);
       if (entries.length === 0) {
-        makeSizeRow(sizeRowsEdit);
+        makeSizeRow(sizeRowsEdit, "", "", vType);
       } else {
-        entries.forEach(([size, price]) => makeSizeRow(sizeRowsEdit, size, price));
+        entries.forEach(([size, price]) => makeSizeRow(sizeRowsEdit, size, price, vType));
       }
 
       const modalEl = document.getElementById('editProductModal');
@@ -1079,12 +1136,19 @@ function bindEditProductButtons(){
   });
 }
 
-function makeSizeRow(container, size = "", price = "") {
+/* type is "inches" (numeric input, "in" unit) or "sizes" (text input, e.g. S/M/L/XL) */
+function makeSizeRow(container, size = "", price = "", type = "inches") {
   const row = document.createElement("div");
   row.className = "d-flex gap-2 mb-2 size-price-row";
+
+  const isInches = type !== 'sizes';
+  const sizeInputHTML = isInches
+    ? `<input type="number" step="0.5" class="form-control size-input" name="size[]" placeholder="Size" value="${size}">`
+    : `<input type="text" class="form-control size-input" name="size[]" placeholder="e.g. S, M, L, XL" value="${size}">`;
+
   row.innerHTML = `
-    <input type="number" step="0.5" class="form-control" name="size[]" placeholder="Size" value="${size}">
-    <span class="size-unit align-self-center">in</span>
+    ${sizeInputHTML}
+    <span class="size-unit align-self-center">${isInches ? 'in' : 'size'}</span>
     <input type="number" step="1" class="form-control" name="price[]" placeholder="Price (₹)" value="${price}">
     <button type="button" class="btn btn-outline-danger remove-size-row">✕</button>
   `;
@@ -1092,21 +1156,83 @@ function makeSizeRow(container, size = "", price = "") {
   container.appendChild(row);
 }
 
+/* Switch every existing row's size input between number(inches) <-> text(sizes) */
+function updateSizeRowsType(container, type){
+  const isInches = type !== 'sizes';
+  container.querySelectorAll('.size-price-row').forEach(row=>{
+    const sizeInput = row.querySelector('.size-input');
+    const unitLabel = row.querySelector('.size-unit');
+    if(!sizeInput) return;
+    const currentValue = sizeInput.value;
+    sizeInput.type = isInches ? 'number' : 'text';
+    if(isInches){ sizeInput.step = '0.5'; } else { sizeInput.removeAttribute('step'); }
+    sizeInput.placeholder = isInches ? 'Size' : 'e.g. S, M, L, XL';
+    sizeInput.value = currentValue;
+    if(unitLabel) unitLabel.textContent = isInches ? 'in' : 'size';
+  });
+}
+
+function updateSizeRowsLabel(which, type){
+  const isInches = type !== 'sizes';
+  const label = document.getElementById(which === 'add' ? 'sizeRowsAddLabel' : 'sizeRowsEditLabel');
+  if(label) label.textContent = isInches ? 'Sizes & Prices (inches → ₹)' : 'Sizes & Prices (S/M/L/XL → ₹)';
+  if(which === 'add'){
+    const hint = document.getElementById('sizeRowsAddHint');
+    if(hint){
+      hint.textContent = isInches
+        ? 'e.g. 6 inch → ₹300, 8 inch → ₹500. Customers pick a size on the storefront and the price updates automatically.'
+        : 'e.g. S → ₹300, M → ₹400, L → ₹500. Customers pick a size on the storefront and the price updates automatically.';
+    }
+  }
+}
+
+function bindVariantTypeToggle(){
+  const addToggle = document.getElementById('variantTypeAdd');
+  const sizeRowsAdd = document.getElementById('sizeRowsAdd');
+  if(addToggle && !addToggle.dataset.bound){
+    addToggle.dataset.bound = "1";
+    addToggle.querySelectorAll('input[name="variant_type"]').forEach(radio=>{
+      radio.addEventListener('change', ()=>{
+        updateSizeRowsType(sizeRowsAdd, radio.value);
+        updateSizeRowsLabel('add', radio.value);
+      });
+    });
+  }
+
+  const editToggle = document.getElementById('variantTypeEdit');
+  const sizeRowsEdit = document.getElementById('sizeRowsEdit');
+  if(editToggle && !editToggle.dataset.bound){
+    editToggle.dataset.bound = "1";
+    editToggle.querySelectorAll('input[name="variant_type"]').forEach(radio=>{
+      radio.addEventListener('change', ()=>{
+        updateSizeRowsType(sizeRowsEdit, radio.value);
+        updateSizeRowsLabel('edit', radio.value);
+      });
+    });
+  }
+}
+
 function bindSizeRowButtons(){
   const addBtn = document.getElementById('addSizeRowBtn');
   const sizeRowsAdd = document.getElementById('sizeRowsAdd');
   if(addBtn && sizeRowsAdd && !addBtn.dataset.bound){
     addBtn.dataset.bound = "1";
-    addBtn.addEventListener('click', ()=>makeSizeRow(sizeRowsAdd));
+    addBtn.addEventListener('click', ()=>{
+      const checked = document.querySelector('#variantTypeAdd input[name="variant_type"]:checked');
+      makeSizeRow(sizeRowsAdd, "", "", checked ? checked.value : 'inches');
+    });
   }
   if(sizeRowsAdd && sizeRowsAdd.children.length === 0){
-    makeSizeRow(sizeRowsAdd);
+    makeSizeRow(sizeRowsAdd, "", "", 'inches');
   }
 
   const addEditBtn = document.getElementById('addSizeRowEditBtn');
   if(addEditBtn && !addEditBtn.dataset.bound){
     addEditBtn.dataset.bound = "1";
-    addEditBtn.addEventListener('click', ()=>makeSizeRow(document.getElementById('sizeRowsEdit')));
+    addEditBtn.addEventListener('click', ()=>{
+      const checked = document.querySelector('#variantTypeEdit input[name="variant_type"]:checked');
+      makeSizeRow(document.getElementById('sizeRowsEdit'), "", "", checked ? checked.value : 'inches');
+    });
   }
 }
 
@@ -1160,6 +1286,7 @@ function initDynamicHandlers(){
   bindAjaxForms();
   bindEditProductButtons();
   bindSizeRowButtons();
+  bindVariantTypeToggle();
   bindPreviewControls();
 }
 
