@@ -171,15 +171,14 @@ class HeroForm(forms.ModelForm):
         if not hasattr(video, "size"):
             return video
 
-        # Phone-recorded background videos routinely land in the 40-150MB
-        # range even at short lengths, so 30MB was rejecting completely
-        # normal uploads with little/no visible feedback. Bumped to a more
-        # realistic 100MB (matches Cloudinary's free-plan single-file cap).
-        max_size = 100 * 1024 * 1024  # 100 MB
+        # Hero background video is capped at 20MB — enough for a short,
+        # compressed looping clip, while keeping page-load fast and
+        # Cloudinary bandwidth usage low.
+        max_size = 20 * 1024 * 1024  # 20 MB
 
         if video.size > max_size:
             raise forms.ValidationError(
-                f"Video must be smaller than 100 MB (yours is "
+                f"Video must be smaller than 20 MB (yours is "
                 f"{video.size / (1024 * 1024):.1f} MB). Try trimming the "
                 f"clip or compressing it before uploading."
             )

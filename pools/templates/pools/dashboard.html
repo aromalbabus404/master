@@ -649,10 +649,10 @@
               </div>
 
               <div class="col-md-6">
-                <label class="form-label fw-bold">Upload Background Video (MP4, max 100MB)</label>
+                <label class="form-label fw-bold">Upload Background Video (MP4, max 20MB)</label>
                 {{ hero_form.video_file }}
                 <!-- Live client-side size feedback: warns BEFORE upload if the
-                     chosen file is over the server's 100MB limit, instead of
+                     chosen file is over the server's 20MB limit, instead of
                      silently failing after a long upload with no explanation. -->
                 <div class="hero-upload-hint text-muted" id="heroVideoSizeInfo"></div>
               </div>
@@ -1453,7 +1453,7 @@ function reloadPreview(){
 
 /* ---- NEW: hero video upload — instant client-side size feedback.
    The server (see HeroForm.clean_video_file) rejects videos over
-   100MB, but previously the admin had no idea until AFTER a long
+   20MB, but previously the admin had no idea until AFTER a long
    upload finished (or silently failed — see the fetch fix above).
    This warns immediately when a file is picked. ---- */
 function bindHeroVideoSizeCheck(){
@@ -1462,7 +1462,7 @@ function bindHeroVideoSizeCheck(){
   if(!videoInput || !info || videoInput.dataset.bound) return;
   videoInput.dataset.bound = "1";
 
-  const MAX_BYTES = 100 * 1024 * 1024; // matches HeroForm.clean_video_file
+  const MAX_BYTES = 20 * 1024 * 1024; // matches HeroForm.clean_video_file
 
   videoInput.addEventListener('change', ()=>{
     const file = videoInput.files && videoInput.files[0];
@@ -1470,7 +1470,7 @@ function bindHeroVideoSizeCheck(){
     const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
     if(file.size > MAX_BYTES){
       info.className = 'hero-upload-hint text-danger';
-      info.textContent = `"${file.name}" is ${sizeMB}MB — over the 100MB limit. Please trim or compress it before uploading.`;
+      info.textContent = `"${file.name}" is ${sizeMB}MB — over the 20MB limit. Please trim or compress it before uploading.`;
     } else {
       info.className = 'hero-upload-hint text-muted';
       info.textContent = `Selected: ${file.name} (${sizeMB}MB)`;

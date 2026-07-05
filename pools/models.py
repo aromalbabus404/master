@@ -64,38 +64,32 @@ class HeroSection(models.Model):
         self.pk = 1
 
         # ------------------------------------------------------------
-        # STEP 1 — figure out (BEFORE saving) whether video_file /
-        # poster_image_file are being REPLACED with something new, and
-        # if so, remember the OLD Cloudinary public_id so we can delete
-        # it afterwards. We compare against whatever is currently in
-        # the database, not just in-memory state, so this is reliable
-        # regardless of how `self` was constructed (form save, admin,
-        # shell, etc).
+        # STEP 1 — capture the OLD Cloudinary public_id(s) from the
+        # database BEFORE saving, so we know what to clean up
+        # afterwards. This is safe to read now because `old` comes
+        # straight from the DB, so its video_file/poster_image_file are
+        # already real Cloudinary objects (not raw upload data).
         # ------------------------------------------------------------
         old_video_public_id = None
         old_poster_public_id = None
 
         try:
             old = HeroSection.objects.get(pk=self.pk)
-
-            old_video_pid = old.video_file.public_id if old.video_file else None
-            new_video_pid = self.video_file.public_id if self.video_file else None
-            if old_video_pid and old_video_pid != new_video_pid:
-                old_video_public_id = old_video_pid
-
-            old_poster_pid = old.poster_image_file.public_id if old.poster_image_file else None
-            new_poster_pid = self.poster_image_file.public_id if self.poster_image_file else None
-            if old_poster_pid and old_poster_pid != new_poster_pid:
-                old_poster_public_id = old_poster_pid
-
+            old_video_public_id = old.video_file.public_id if old.video_file else None
+            old_poster_public_id = old.poster_image_file.public_id if old.poster_image_file else None
         except HeroSection.DoesNotExist:
             # First-ever save (no existing row yet) — nothing old to delete.
             pass
 
         # ------------------------------------------------------------
-        # STEP 2 — save the new data first. We never delete the old
-        # Cloudinary asset before this succeeds, so a failed save can
-        # never leave you with neither the old nor the new file.
+        # STEP 2 — save now. IMPORTANT: if a new video/image was just
+        # submitted, `self.video_file` / `self.poster_image_file` are
+        # STILL the raw uploaded file objects at this point (e.g. an
+        # InMemoryUploadedFile) — NOT yet Cloudinary objects. They only
+        # get converted (and gain a `.public_id`) during this
+        # super().save() call, inside CloudinaryField's own pre_save().
+        # Reading `.public_id` any earlier than this raises
+        # AttributeError — which is exactly the bug this fixes.
         # ------------------------------------------------------------
         super().save(*args, **kwargs)
 
@@ -131,12 +125,19 @@ class HeroSection(models.Model):
             super().save(update_fields=update_fields)
 
         # ------------------------------------------------------------
-        # STEP 3 — now that the new file is safely committed, delete
-        # whatever old video/poster it just replaced, so Cloudinary
-        # storage doesn't quietly fill up with orphaned files every
-        # time an admin uploads a new hero video or image.
+        # STEP 3 — NOW it's safe to read .public_id on the new files:
+        # super().save() has already run, so self.video_file and
+        # self.poster_image_file are guaranteed to be real Cloudinary
+        # objects (or None, if cleared). Compare against the OLD
+        # public_ids captured in Step 1, and delete whichever old
+        # asset(s) were actually replaced — so Cloudinary storage
+        # doesn't quietly fill up with orphaned files every time an
+        # admin uploads a new hero video or image.
         # ------------------------------------------------------------
-        if old_video_public_id:
+        new_video_public_id = self.video_file.public_id if self.video_file else None
+        new_poster_public_id = self.poster_image_file.public_id if self.poster_image_file else None
+
+        if old_video_public_id and old_video_public_id != new_video_public_id:
             try:
                 cloudinary.uploader.destroy(
                     old_video_public_id,
@@ -149,7 +150,7 @@ class HeroSection(models.Model):
                 # would look like the whole hero-section save failed).
                 pass
 
-        if old_poster_public_id:
+        if old_poster_public_id and old_poster_public_id != new_poster_public_id:
             try:
                 cloudinary.uploader.destroy(
                     old_poster_public_id,
