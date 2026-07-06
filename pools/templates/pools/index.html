@@ -91,28 +91,67 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-stats small{color:rgba(255,255,255,.65);font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;}
 
 /* ---- sliding card carousel — moved to its own strip just below the hero ---- */
-.carousel-wrap{position:relative;width:100%;max-width:460px;min-width:0;margin:0 auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
+/* Restyled to a full-bleed image + big overlaid label carousel, with a scaled-up
+   "active" center card and prev/next arrow controls (scroll-snap based). */
+.carousel-wrap{position:relative;width:100%;max-width:920px;min-width:0;margin:0 auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
+
 .carousel-mask{
-  position:relative;overflow:hidden;border-radius:var(--radius);
-  -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
-  mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
+  position:relative;overflow-x:auto;overflow-y:hidden;
+  padding:26px 8px 34px;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image:linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
 }
-.carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 150s linear infinite;}
-.carousel-wrap:hover .carousel-track{animation-play-state:paused;}
+.carousel-mask::-webkit-scrollbar{display:none;}
+
+.carousel-track{display:flex;gap:22px;width:max-content;align-items:center;padding:0 8%;}
+
 .plant-card{
-  display:block;
-  background:linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.06));
-  border:1px solid rgba(255,255,255,.45);
-  backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
-  border-radius:var(--radius);padding:14px 14px 18px;text-align:center;width:220px;flex-shrink:0;
-  box-shadow:0 18px 40px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.5);
-  transition:transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+  position:relative;display:block;overflow:hidden;flex-shrink:0;
+  width:210px;height:290px;border-radius:26px;scroll-snap-align:center;
+  box-shadow:0 16px 36px rgba(0,0,0,.26);
+  transform:scale(.86);opacity:.65;
+  transition:transform .4s ease, opacity .4s ease, box-shadow .4s ease;
 }
-.plant-card:hover{transform:translateY(-6px) scale(1.03);border-color:rgba(255,255,255,.65);box-shadow:0 24px 50px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.6);}
-.plant-card img{border-radius:12px;width:100%;height:150px;object-fit:cover;margin-bottom:12px;transition:transform .5s ease;}
-.plant-card:hover img{transform:scale(1.05);}
-.plant-card .name{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--white);margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.4);}
-.plant-card .price{color:var(--brass-light);font-size:.85rem;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+.plant-card img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .6s ease;
+}
+.plant-card::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,.62) 0%, rgba(0,0,0,.16) 46%, transparent 68%);
+}
+.plant-card .name{
+  position:absolute;left:22px;right:22px;bottom:46px;z-index:2;
+  font-family:'Fraunces',serif;font-weight:600;font-size:1.65rem;color:var(--white);
+  letter-spacing:-.5px;text-shadow:0 2px 10px rgba(0,0,0,.25);
+}
+.plant-card .price{
+  position:absolute;left:22px;right:22px;bottom:22px;z-index:2;
+  color:rgba(255,255,255,.9);font-size:.82rem;font-weight:700;
+}
+.plant-card:hover img{transform:scale(1.06);}
+
+.plant-card.is-active{
+  transform:scale(1);opacity:1;z-index:2;
+  box-shadow:0 30px 60px rgba(0,0,0,.4);
+}
+.plant-card.is-active .name{font-size:1.85rem;}
+
+.carousel-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(255,255,255,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);cursor:pointer;z-index:5;transition:.25s ease;
+}
+.carousel-arrow:hover{background:var(--white);color:var(--ink);}
+.carousel-arrow:active{transform:translateY(-50%) scale(.94);}
+.carousel-arrow.prev{left:-4px;}
+.carousel-arrow.next{right:-4px;}
+.carousel-arrow svg{width:20px;height:20px;flex-shrink:0;}
 
 .carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:16px;}
 .carousel-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);animation:pulseDot 3s ease-in-out infinite;}
@@ -130,18 +169,18 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .btn-pill:hover svg{transform:translate(3px,-3px);}
 
 @keyframes heroFadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-@keyframes slideLTR{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 @keyframes pulseDot{0%,100%{background:rgba(255,255,255,.35);}50%{background:var(--brass-light);}}
 
 @media(prefers-reduced-motion:reduce){
-  .hero-text,.carousel-wrap,.carousel-track,.carousel-dots span{animation:none!important;opacity:1!important;transform:none!important;}
+  .hero-text,.carousel-wrap,.carousel-dots span{animation:none!important;opacity:1!important;transform:none!important;}
+  .plant-card{transition:none!important;}
   header{transition:none!important;}
 }
 
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
 
 /* ---- carousel strip, sits right below the hero as its own dark section ---- */
-.carousel-strip{background:var(--ink);padding:44px 0 56px;}
+.carousel-strip{padding:44px 0 56px;}
 .carousel-strip .carousel-wrap{opacity:1;animation:none;}
 
 @media(max-width:980px){
@@ -158,8 +197,11 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   .hero-stats{gap:18px 22px;}
   .hero-stats .stat-copy{text-align:left;}
   .carousel-strip{padding:32px 0 40px;}
-  .plant-card{width:180px;}
-  .plant-card img{height:120px;}
+  .plant-card{width:160px;height:230px;}
+  .plant-card .name{font-size:1.25rem;bottom:36px;}
+  .plant-card.is-active .name{font-size:1.4rem;}
+  .plant-card .price{font-size:.72rem;bottom:16px;}
+  .carousel-arrow{width:40px;height:40px;}
 }
 
 /* ============ SERVICES ============ */
@@ -410,11 +452,16 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     </div>
 </section>
 
-<!-- product card carousel: its own strip right below the hero -->
+<!-- product card carousel: its own strip right below the hero, restyled with full-bleed image
+     cards, big overlaid label, a scaled-up active/center card and prev/next arrows -->
 <section class="carousel-strip">
     <div class="wrap">
         <div class="carousel-wrap">
-            <div class="carousel-mask">
+            <button class="carousel-arrow prev" id="carPrev" type="button" aria-label="Previous product">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+
+            <div class="carousel-mask" id="carMask">
                 <div class="carousel-track" id="track">
                     {% for p in products %}
                     <a href="{% url 'shop' %}" class="plant-card">
@@ -423,15 +470,12 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                         <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
                     </a>
                     {% endfor %}
-                    {% for p in products %}
-                    <a href="{% url 'shop' %}" class="plant-card" aria-hidden="true" tabindex="-1">
-                        <img src="{{ p.image }}" alt="">
-                        <div class="name">{{ p.name }}</div>
-                        <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
-                    </a>
-                    {% endfor %}
                 </div>
             </div>
+
+            <button class="carousel-arrow next" id="carNext" type="button" aria-label="Next product">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
 
             <div class="carousel-dots"><span></span><span></span><span></span></div>
 
@@ -768,6 +812,69 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   }
   window.addEventListener('touchstart', firstGestureRetry, {passive:true});
   window.addEventListener('scroll', firstGestureRetry, {passive:true});
+})();
+
+/* ============ HERO PRODUCT CAROUSEL — scroll-snap based, arrows + auto-center "active" card ============ */
+(function(){
+  const mask = document.getElementById('carMask');
+  const track = document.getElementById('track');
+  const prevBtn = document.getElementById('carPrev');
+  const nextBtn = document.getElementById('carNext');
+  if(!mask || !track) return;
+
+  const cards = [...track.querySelectorAll('.plant-card')];
+  if(cards.length === 0) return;
+
+  function cardStep(){
+    const c = cards[0];
+    const style = getComputedStyle(track);
+    const gap = parseFloat(style.columnGap || style.gap) || 22;
+    return c.getBoundingClientRect().width + gap;
+  }
+
+  function updateActive(){
+    const maskRect = mask.getBoundingClientRect();
+    const center = maskRect.left + maskRect.width / 2;
+    let closest = null, minDist = Infinity;
+    cards.forEach(c=>{
+      const r = c.getBoundingClientRect();
+      const cCenter = r.left + r.width / 2;
+      const dist = Math.abs(cCenter - center);
+      if(dist < minDist){ minDist = dist; closest = c; }
+    });
+    cards.forEach(c=>c.classList.toggle('is-active', c === closest));
+  }
+
+  let rafPending = false;
+  mask.addEventListener('scroll', ()=>{
+    if(!rafPending){
+      rafPending = true;
+      requestAnimationFrame(()=>{ updateActive(); rafPending = false; });
+    }
+  }, {passive:true});
+
+  if(prevBtn) prevBtn.addEventListener('click', ()=> mask.scrollBy({left:-cardStep(), behavior:'smooth'}));
+  if(nextBtn) nextBtn.addEventListener('click', ()=> mask.scrollBy({left:cardStep(), behavior:'smooth'}));
+
+  // gentle autoplay — loops back to the start, pauses on hover/touch
+  let autoTimer;
+  function startAuto(){
+    stopAuto();
+    autoTimer = setInterval(()=>{
+      const atEnd = mask.scrollLeft + mask.clientWidth >= track.scrollWidth - 4;
+      if(atEnd){ mask.scrollTo({left:0, behavior:'smooth'}); }
+      else{ mask.scrollBy({left:cardStep(), behavior:'smooth'}); }
+    }, 3200);
+  }
+  function stopAuto(){ clearInterval(autoTimer); }
+
+  mask.addEventListener('mouseenter', stopAuto);
+  mask.addEventListener('mouseleave', startAuto);
+  mask.addEventListener('touchstart', stopAuto, {passive:true});
+  window.addEventListener('resize', updateActive);
+
+  updateActive();
+  startAuto();
 })();
 
 /* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
