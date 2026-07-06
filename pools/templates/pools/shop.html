@@ -58,14 +58,44 @@ nav a:hover,nav a.active{opacity:1;color:var(--seafoam);}
 .page-banner h1{color:var(--white);font-size:clamp(2rem,4vw,3rem);font-weight:500;}
 .page-banner p{color:rgba(255,255,255,.85);margin-top:14px;max-width:560px;}
 
-/* ============ SEARCH ============ */
+/* ============ SEARCH + CATEGORY ============ */
 .section{padding:64px 0 104px;}
-.search-box{display:flex;justify-content:center;margin-bottom:50px;}
-.search-box form{display:flex;width:100%;max-width:560px;box-shadow:var(--shadow);border-radius:999px;overflow:hidden;}
-.search-box input{flex:1;padding:16px 22px;border:1.5px solid var(--line);border-right:none;font-size:.95rem;font-family:'Manrope',sans-serif;background:var(--white);}
+.search-box{display:flex;justify-content:center;margin-bottom:22px;}
+.search-box form{display:flex;width:100%;max-width:680px;box-shadow:var(--shadow);border-radius:999px;overflow:hidden;}
+.search-box input{flex:1;padding:16px 22px;border:1.5px solid var(--line);border-right:none;font-size:.95rem;font-family:'Manrope',sans-serif;background:var(--white);min-width:0;}
 .search-box input:focus{outline:none;}
-.search-box button{padding:16px 28px;border:none;background:var(--brass);color:var(--white);cursor:pointer;font-weight:700;font-family:'Manrope',sans-serif;}
+.search-box .category-select{
+    border:1.5px solid var(--line);
+    border-left:none;
+    border-right:none;
+    background:var(--white);
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    font-size:.88rem;
+    font-weight:600;
+    padding:0 16px;
+    cursor:pointer;
+    flex:0 0 auto;
+    max-width:180px;
+    appearance:none;
+    -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C7382' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    background-size:14px;
+    padding-right:32px;
+}
+.search-box .category-select:focus{outline:none;}
+.search-box button{padding:16px 28px;border:none;background:var(--brass);color:var(--white);cursor:pointer;font-weight:700;font-family:'Manrope',sans-serif;flex:0 0 auto;}
 .search-box button:hover{background:var(--brass-light);}
+
+.active-filter{display:flex;justify-content:center;margin-bottom:28px;}
+.active-filter span{
+    background:var(--stone);color:var(--deep);font-size:.82rem;font-weight:700;
+    padding:8px 18px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;
+}
+.active-filter a{color:var(--muted);font-weight:800;text-decoration:none;}
+.active-filter a:hover{color:#B84A3E;}
 
 /* ============ PRODUCT GRID ============ */
 .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
@@ -181,6 +211,10 @@ footer{background:var(--ink);color:rgba(255,255,255,.75);padding:68px 0 28px;}
     .logo-img{height:36px;}
     .page-banner{padding:130px 0 40px;}
     .section{padding:36px 0 60px;}
+    .search-box form{flex-wrap:wrap;border-radius:16px;}
+    .search-box input{border-right:1.5px solid var(--line);border-radius:16px 16px 0 0;flex:1 1 100%;}
+    .search-box .category-select{border-left:1.5px solid var(--line);border-radius:0;flex:1 1 60%;max-width:none;}
+    .search-box button{flex:1 1 40%;border-radius:0 0 16px 16px;}
     .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
     .product-card{border-radius:12px;}
     .badge{top:8px;left:8px;font-size:9px;padding:4px 8px;}
@@ -245,9 +279,22 @@ footer{background:var(--ink);color:rgba(255,255,255,.75);padding:68px 0 28px;}
 <div class="search-box">
 <form method="GET">
 <input type="text" name="q" placeholder="Search Products..." value="{{ query }}">
+<select name="category" class="category-select" onchange="this.form.submit()">
+    <option value="" {% if not selected_category %}selected{% endif %}>All Categories</option>
+    <option value="Pumps & Filters" {% if selected_category == "Pumps & Filters" %}selected{% endif %}>Pumps & Filters</option>
+    <option value="Lightings" {% if selected_category == "Lightings" %}selected{% endif %}>Lightings</option>
+    <option value="Covers & Ladders" {% if selected_category == "Covers & Ladders" %}selected{% endif %}>Covers & Ladders</option>
+    <option value="Cleaning" {% if selected_category == "Cleaning" %}selected{% endif %}>Cleaning</option>
+</select>
 <button type="submit">Search</button>
 </form>
 </div>
+
+{% if selected_category %}
+<div class="active-filter">
+    <span>Category: {{ selected_category }} <a href="{% url 'shop' %}{% if query %}?q={{ query }}{% endif %}">✕</a></span>
+</div>
+{% endif %}
 
 <div class="product-grid" id="productGrid">
 
@@ -340,7 +387,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.75);padding:68px 0 28px;}
         <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="f-logo-img">
         <p style="font-size:.88rem;max-width:280px;">Master Pools designs and builds custom swimming pools and premium pool accessories across Kerala.</p>
     </div>
-    <div><h4>Shop</h4><ul><li><a href="{% url 'shop' %}">Pool Designs</a></li><li><a href="{% url 'shop' %}">Pumps & Filters</a></li><li><a href="{% url 'shop' %}">Lighting</a></li><li><a href="{% url 'shop' %}">Cleaning</a></li></ul></div>
+    <div><h4>Shop</h4><ul><li><a href="{% url 'shop' %}?category=Pumps%20%26%20Filters">Pumps & Filters</a></li><li><a href="{% url 'shop' %}?category=Lightings">Lightings</a></li><li><a href="{% url 'shop' %}?category=Covers%20%26%20Ladders">Covers & Ladders</a></li><li><a href="{% url 'shop' %}?category=Cleaning">Cleaning</a></li></ul></div>
     <div><h4>Company</h4><ul><li><a href="/#services">Services</a></li><li><a href="/#gallery">Gallery</a></li><li><a href="/#reviews">Reviews</a></li><li><a href="/#contact">Contact</a></li></ul></div>
     <div><h4>Contact</h4><ul><li><a href="https://wa.me/917356462150">WhatsApp</a></li><li><a href="mailto:hello@masterpools.com">hello@masterpools.com</a></li><li>Kochi, Kerala — 682001</li></ul></div>
     </div>
