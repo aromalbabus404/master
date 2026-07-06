@@ -468,6 +468,30 @@
     .color-row input{max-width:160px;}
     .color-swatch{width:28px;height:28px;flex-basis:28px;}
   }
+
+  /* Scroll To Top Button */
+  .scroll-top-btn{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      width:55px;
+      height:55px;
+      border:none;
+      border-radius:50%;
+      background:#0d6efd;
+      color:#fff;
+      font-size:24px;
+      cursor:pointer;
+      display:none;
+      z-index:9999;
+      box-shadow:0 8px 20px rgba(0,0,0,.25);
+      transition:.3s;
+  }
+
+  .scroll-top-btn:hover{
+      background:#0b5ed7;
+      transform:translateY(-3px);
+  }
 </style>
 </head>
 <body>
@@ -918,6 +942,11 @@
     </div>
   </div>
 </div>
+
+<!-- Scroll To Top Button -->
+<button id="scrollTopBtn" class="scroll-top-btn" aria-label="Scroll to top">
+    ↑
+</button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -1424,6 +1453,24 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.body.classList.remove('modal-open');
   document.body.style.removeProperty('overflow');
   document.body.style.removeProperty('padding-right');
+});
+
+/* Scroll To Top Button */
+const scrollBtn = document.getElementById("scrollTopBtn");
+
+window.addEventListener("scroll", function () {
+    if (window.scrollY > 300) {
+        scrollBtn.style.display = "block";
+    } else {
+        scrollBtn.style.display = "none";
+    }
+});
+
+scrollBtn.addEventListener("click", function () {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 });
 </script>
 </body>
