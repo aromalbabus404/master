@@ -57,37 +57,41 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 /* ============ HERO — full-bleed background video, text overlaid on top (alleppeytourism.in style) ============ */
 .hero{
   position:relative;z-index:0;overflow:hidden;background:var(--ink);
-  min-height:100svh;min-height:100vh;
-  display:flex;align-items:center;
-  padding:140px 0 56px;
+  border-radius:0 0 40px 40px;
+  padding:150px 0 64px;
+  display:flex;align-items:center;justify-content:center;
 }
-.hero-bg-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.62);background:var(--ink);z-index:0;}
-.hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.62);background:var(--ink);z-index:0;}
+.hero-bg-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.4);background:var(--ink);z-index:0;}
+.hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.4);background:var(--ink);z-index:0;}
 .hero-overlay{
   position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(9,26,24,.55) 0%, rgba(9,26,24,.25) 30%, rgba(9,26,24,.35) 65%, rgba(7,20,18,.92) 100%),
-    linear-gradient(90deg, rgba(6,18,16,.55) 0%, rgba(6,18,16,0) 55%);
+  background:linear-gradient(180deg, rgba(9,26,24,.7) 0%, rgba(9,26,24,.55) 45%, rgba(7,20,18,.8) 100%);
 }
 .hero > .wrap{position:relative;z-index:2;width:100%;}
 
-/* text sits directly over the video, carousel floats below it — both inside the same wrap */
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0;align-items:center;}
+/* single centered column — heading, subtext, CTA pills, icon-stat row (alleppeytourism.in model) */
+.hero-grid{display:flex;justify-content:center;}
 
-.hero-text{max-width:640px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;width:100%;}
-.hero-text .eyebrow{color:var(--brass-light);}
+.hero-text{max-width:720px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;width:100%;text-align:center;margin:0 auto;}
+.hero-text .eyebrow{color:var(--brass-light);justify-content:center;}
 .hero-text .eyebrow::before{background:var(--seafoam);}
-.hero-text h1{font-size:clamp(2.3rem,4.6vw,3.7rem);color:var(--white);margin-bottom:20px;font-weight:500;text-shadow:0 4px 24px rgba(0,0,0,.35);}
-.hero-text p{color:rgba(255,255,255,.88);font-size:1.08rem;max-width:480px;margin-bottom:28px;font-weight:400;}
-.hero-cta{display:flex;gap:16px;flex-wrap:wrap;}
-.hero-stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.22);max-width:560px;margin-top:34px;}
-.hero-stats div{flex:1;padding:20px 10px 0;text-align:center;color:var(--white);border-right:1px solid rgba(255,255,255,.18);}
-.hero-stats div:last-child{border-right:none;}
-.hero-stats strong{display:block;font-family:'Fraunces',serif;font-size:1.5rem;color:var(--seafoam);font-weight:600;}
-.hero-stats small{color:rgba(255,255,255,.65);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;}
+.hero-text h1{font-size:clamp(2.1rem,5vw,3.4rem);color:var(--white);margin-bottom:18px;font-weight:700;}
+.hero-text h1 em{color:var(--seafoam);font-style:normal;}
+.hero-text p{color:rgba(255,255,255,.85);font-size:1.05rem;max-width:600px;margin:0 auto 30px;font-weight:400;}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+.hero-cta .btn{background:var(--white);color:var(--ink);}
+.hero-cta .btn:hover{background:var(--brass-light);}
+.hero-cta .btn svg{width:17px;height:17px;flex-shrink:0;}
 
-/* ---- sliding card carousel — floats near the bottom of the hero, over the video ---- */
-.carousel-wrap{position:relative;width:100%;max-width:460px;min-width:0;margin:44px auto 0 0;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
+.hero-stats{display:flex;gap:44px;flex-wrap:wrap;justify-content:center;margin-top:40px;}
+.hero-stats .stat-item{display:flex;align-items:center;gap:10px;color:var(--white);}
+.hero-stats .stat-ic{width:26px;height:26px;flex-shrink:0;color:var(--seafoam);}
+.hero-stats .stat-copy{text-align:left;}
+.hero-stats strong{display:block;font-family:'Manrope',sans-serif;font-size:1.02rem;font-weight:800;color:var(--white);line-height:1.2;}
+.hero-stats small{color:rgba(255,255,255,.65);font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;}
+
+/* ---- sliding card carousel — moved to its own strip just below the hero ---- */
+.carousel-wrap{position:relative;width:100%;max-width:460px;min-width:0;margin:0 auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
 .carousel-mask{
   position:relative;overflow:hidden;border-radius:var(--radius);
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
@@ -135,20 +139,24 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
 
+/* ---- carousel strip, sits right below the hero as its own dark section ---- */
+.carousel-strip{background:var(--ink);padding:44px 0 56px;}
+.carousel-strip .carousel-wrap{opacity:1;animation:none;}
+
 @media(max-width:980px){
-  .hero{padding:120px 0 44px;min-height:100svh;min-height:100vh;}
-  .hero-grid{grid-template-columns:minmax(0,1fr);}
-  .carousel-wrap{max-width:460px;margin:36px auto 0 0;}
+  .hero{padding:130px 0 48px;border-radius:0 0 28px 28px;}
+  .hero-stats{gap:28px;}
 }
 @media(max-width:600px){
   .hero{
-    padding:104px 0 32px;
-    min-height:100svh;min-height:100vh;
-    align-items:flex-end;
+    padding:112px 0 40px;
+    border-radius:0 0 20px 20px;
   }
   .hero-text{max-width:100%;}
   .hero-text p{max-width:100%;}
-  .carousel-wrap{margin:28px auto 0 0;max-width:100%;}
+  .hero-stats{gap:18px 22px;}
+  .hero-stats .stat-copy{text-align:left;}
+  .carousel-strip{padding:32px 0 40px;}
   .plant-card{width:180px;}
   .plant-card img{height:120px;}
 }
@@ -312,8 +320,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .opt-row label{font-size:.64rem;}
     select.opt-select{padding:6px 8px;font-size:.76rem;}
     .add-cart-btn{padding:10px;font-size:.82rem;}
-    .hero-stats{flex-wrap:wrap;}
-    .hero-stats div{flex:50%;border-right:none;border-bottom:1px solid rgba(255,255,255,.2);}
     .hero-text h1{font-size:2.15rem;}
     .section{padding:68px 0;}
     .field-row{flex-direction:column;}
@@ -361,7 +367,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="hero" id="home">
 
-        <!-- Video is now a full-bleed background for the whole hero section -->
+        <!-- Video is a full-bleed, dimmed background for the whole hero card -->
         {% if hero.poster_url %}
         <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
         {% else %}
@@ -373,25 +379,40 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <div class="hero-overlay" aria-hidden="true"></div>
 
     <div class="wrap">
-
         <div class="hero-grid">
-            <!-- hero text: sits directly over the video -->
+            <!-- hero text: centered, alleppeytourism.in style -->
             <div class="hero-text">
                 <div class="eyebrow">{{ hero.eyebrow }}</div>
                 <h1>{{ hero.heading|safe }}</h1>
                 <p>{{ hero.sub }}</p>
+
                 <div class="hero-cta">
-                    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20a%20free%20pool%20design%20consultation." id="heroConsultBtn" class="btn btn-outline" target="_blank">Get Free Consultation</a>
+                    <a href="tel:+919876543210" class="btn">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.25 1.02z"/></svg>
+                        Call Us
+                    </a>
+                    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20a%20free%20pool%20design%20consultation." id="heroConsultBtn" class="btn" target="_blank">
+                        <svg width="17" height="17" viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.42.71 4.673 1.933 6.568L4 29l7.617-1.897A11.93 11.93 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.7c-2.11 0-4.08-.62-5.735-1.687l-.411-.257-4.522 1.127 1.208-4.406-.27-.428A9.66 9.66 0 0 1 6.3 15c0-5.35 4.352-9.7 9.701-9.7 5.35 0 9.699 4.35 9.699 9.7 0 5.35-4.35 9.7-9.699 9.7zm5.316-7.268c-.29-.145-1.717-.848-1.983-.945-.266-.097-.46-.145-.653.145-.194.29-.75.945-.92 1.14-.169.194-.338.218-.628.073-.29-.145-1.223-.451-2.33-1.437-.861-.768-1.443-1.716-1.612-2.006-.169-.29-.018-.447.127-.591.13-.13.29-.339.435-.508.145-.169.194-.29.29-.484.097-.194.048-.363-.024-.508-.073-.145-.653-1.575-.896-2.156-.236-.567-.475-.49-.653-.499l-.556-.01c-.194 0-.508.073-.774.363-.266.29-1.014.99-1.014 2.42 0 1.428 1.038 2.808 1.183 3.002.145.194 2.043 3.12 4.951 4.376.692.299 1.232.477 1.653.61.694.221 1.326.19 1.826.115.557-.083 1.717-.702 1.96-1.38.242-.678.242-1.259.169-1.38-.073-.121-.266-.194-.556-.339z"/></svg>
+                        WhatsApp Us
+                    </a>
                 </div>
+
                 <div class="hero-stats">
                     {% for s in hero.stats %}
-                    <div><strong>{{ s.v }}</strong><small>{{ s.l }}</small></div>
+                    <div class="stat-item">
+                        <svg class="stat-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        <div class="stat-copy"><strong>{{ s.v }}</strong><small>{{ s.l }}</small></div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- product card carousel: floats below the text, still over the video -->
+<!-- product card carousel: its own strip right below the hero -->
+<section class="carousel-strip">
+    <div class="wrap">
         <div class="carousel-wrap">
             <div class="carousel-mask">
                 <div class="carousel-track" id="track">
