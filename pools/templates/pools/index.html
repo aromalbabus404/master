@@ -7,7 +7,7 @@
 <title>Master Pools | Custom Pools & Pool Accessories — Kerala</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
     --ink:#0B211F; --deep:#123B37; --deep2:#0E2E2B; --stone:#EDE7D8; --sand:#F7F3E8;
@@ -35,8 +35,8 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-sp
 .section{padding:104px 0;}
 .section-head{max-width:640px;margin-bottom:52px;}
 .section-head p{color:var(--muted);font-size:1.06rem;margin-top:16px;}
-header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:20px 32px;transition:.3s;background:var(--ink);}
-header.scrolled{box-shadow:var(--shadow);padding:14px 32px;}
+header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;transition:.3s;background:linear-gradient(to bottom, rgba(11,33,31,.5), transparent);}
+header.scrolled{background:var(--ink);box-shadow:var(--shadow);padding:14px 32px;}
 .logo{font-family:'Fraunces',serif;font-weight:600;color:var(--white);font-size:1.4rem;display:flex;align-items:center;gap:2px;font-style:italic;}
 .logo span{color:var(--seafoam);font-style:normal;}
 .logo-img{height:46px;width:auto;display:block;background:transparent;}
@@ -57,36 +57,21 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 /* ============ HERO — image background + sliding card carousel ============ */
 .hero{position:relative;padding:170px 0 70px;overflow:hidden;}
 .hero-bg-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
-.hero-bg-poster{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);background-size:cover;background-position:center;}
+.hero-bg-poster{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
 .hero-bg-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(11,33,31,.6) 0%, rgba(11,33,31,.5) 45%, rgba(11,33,31,.72) 100%);}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:56px;align-items:center;}
 
-/* ---- Admin-only hero media picker + live preview ---- */
-.hero-media-editor{position:absolute;top:96px;right:28px;z-index:5;display:flex;align-items:center;gap:10px;}
-.hero-media-editor-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(11,33,31,.55);backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.35);color:var(--white);font-family:'Manrope',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.3px;padding:10px 16px;border-radius:999px;cursor:pointer;transition:.25s ease;}
-.hero-media-editor-btn:hover{background:var(--brass);border-color:var(--brass);color:var(--ink);}
-.hero-media-editor-status{font-family:'Manrope',sans-serif;font-size:.72rem;color:rgba(255,255,255,.75);background:rgba(11,33,31,.5);padding:6px 12px;border-radius:999px;display:none;}
-.hero-media-editor-status.show{display:inline-block;}
-@media(max-width:600px){
-  .hero-media-editor{top:80px;right:14px;}
-  .hero-media-editor-btn{font-size:.7rem;padding:8px 12px;}
-}
-
 .hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:2;}
-.hero-text .eyebrow{display:inline-flex;color:var(--white);background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.28);padding:9px 18px 9px 14px;border-radius:999px;font-family:'Manrope',sans-serif;font-style:normal;font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;}
-.hero-text .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--seafoam);box-shadow:0 0 0 4px rgba(111,207,194,.22);margin-right:2px;}
-.hero-text h1{font-family:'Anton','Fraunces',serif;font-size:clamp(2.6rem,5.6vw,4.4rem);color:var(--white);margin-bottom:20px;font-weight:400;text-transform:uppercase;letter-spacing:-.5px;line-height:.98;}
+.hero-text .eyebrow{color:var(--brass-light);}
+.hero-text .eyebrow::before{background:var(--seafoam);}
+.hero-text h1{font-size:clamp(2.3rem,4.6vw,3.7rem);color:var(--white);margin-bottom:20px;font-weight:500;}
 .hero-text p{color:rgba(255,255,255,.82);font-size:1.08rem;max-width:480px;margin-bottom:28px;font-weight:400;}
 .hero-cta{display:flex;gap:16px;flex-wrap:wrap;}
-.hero-cta .btn-solid-brass{background:var(--brass);color:var(--ink);}
-.hero-cta .btn-solid-brass:hover{background:var(--brass-light);transform:translateY(-2px);}
-.hero-stats{display:flex;gap:10px;max-width:560px;margin-top:34px;flex-wrap:wrap;}
-.hero-stats div{flex:1;min-width:110px;padding:16px 10px;text-align:center;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);}
-.hero-stats div:nth-child(4n+1){background:rgba(184,137,79,.18);border-color:rgba(184,137,79,.35);}
-.hero-stats div:nth-child(4n+2){background:rgba(111,207,194,.16);border-color:rgba(111,207,194,.32);}
-.hero-stats div:nth-child(4n+3){background:rgba(217,178,124,.16);border-color:rgba(217,178,124,.32);}
-.hero-stats strong{display:block;font-family:'Fraunces',serif;font-size:1.5rem;color:var(--white);font-weight:700;}
-.hero-stats small{color:rgba(255,255,255,.72);font-size:.68rem;text-transform:uppercase;letter-spacing:1px;}
+.hero-stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.22);max-width:560px;margin-top:34px;}
+.hero-stats div{flex:1;padding:20px 10px 0;text-align:center;color:var(--white);border-right:1px solid rgba(255,255,255,.18);}
+.hero-stats div:last-child{border-right:none;}
+.hero-stats strong{display:block;font-family:'Fraunces',serif;font-size:1.5rem;color:var(--seafoam);font-weight:600;}
+.hero-stats small{color:rgba(255,255,255,.65);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;}
 
 /* ---- sliding card carousel (borrowed from the plant-shop hero) ---- */
 .carousel-wrap{position:relative;width:100%;max-width:340px;min-width:0;margin-right:auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:1;}
@@ -95,27 +80,23 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
   mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
 }
+/* Slowed down: was 20s, now 45s for a calmer, slower slide */
 .carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 150s linear infinite;}
 .carousel-wrap:hover .carousel-track{animation-play-state:paused;}
 .plant-card{
   display:block;
-  background:var(--white);
-  border:none;
-  border-radius:var(--radius);overflow:hidden;text-align:left;width:220px;flex-shrink:0;
-  box-shadow:0 18px 40px rgba(0,0,0,.28);
-  transition:transform .35s ease, box-shadow .35s ease;
+  background:linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.45);
+  backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+  border-radius:var(--radius);padding:14px 14px 18px;text-align:center;width:220px;flex-shrink:0;
+  box-shadow:0 18px 40px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .35s ease, border-color .35s ease, box-shadow .35s ease;
 }
-.plant-card:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 24px 50px rgba(0,0,0,.36);}
-.plant-card img{width:100%;height:130px;object-fit:cover;transition:transform .5s ease;}
+.plant-card:hover{transform:translateY(-6px) scale(1.03);border-color:rgba(255,255,255,.65);box-shadow:0 24px 50px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.6);}
+.plant-card img{border-radius:12px;width:100%;height:150px;object-fit:cover;margin-bottom:12px;transition:transform .5s ease;}
 .plant-card:hover img{transform:scale(1.05);}
-.plant-card .card-bar{background:var(--brass);padding:12px 14px 14px;}
-.carousel-track .plant-card:nth-child(4n+2) .card-bar{background:var(--seafoam);}
-.carousel-track .plant-card:nth-child(4n+3) .card-bar{background:var(--deep);}
-.carousel-track .plant-card:nth-child(4n+4) .card-bar{background:var(--brass-light);}
-.plant-card .name{font-family:'Manrope',sans-serif;font-size:.86rem;font-weight:800;color:var(--ink);margin-bottom:3px;text-transform:uppercase;letter-spacing:.2px;}
-.carousel-track .plant-card:nth-child(4n+3) .name{color:var(--white);}
-.plant-card .price{color:var(--ink);opacity:.75;font-size:.8rem;font-weight:700;}
-.carousel-track .plant-card:nth-child(4n+3) .price{color:rgba(255,255,255,.8);}
+.plant-card .name{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--white);margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+.plant-card .price{color:var(--brass-light);font-size:.85rem;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.4);}
 
 .carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:16px;}
 .carousel-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);animation:pulseDot 3s ease-in-out infinite;}
@@ -143,21 +124,18 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
 
 @media(max-width:980px){
-  .hero{padding:130px 0 50px;}
+  .hero{padding:150px 0 60px;}
   .hero-grid{grid-template-columns:minmax(0,1fr);}
-  .hero-text{order:1;text-align:left;}
-  .carousel-wrap{order:2;max-width:460px;margin:38px auto 0;}
+  .carousel-wrap{max-width:460px;margin:0 auto 36px;}
 }
 @media(max-width:600px){
-  .hero{padding:118px 0 44px;}
-  .hero-text{max-width:100%;}
-  .hero-text h1{font-size:2.3rem;}
-  .hero-text p{max-width:100%;font-size:1rem;}
-  .hero-cta{gap:12px;}
-  .hero-cta .btn{flex:1 1 auto;min-width:150px;padding:14px 18px;font-size:.85rem;}
-  .carousel-wrap{margin-top:30px;max-width:100%;}
-  .plant-card{width:190px;}
-  .plant-card img{height:120px;}
+  .hero{padding:140px 0 50px;}
+   .carousel-track {
+        margin-top: 170px;
+    }
+  .carousel-wrap{margin-top:40px;max-width:100%;}
+  .plant-card{width:200px;}
+  .plant-card img{height:130px;}
 }
 
 /* ============ SERVICES ============ */
@@ -312,8 +290,9 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .opt-row label{font-size:.64rem;}
     select.opt-select{padding:6px 8px;font-size:.76rem;}
     .add-cart-btn{padding:10px;font-size:.82rem;}
-    .hero-stats{flex-wrap:wrap;gap:8px;}
-    .hero-stats div{flex:1 1 46%;min-width:0;}
+    .hero-stats{flex-wrap:wrap;}
+    .hero-stats div{flex:50%;border-right:none;border-bottom:1px solid rgba(255,255,255,.2);}
+    .hero-text h1{font-size:2.15rem;}
     .section{padding:68px 0;}
     .field-row{flex-direction:column;}
     .gallery-grid{column-count:1;}
@@ -321,41 +300,9 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 @media(max-width:768px){
     .gallery-grid{column-count:2;}
 }
-
-/* ============ PREMIUM SCROLL SYSTEM ============ */
-.scroll-rail{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--seafoam-deep),var(--brass));z-index:999;transition:width .12s linear;}
-
-.reveal{opacity:0;transform:translateY(38px);filter:blur(2px);transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.16,1,.3,1);transition-delay:var(--rd,0s);will-change:opacity,transform;}
-.reveal.in-view{opacity:1;transform:translateY(0);filter:blur(0);}
-
-.reveal-soft{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--rd,0s);}
-.reveal-soft.in-view{opacity:1;transform:translateY(0);}
-
-.reveal-scale{opacity:0;transform:scale(.94) translateY(24px);transition:opacity .95s cubic-bezier(.16,1,.3,1), transform .95s cubic-bezier(.16,1,.3,1);transition-delay:var(--rd,0s);}
-.reveal-scale.in-view{opacity:1;transform:scale(1) translateY(0);}
-
-@media(prefers-reduced-motion:reduce){
-  .reveal,.reveal-soft,.reveal-scale{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
-}
-
-.service-card,.product-card,.review-card{transition:transform .5s cubic-bezier(.16,1,.3,1), box-shadow .5s cubic-bezier(.16,1,.3,1);}
-.service-card:hover,.product-card:hover{box-shadow:0 30px 60px rgba(11,33,31,.18);}
-.review-card:hover{transform:translateY(-4px);box-shadow:0 30px 60px rgba(11,33,31,.18);}
-
-.btn-primary,.btn-dark{transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s cubic-bezier(.16,1,.3,1), background .3s ease;}
-.btn-primary:hover{box-shadow:0 16px 34px rgba(184,137,79,.35);}
-.btn-dark:hover{box-shadow:0 16px 34px rgba(11,33,31,.3);}
-
-.hero-bg-video,.hero-bg-poster{transition:transform .1s linear;}
-
-.hero-stats strong{transition:transform .25s ease;}
-.hero-stats.counted strong{animation:statPop .5s ease;}
-@keyframes statPop{0%{transform:scale(1);}50%{transform:scale(1.12);}100%{transform:scale(1);}}
 </style>
 </head>
 <body>
-
-<div class="scroll-rail" id="scrollRail"></div>
 
 <header id="siteHeader">
 <a href="#home" class="logo"><img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="logo-img"></a>
@@ -391,34 +338,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 
 <section class="hero" id="home">
-    <!--
-      ============================================================
-      HERO MEDIA — explicit if / else (video wins if it exists,
-      photo is the fallback). No stray <source> tag is ever
-      rendered when hero.video_url is empty, and the video/poster
-      elements are set to the correct initial display right away —
-      so a deleted video can never show up again just because the
-      element happened to still exist in the DOM.
-
-      Both #heroVideo and #heroPoster are ALWAYS rendered (their
-      visibility is controlled by inline style, not by removing
-      them from the page) so the admin's live-preview picker and
-      the iOS autoplay-fallback script below keep working no
-      matter which one is "active".
-      ============================================================
-    -->
+    <!-- Poster image shows instantly and acts as the iOS fallback if the video is ever blocked (e.g. Low Power Mode).
+         Uses hero.poster_url if your model has it; otherwise falls back to nothing extra is needed —
+         the video's own poster="" attribute below covers the same purpose without requiring a new field. -->
     {% if hero.poster_url %}
-    <img class="hero-bg-poster" id="heroPoster"
-         src="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}"
-         alt="" aria-hidden="true"
-         style="display:{% if hero.video_url %}none{% else %}block{% endif %};">
+    <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
     {% else %}
-    <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"
-         style="display:{% if hero.video_url %}none{% else %}block{% endif %};"></div>
+    <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
     {% endif %}
-
-    {% if hero.video_url %}
-    <!-- VIDEO PRESENT -> show the video -->
     <video
         class="hero-bg-video"
         id="heroVideo"
@@ -430,39 +357,10 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         preload="auto"
         disableRemotePlayback
         x-webkit-airplay="allow"
-        style="display:block;"
-        {% if hero.poster_url %}poster="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}"{% endif %}>
-        <source src="{{ hero.video_url }}?v={{ hero.updated_at|date:'U' }}" type="video/mp4">
+        {% if hero.poster_url %}poster="{{ hero.poster_url }}"{% endif %}>
+        <source src="{{ hero.video_url }}" type="video/mp4">
     </video>
-    {% else %}
-    <!-- NO VIDEO -> photo is shown instead (kept hidden + empty, no source) -->
-    <video
-        class="hero-bg-video"
-        id="heroVideo"
-        autoplay
-        muted
-        loop
-        playsinline
-        webkit-playsinline="true"
-        preload="auto"
-        disableRemotePlayback
-        x-webkit-airplay="allow"
-        style="display:none;">
-    </video>
-    {% endif %}
-
     <div class="hero-bg-overlay"></div>
-
-    {% if user.is_staff %}
-    <!-- Admin-only: pick a video or image and see it appear in the hero
-         IMMEDIATELY (client-side preview), before it's ever uploaded/saved. -->
-    <div class="hero-media-editor">
-        <label class="hero-media-editor-btn" for="heroFileInput">🖼️ Change Hero Media</label>
-        <input type="file" id="heroFileInput" accept="image/*,video/*" hidden>
-        <span class="hero-media-editor-status" id="heroMediaStatus"></span>
-    </div>
-    {% endif %}
-
     <div class="wrap">
         <div class="hero-grid">
 
@@ -472,7 +370,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                 <p>{{ hero.sub }}</p>
                 <div class="hero-cta">
                     <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20a%20free%20pool%20design%20consultation." id="heroConsultBtn" class="btn btn-outline" target="_blank">Get Free Consultation</a>
-                    <a href="#gallery" class="btn btn-solid-brass">View Our Work</a>
                 </div>
                 <div class="hero-stats">
                     {% for s in hero.stats %}
@@ -488,19 +385,15 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                         {% for p in products %}
                         <a href="{% url 'shop' %}" class="plant-card">
                             <img src="{{ p.image }}" alt="{{ p.name }}">
-                            <div class="card-bar">
-                                <div class="name">{{ p.name }}</div>
-                                <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
-                            </div>
+                            <div class="name">{{ p.name }}</div>
+                            <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
                         </a>
                         {% endfor %}
                         {% for p in products %}
                         <a href="{% url 'shop' %}" class="plant-card" aria-hidden="true" tabindex="-1">
                             <img src="{{ p.image }}" alt="">
-                            <div class="card-bar">
-                                <div class="name">{{ p.name }}</div>
-                                <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
-                            </div>
+                            <div class="name">{{ p.name }}</div>
+                            <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
                         </a>
                         {% endfor %}
                     </div>
@@ -521,18 +414,18 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="services">
 <div class="wrap">
-    <div class="section-head reveal-soft">
+    <div class="section-head">
     <div class="eyebrow">What We Offer</div>
     <h2>Everything for a pool that lasts</h2>
     <p>Whether it's a new build, a refit, or just the right pump for your filtration — one team handles the whole job.</p>
     </div>
     <div class="services-grid">
-    <div class="service-card reveal" style="--rd:.0s"><div class="ic">🏗</div><h3>Custom Swimming pool construction</h3><p>From design to digging to the final finish, we build pools tailored to your space, budget and style — homes, villas and resorts alike.</p></div>
-    <div class="service-card reveal" style="--rd:.1s"><div class="ic">🔧</div><h3>Maintainance</h3><p>Regular cleaning, equipment checks and water balancing so your pool stays safe, clear and ready to use all year round.</p></div>
-    <div class="service-card reveal" style="--rd:.2s"><div class="ic">💧</div><h3>Accessories &  Pool water treatment chemicals</h3><p>Pumps, filters, lighting and genuine water-treatment chemicals — everything you need to keep your pool running right.</p></div>
-    <div class="service-card reveal" style="--rd:.3s"><div class="ic">🛠</div><h3>Guidelines</h3><p>Not sure where to start? Our team offers honest guidance on design, upkeep and safety so you can make the right call for your pool.</p></div>
+    <div class="service-card"><div class="ic">🏗</div><h3>Custom Swimming pool construction</h3><p>From design to digging to the final finish, we build pools tailored to your space, budget and style — homes, villas and resorts alike.</p></div>
+    <div class="service-card"><div class="ic">🔧</div><h3>Maintainance</h3><p>Regular cleaning, equipment checks and water balancing so your pool stays safe, clear and ready to use all year round.</p></div>
+    <div class="service-card"><div class="ic">💧</div><h3>Accessories &  Pool water treatment chemicals</h3><p>Pumps, filters, lighting and genuine water-treatment chemicals — everything you need to keep your pool running right.</p></div>
+    <div class="service-card"><div class="ic">🛠</div><h3>Guidelines</h3><p>Not sure where to start? Our team offers honest guidance on design, upkeep and safety so you can make the right call for your pool.</p></div>
     </div>
-    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20pool%20construction%2C%20maintenance%20and%20accessory%20services." class="services-wa reveal" style="--rd:.35s" target="_blank">
+    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20pool%20construction%2C%20maintenance%20and%20accessory%20services." class="services-wa" target="_blank">
         <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.42.71 4.673 1.933 6.568L4 29l7.617-1.897A11.93 11.93 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.7c-2.11 0-4.08-.62-5.735-1.687l-.411-.257-4.522 1.127 1.208-4.406-.27-.428A9.66 9.66 0 0 1 6.3 15c0-5.35 4.352-9.7 9.701-9.7 5.35 0 9.699 4.35 9.699 9.7 0 5.35-4.35 9.7-9.699 9.7zm5.316-7.268c-.29-.145-1.717-.848-1.983-.945-.266-.097-.46-.145-.653.145-.194.29-.75.945-.92 1.14-.169.194-.338.218-.628.073-.29-.145-1.223-.451-2.33-1.437-.861-.768-1.443-1.716-1.612-2.006-.169-.29-.018-.447.127-.591.13-.13.29-.339.435-.508.145-.169.194-.29.29-.484.097-.194.048-.363-.024-.508-.073-.145-.653-1.575-.896-2.156-.236-.567-.475-.49-.653-.499l-.556-.01c-.194 0-.508.073-.774.363-.266.29-1.014.99-1.014 2.42 0 1.428 1.038 2.808 1.183 3.002.145.194 2.043 3.12 4.951 4.376.692.299 1.232.477 1.653.61.694.221 1.326.19 1.826.115.557-.083 1.717-.702 1.96-1.38.242-.678.242-1.259.169-1.38-.073-.121-.266-.194-.556-.339z"/></svg>
         Chat with us on WhatsApp
     </a>
@@ -541,30 +434,34 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="shop" style="background:var(--white);">
 <div class="wrap">
-    <div class="section-head reveal-soft">
+    <div class="section-head">
     <div class="eyebrow">Pool Shop</div>
     <h2>Pools & accessories</h2>
     <p>A quick look at our pool designs and accessories — pick a size, choose quantity, add to cart. Click any product, or tap "Shop All" below, to see our full catalog.</p>
     </div>
-    <div class="shop-tabs reveal-soft" id="shopTabs">
+    <div class="shop-tabs" id="shopTabs">
     <button class="tab-btn active" data-cat="all">All</button>
     {% for key, label in categories %}
     <button class="tab-btn" data-cat="{{ key }}">{{ label }}</button>
     {% endfor %}
     </div>
 
+    <!-- Only the first 4 products are shown on the homepage; the rest live on the full Shop page -->
     <div class="product-grid" id="productGrid">
     {% for p in products|slice:":4" %}
-        <div class="product-card reveal" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
+        <div class="product-card" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
 
+        <!-- Clicking the image goes straight to the Shop page -->
         <a href="{% url 'shop' %}" class="product-img">
             {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
             <img src="{{ p.image }}" alt="{{ p.name }}">
         </a>
 
         <div class="product-body">
+            <!-- Clicking the name also goes to the Shop page -->
             <a href="{% url 'shop' %}"><h3 class="product-title-link">{{ p.name }}</h3></a>
 
+            <!-- Price now updates live based on the size picked below -->
             <div class="price" id="price-{{ p.id }}">
                 {% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}<span class="price-value">₹{{ p.price|floatformat:0 }}</span>
             </div>
@@ -586,28 +483,29 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     {% endfor %}
     </div>
 
+    <!-- See more / Shop button below the 4 preview products -->
     <div class="shop-more-wrap">
-        <a href="{% url 'shop' %}" class="btn btn-primary reveal">See More — Shop All Products →</a>
+        <a href="{% url 'shop' %}" class="btn btn-primary">See More — Shop All Products →</a>
     </div>
 </div>
 </section>
 
 <section class="section" id="gallery">
 <div class="wrap">
-    <div class="section-head reveal-soft">
+    <div class="section-head">
     <div class="eyebrow">Recent Work</div>
     <h2>Gallery</h2>
     <p>A look at pools we've designed, built and fitted out.</p>
     </div>
     <div class="gallery-grid" id="galleryGridEl">
-    {% for g in gallery %}<img class="reveal-scale" src="{{ g.image }}">{% endfor %}
+    {% for g in gallery %}<img src="{{ g.image }}">{% endfor %}
     </div>
 </div>
 </section>
 
 <section class="section" id="clients" style="padding-top:0;">
 <div class="wrap">
-    <div class="clients-strip reveal-soft">
+    <div class="clients-strip">
     <span>GREENPALM RESORTS</span><span>VILLA ESTATES</span><span>BLUE LAGOON HOMES</span><span>COASTLINE HOTELS</span><span>PALM GROVE</span>
     </div>
 </div>
@@ -615,14 +513,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="reviews" style="background:var(--white);">
 <div class="wrap">
-    <div class="section-head reveal-soft">
+    <div class="section-head">
     <div class="eyebrow">Client Reviews</div>
     <h2>What pool owners say</h2>
     <p>Real feedback from people we've built and maintained pools for.</p>
     </div>
     <div class="review-grid" id="reviewGrid">
     {% for r in reviews %}
-        <div class="review-card reveal">
+        <div class="review-card">
         <div class="review-top"><img src="{{ r.avatar_url }}" alt="{{ r.name }}"><div><h4>{{ r.name }}</h4><small>Verified Customer</small></div></div>
         <div class="stars">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
         <p>{{ r.text }}</p>
@@ -638,7 +536,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <p style="grid-column:1/-1;color:var(--muted);">Be the first to leave a review!</p>
     {% endfor %}
     </div>
-    <div class="review-form reveal-soft">
+    <div class="review-form">
     <h3>Add your review</h3>
     <p class="sub">Share your experience — add photos or a short video of your pool. Reviews are checked by our team before going live.</p>
     <div class="field"><label>Your name</label><input type="text" id="rvName" placeholder="e.g. Anu Thomas"></div>
@@ -659,12 +557,12 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="contact">
 <div class="wrap">
-    <div class="section-head reveal-soft">
+    <div class="section-head">
     <div class="eyebrow">Get In Touch</div>
     <h2>Let's talk about your pool</h2>
     </div>
     <div class="contact-wrap">
-    <div class="contact-info reveal">
+    <div class="contact-info">
         <h3>Contact details</h3>
         <div class="contact-row"><div class="ic">📍</div><div><h4>Workshop & Showroom</h4><p>NH66, Near Marine Drive, Kochi, Kerala — 682001</p></div></div>
         <div class="contact-row"><div class="ic">📞</div><div><h4>Call us</h4><p>+91 98765 43210 · Mon–Sat, 9am–7pm</p></div></div>
@@ -672,7 +570,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <div class="contact-row"><div class="ic">✉️</div><div><h4>Email</h4><p>hello@masterpools.com</p></div></div>
         <div class="map-box"><iframe loading="lazy" src="https://www.google.com/maps?q=Kochi,Kerala&output=embed"></iframe></div>
     </div>
-    <div class="contact-form reveal" style="--rd:.15s">
+    <div class="contact-form">
         <h3 style="font-family:'Fraunces',serif;font-weight:600;margin-bottom:20px;">Send an enquiry</h3>
         <div class="field"><label>Name</label><input type="text" id="cName" placeholder="Your name"></div>
         <div class="field"><label>Phone</label><input type="text" id="cPhone" placeholder="Your phone number"></div>
@@ -685,7 +583,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <footer>
 <div class="wrap">
-    <div class="footer-grid reveal-soft">
+    <div class="footer-grid">
     <div>
         <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="logo-img" style="margin-bottom:14px;">
         <p style="font-size:.88rem;max-width:280px;">Master Pools designs and builds custom swimming pools and premium pool accessories across Kerala.</p>
@@ -744,131 +642,38 @@ const REVIEW_URL = "{% url 'submit_review' %}";
 /* ============ HEADER SCROLL + MOBILE NAV ============ */
 const header = document.getElementById('siteHeader');
 window.addEventListener('scroll', ()=>{ header.classList.toggle('scrolled', window.scrollY > 40); });
-
-/* ============ SCROLL PROGRESS RAIL ============ */
-const scrollRail = document.getElementById('scrollRail');
-function updateRail(){
-  const h = document.documentElement;
-  const scrolled = h.scrollTop || document.body.scrollTop;
-  const max = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
-  scrollRail.style.width = max > 0 ? (scrolled / max * 100) + '%' : '0%';
-}
-window.addEventListener('scroll', updateRail, {passive:true});
-updateRail();
-
-/* ============ HERO PARALLAX ============ */
-const heroVideoEl = document.getElementById('heroVideo');
-const heroPosterEl = document.getElementById('heroPoster');
-function updateHeroParallax(){
-  const y = window.scrollY;
-  if(y < window.innerHeight * 1.1){
-    const shift = y * 0.18;
-    const scale = 1 + Math.min(y / 4000, 0.06);
-    const t = `translateY(${shift}px) scale(${scale})`;
-    if(heroVideoEl) heroVideoEl.style.transform = t;
-    if(heroPosterEl) heroPosterEl.style.transform = t;
-  }
-}
-window.addEventListener('scroll', updateHeroParallax, {passive:true});
-updateHeroParallax();
-
-/* ============ SCROLL REVEAL ============ */
-(function(){
-  const staggerGroups = [
-    '#productGrid', '#galleryGridEl', '#reviewGrid', '.footer-grid', '.services-grid'
-  ];
-  staggerGroups.forEach(sel=>{
-    document.querySelectorAll(sel).forEach(group=>{
-      const children = [...group.children].filter(c=>c.classList && (c.classList.contains('reveal') || c.classList.contains('reveal-scale') || c.classList.contains('reveal-soft')));
-      children.forEach((child, i)=>{
-        if(!child.style.getPropertyValue('--rd')){
-          child.style.setProperty('--rd', (Math.min(i,6) * 0.08) + 's');
-        }
-      });
-    });
-  });
-
-  const revealEls = document.querySelectorAll('.reveal, .reveal-soft, .reveal-scale');
-  if('IntersectionObserver' in window){
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          entry.target.classList.add('in-view');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.14, rootMargin: '0px 0px -60px 0px' });
-    revealEls.forEach(el=>io.observe(el));
-  } else {
-    revealEls.forEach(el=>el.classList.add('in-view'));
-  }
-})();
-
-/* ============ HERO STAT COUNTERS ============ */
-(function(){
-  const statBlocks = document.querySelectorAll('.hero-stats > div');
-  if(!statBlocks.length || !('IntersectionObserver' in window)) return;
-
-  function animateCount(strongEl){
-    const raw = strongEl.textContent.trim();
-    const match = raw.match(/^([\d.]+)(.*)$/);
-    if(!match){ return; }
-    const target = parseFloat(match[1]);
-    const suffix = match[2] || '';
-    const isDecimal = match[1].includes('.');
-    const duration = 1100;
-    const start = performance.now();
-    function tick(now){
-      const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      const val = target * eased;
-      strongEl.textContent = (isDecimal ? val.toFixed(1) : Math.round(val)) + suffix;
-      if(p < 1) requestAnimationFrame(tick);
-      else strongEl.textContent = raw;
-    }
-    requestAnimationFrame(tick);
-  }
-
-  const statIo = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const strong = entry.target.querySelector('strong');
-        if(strong) animateCount(strong);
-        entry.target.parentElement.classList.add('counted');
-        statIo.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.5 });
-  statBlocks.forEach(b=>statIo.observe(b));
-})();
 const mobileNav = document.getElementById('mobileNav');
 document.getElementById('menuToggle').addEventListener('click', ()=>mobileNav.classList.toggle('open'));
 document.getElementById('mobileNavClose').addEventListener('click', ()=>mobileNav.classList.remove('open'));
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileNav.classList.remove('open')));
 
 /* ============ HERO VIDEO — iOS/Safari autoplay + resume fix ============
-   If there's no video (server rendered display:none, no <source>), play()
-   simply fails immediately and showPosterFallback() confirms the poster
-   is visible — it's a no-op safety net, not the source of truth. The
-   template if/else above is the source of truth for which one is shown.
+   iOS Safari will silently pause a background <video> when:
+   - the tab/app goes to the background or the screen locks
+   - Low Power Mode blocks autoplay entirely
+   - the element is reflowed/hidden briefly during scroll
+   The fixes below (a) always attempt play() again on resume events,
+   (b) fall back to a static poster image if playback keeps failing,
+   (c) retry play() on first user touch, since iOS sometimes needs a
+       user gesture even for muted videos in certain power/data-saving states.
 */
 (function(){
   const video = document.getElementById('heroVideo');
   const poster = document.getElementById('heroPoster');
   if(!video) return;
 
-  let usingFallback = video.style.display === 'none';
+  let usingFallback = false;
   function showPosterFallback(){
     if(usingFallback) return;
     usingFallback = true;
     video.style.display = 'none';
-    if(poster) poster.style.display = 'block';
+    poster.style.display = 'block';
   }
   function hidePosterFallback(){
     if(!usingFallback) return;
     usingFallback = false;
     video.style.display = 'block';
-    if(poster) poster.style.display = 'none';
+    poster.style.display = 'none';
   }
 
   function attemptPlay(){
@@ -877,26 +682,36 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
       playPromise
         .then(hidePosterFallback)
         .catch(()=>{
+          // Autoplay blocked (e.g. Low Power Mode) — show the poster instead
+          // of a frozen/paused video, and try again on the next interaction.
           showPosterFallback();
         });
     }
   }
 
+  // Initial attempt once metadata is ready
   video.addEventListener('loadedmetadata', attemptPlay);
   attemptPlay();
 
+  // iOS pauses the video when the page is backgrounded (app switch, lock
+  // screen, tab switch). Resume as soon as the page is visible again.
   document.addEventListener('visibilitychange', ()=>{
     if(document.visibilityState === 'visible') attemptPlay();
   });
 
+  // bfcache restores (Safari back/forward gesture) can leave the video paused
   window.addEventListener('pageshow', (e)=>{ attemptPlay(); });
 
+  // Belt-and-braces: if the video ever fires 'pause' unexpectedly while the
+  // tab is active and visible, try to resume it.
   video.addEventListener('pause', ()=>{
     if(document.visibilityState === 'visible' && !usingFallback){
       attemptPlay();
     }
   });
 
+  // Some iOS versions only allow (re)play after a user gesture — catch the
+  // very first tap/scroll anywhere on the page and retry once.
   function firstGestureRetry(){
     attemptPlay();
     window.removeEventListener('touchstart', firstGestureRetry);
@@ -906,65 +721,7 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   window.addEventListener('scroll', firstGestureRetry, {passive:true});
 })();
 
-/* ============ HERO MEDIA LIVE PREVIEW — admin picks a file, sees it in the
-   hero instantly, no page reload, no upload required to preview ============ */
-(function(){
-  const fileInput = document.getElementById('heroFileInput');
-  if(!fileInput) return; // not present for non-staff visitors
-
-  const statusEl = document.getElementById('heroMediaStatus');
-  let lastObjectUrl = null;
-
-  function setStatus(text){
-    if(!statusEl) return;
-    statusEl.textContent = text;
-    statusEl.classList.add('show');
-    clearTimeout(setStatus._t);
-    setStatus._t = setTimeout(()=> statusEl.classList.remove('show'), 3000);
-  }
-
-  fileInput.addEventListener('change', function(e){
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    if(!heroVideoEl || !heroPosterEl) return;
-
-    if(lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
-    const url = URL.createObjectURL(file);
-    lastObjectUrl = url;
-
-    if(file.type.startsWith('video/')){
-      heroVideoEl.querySelectorAll('source').forEach(s => s.remove());
-      heroVideoEl.src = url;
-      heroVideoEl.style.display = 'block';
-      heroVideoEl.load();
-      heroVideoEl.play().catch(()=>{});
-
-      heroPosterEl.style.display = 'none';
-      setStatus('Previewing video — not yet saved');
-
-    } else if(file.type.startsWith('image/')){
-      heroVideoEl.pause();
-      heroVideoEl.removeAttribute('src');
-      heroVideoEl.style.display = 'none';
-
-      if(heroPosterEl.tagName === 'IMG'){
-        heroPosterEl.src = url;
-      } else {
-        heroPosterEl.style.backgroundImage = `url(${url})`;
-      }
-      heroPosterEl.style.display = 'block';
-      setStatus('Previewing image — not yet saved');
-
-    } else {
-      setStatus('Please choose an image or video file');
-      return;
-    }
-
-    // TODO: when ready to persist this choice, upload `file` here.
-  });
-})();
-
-/* ============ SHOP TABS ============ */
+/* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
 document.getElementById('shopTabs').addEventListener('click', e=>{
@@ -984,6 +741,7 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   const priceValueEl = card.querySelector('.price-value');
   let qty = 1;
 
+  // Update the displayed price whenever the customer picks a different size
   function updatePriceDisplay(){
     const opt = sizeSelect.options[sizeSelect.selectedIndex];
     if(opt && priceValueEl){
@@ -992,7 +750,7 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   }
   if(sizeSelect){
     sizeSelect.addEventListener('change', updatePriceDisplay);
-    updatePriceDisplay();
+    updatePriceDisplay(); // set correct price for whichever size is selected by default
   }
 
   card.querySelector('.qty-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty-1); qtyVal.textContent = qty; });
@@ -1015,7 +773,7 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   });
 });
 
-/* ============ CART ============ */
+/* ============ CART (in-memory for this visit) ============ */
 let cart = [];
 function addToCart(product, size, qty){
   const existing = cart.find(c=>c.id===product.id && c.size===size);
@@ -1049,7 +807,7 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
 overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); });
 
-/* ============ CHECKOUT ============ */
+/* ============ CHECKOUT -> saves to real DB via fetch, then opens WhatsApp ============ */
 const checkoutModal = document.getElementById('checkoutModal');
 function openModal(){ if(cart.length===0){ showToast("Your cart is empty"); return; } checkoutModal.classList.add('show'); overlay.classList.add('show'); }
 function closeModal(){ checkoutModal.classList.remove('show'); overlay.classList.remove('show'); }
@@ -1102,7 +860,7 @@ document.getElementById('cSend').addEventListener('click', ()=>{
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 });
 
-/* ============ REVIEWS ============ */
+/* ============ REVIEWS -> saves to real DB via fetch (multipart, with media) ============ */
 let pickedRating = 5;
 const ratingPick = document.getElementById('ratingPick');
 function paintStars(){ [...ratingPick.children].forEach(s=>{ s.classList.toggle('active', parseInt(s.dataset.v) <= pickedRating); }); }

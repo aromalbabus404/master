@@ -11,9 +11,7 @@ urlpatterns = [
     # Legacy standalone product edit endpoint (kept for backward compatibility,
     # renamed so it no longer collides with the dashboard's "product_edit" name)
     path("product/<int:pk>/edit/", views.product_edit, name="product_edit_legacy"),
-    
-    
-    path("hero/remove/", views.hero_remove_file, name="hero_remove_file"),
+
     # Admin dashboard
     path("dashboard/", views.dashboard, name="dashboard"),
     path("dashboard/hero/save/", views.hero_save, name="hero_save"),
