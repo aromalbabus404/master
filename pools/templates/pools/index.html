@@ -57,9 +57,20 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 /* ============ HERO — image background + sliding card carousel ============ */
 .hero{position:relative;padding:170px 0 70px;overflow:hidden;}
 .hero-bg-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
-.hero-bg-poster{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
+.hero-bg-poster{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);background-size:cover;background-position:center;}
 .hero-bg-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(11,33,31,.6) 0%, rgba(11,33,31,.5) 45%, rgba(11,33,31,.72) 100%);}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:56px;align-items:center;}
+
+/* ---- Admin-only hero media picker + live preview ---- */
+.hero-media-editor{position:absolute;top:96px;right:28px;z-index:5;display:flex;align-items:center;gap:10px;}
+.hero-media-editor-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(11,33,31,.55);backdrop-filter:blur(6px);border:1.5px solid rgba(255,255,255,.35);color:var(--white);font-family:'Manrope',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.3px;padding:10px 16px;border-radius:999px;cursor:pointer;transition:.25s ease;}
+.hero-media-editor-btn:hover{background:var(--brass);border-color:var(--brass);color:var(--ink);}
+.hero-media-editor-status{font-family:'Manrope',sans-serif;font-size:.72rem;color:rgba(255,255,255,.75);background:rgba(11,33,31,.5);padding:6px 12px;border-radius:999px;display:none;}
+.hero-media-editor-status.show{display:inline-block;}
+@media(max-width:600px){
+  .hero-media-editor{top:80px;right:14px;}
+  .hero-media-editor-btn{font-size:.7rem;padding:8px 12px;}
+}
 
 .hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:2;}
 .hero-text .eyebrow{display:inline-flex;color:var(--white);background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.28);padding:9px 18px 9px 14px;border-radius:999px;font-family:'Manrope',sans-serif;font-style:normal;font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;}
@@ -417,6 +428,19 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         {% endif %}
     </video>
     <div class="hero-bg-overlay"></div>
+
+    {% if user.is_staff %}
+    <!-- Admin-only: pick a video or image and see it appear in the hero
+         IMMEDIATELY (client-side preview), before it's ever uploaded/saved.
+         Wire heroFileInput's change event (see script at bottom) to your
+         real upload endpoint whenever you're ready to persist the choice. -->
+    <div class="hero-media-editor">
+        <label class="hero-media-editor-btn" for="heroFileInput">🖼️ Change Hero Media</label>
+        <input type="file" id="heroFileInput" accept="image/*,video/*" hidden>
+        <span class="hero-media-editor-status" id="heroMediaStatus"></span>
+    </div>
+    {% endif %}
+
     <div class="wrap">
         <div class="hero-grid">
 
@@ -879,6 +903,71 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   }
   window.addEventListener('touchstart', firstGestureRetry, {passive:true});
   window.addEventListener('scroll', firstGestureRetry, {passive:true});
+})();
+
+/* ============ HERO MEDIA LIVE PREVIEW — admin picks a file, sees it in the
+   hero instantly, no page reload, no upload required to preview ============ */
+(function(){
+  const fileInput = document.getElementById('heroFileInput');
+  if(!fileInput) return; // not present for non-staff visitors
+
+  const statusEl = document.getElementById('heroMediaStatus');
+  let lastObjectUrl = null;
+
+  function setStatus(text){
+    if(!statusEl) return;
+    statusEl.textContent = text;
+    statusEl.classList.add('show');
+    clearTimeout(setStatus._t);
+    setStatus._t = setTimeout(()=> statusEl.classList.remove('show'), 3000);
+  }
+
+  fileInput.addEventListener('change', function(e){
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+
+    // Release the previous blob URL (if any) to avoid leaking memory
+    if(lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+    const url = URL.createObjectURL(file);
+    lastObjectUrl = url;
+
+    if(file.type.startsWith('video/')){
+      // Show the picked video immediately in the hero background
+      heroVideoEl.querySelectorAll('source').forEach(s => s.remove());
+      heroVideoEl.src = url;
+      heroVideoEl.style.display = 'block';
+      heroVideoEl.load();
+      heroVideoEl.play().catch(()=>{ /* autoplay may need a user gesture on some browsers */ });
+
+      heroPosterEl.style.display = 'none';
+      setStatus('Previewing video — not yet saved');
+
+    } else if(file.type.startsWith('image/')){
+      // Show the picked image immediately as the hero background
+      heroVideoEl.pause();
+      heroVideoEl.removeAttribute('src');
+      heroVideoEl.style.display = 'none';
+
+      if(heroPosterEl.tagName === 'IMG'){
+        heroPosterEl.src = url;
+      } else {
+        heroPosterEl.style.backgroundImage = `url(${url})`;
+      }
+      heroPosterEl.style.display = 'block';
+      setStatus('Previewing image — not yet saved');
+
+    } else {
+      setStatus('Please choose an image or video file');
+      return;
+    }
+
+    // TODO: when ready to persist this choice, upload `file` here, e.g.:
+    // const fd = new FormData();
+    // fd.append('hero_media', file);
+    // fetch(HERO_UPLOAD_URL, { method:'POST', headers:{'X-CSRFToken':CSRF_TOKEN}, body: fd })
+    //   .then(r => r.json())
+    //   .then(data => setStatus(data.ok ? 'Saved!' : 'Save failed'));
+  });
 })();
 
 /* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
