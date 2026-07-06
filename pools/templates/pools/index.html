@@ -854,7 +854,7 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
 
   function goToSlide(i){
     const idx = Math.max(0, Math.min(cards.length - 1, i));
-    mask.scrollTo({left: idx * cardWidth(), behavior:'smooth'});
+    mask.scrollTo({left: idx * cardWidth(), behavior:'auto'});
   }
 
   function updateDots(){
@@ -882,7 +882,7 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
     autoTimer = setInterval(()=>{
       const next = currentIndex() + 1 >= cards.length ? 0 : currentIndex() + 1;
       goToSlide(next);
-    }, 3800);
+    }, 1500);
   }
   function stopAuto(){ clearInterval(autoTimer); }
 
