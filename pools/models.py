@@ -60,6 +60,13 @@ class HeroSection(models.Model):
     stat4_value = models.CharField(max_length=20, default="60+")
     stat4_label = models.CharField(max_length=40, default="Accessories")
 
+    # Stamped automatically on every save (Django handles this — no code
+    # needed elsewhere). Used purely as a cache-busting query param on the
+    # video/poster URLs in index.html, so replacing the hero video/image
+    # forces browsers to fetch the new file instead of showing a cached
+    # copy of the old one under the same-looking URL.
+    updated_at = models.DateTimeField(auto_now=True)
+
     def save(self, *args, **kwargs):
         self.pk = 1
 

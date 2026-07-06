@@ -391,10 +391,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="hero" id="home">
     <!-- Poster image shows instantly and acts as the iOS fallback if the video is ever blocked (e.g. Low Power Mode).
-         Uses hero.poster_url if your model has it; otherwise falls back to nothing extra is needed —
-         the video's own poster="" attribute below covers the same purpose without requiring a new field. -->
+         ?v={{ hero.updated_at|date:'U' }} is a cache-busting query param: it changes every time the
+         hero is saved (updated_at is auto_now=True on HeroSection), forcing browsers to fetch the new
+         file instead of reusing a cached copy of the previous video/image under a same-looking URL. -->
     {% if hero.poster_url %}
-    <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
+    <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}" alt="" aria-hidden="true">
     {% else %}
     <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
     {% endif %}
@@ -409,8 +410,13 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         preload="auto"
         disableRemotePlayback
         x-webkit-airplay="allow"
-        {% if hero.poster_url %}poster="{{ hero.poster_url }}"{% endif %}>
-        <source src="{{ hero.video_url }}" type="video/mp4">
+        {% if hero.poster_url %}poster="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}"{% endif %}>
+        <!-- Guarded with {% if hero.video_url %} so removing the hero video (via the admin's
+             "Remove Video" button) doesn't leave an empty src="" here, which some browsers try
+             to resolve against the current page URL and log a spurious load error for. -->
+        {% if hero.video_url %}
+        <source src="{{ hero.video_url }}?v={{ hero.updated_at|date:'U' }}" type="video/mp4">
+        {% endif %}
     </video>
     <div class="hero-bg-overlay"></div>
     <div class="wrap">
