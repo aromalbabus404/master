@@ -95,7 +95,6 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
   mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
 }
-/* Slowed down: was 20s, now 45s for a calmer, slower slide */
 .carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 150s linear infinite;}
 .carousel-wrap:hover .carousel-track{animation-play-state:paused;}
 .plant-card{
@@ -324,19 +323,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 }
 
 /* ============ PREMIUM SCROLL SYSTEM ============ */
-/* Top progress rail — a thin brass line that fills as the page is read */
 .scroll-rail{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--seafoam-deep),var(--brass));z-index:999;transition:width .12s linear;}
 
-/* Base reveal state: content starts settled slightly below and dissolved,
-   then eases up into place — the "premium" motion signature for this page. */
 .reveal{opacity:0;transform:translateY(38px);filter:blur(2px);transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.16,1,.3,1);transition-delay:var(--rd,0s);will-change:opacity,transform;}
 .reveal.in-view{opacity:1;transform:translateY(0);filter:blur(0);}
 
-/* A gentler variant for large blocks (section heads, hero-adjacent copy) */
 .reveal-soft{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--rd,0s);}
 .reveal-soft.in-view{opacity:1;transform:translateY(0);}
 
-/* Scale-in used for images/media so photography feels like it's "arriving" */
 .reveal-scale{opacity:0;transform:scale(.94) translateY(24px);transition:opacity .95s cubic-bezier(.16,1,.3,1), transform .95s cubic-bezier(.16,1,.3,1);transition-delay:var(--rd,0s);}
 .reveal-scale.in-view{opacity:1;transform:scale(1) translateY(0);}
 
@@ -344,20 +338,16 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
   .reveal,.reveal-soft,.reveal-scale{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
 }
 
-/* Slightly deeper, longer hover lift on cards for a more premium settle */
 .service-card,.product-card,.review-card{transition:transform .5s cubic-bezier(.16,1,.3,1), box-shadow .5s cubic-bezier(.16,1,.3,1);}
 .service-card:hover,.product-card:hover{box-shadow:0 30px 60px rgba(11,33,31,.18);}
 .review-card:hover{transform:translateY(-4px);box-shadow:0 30px 60px rgba(11,33,31,.18);}
 
-/* Buttons get a touch more weight on press/hover */
 .btn-primary,.btn-dark{transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s cubic-bezier(.16,1,.3,1), background .3s ease;}
 .btn-primary:hover{box-shadow:0 16px 34px rgba(184,137,79,.35);}
 .btn-dark:hover{box-shadow:0 16px 34px rgba(11,33,31,.3);}
 
-/* Hero copy/stats get subtle parallax drift applied via JS transform on scroll */
 .hero-bg-video,.hero-bg-poster{transition:transform .1s linear;}
 
-/* Animated counter number ticks feel more alive with a tiny scale pulse */
 .hero-stats strong{transition:transform .25s ease;}
 .hero-stats.counted strong{animation:statPop .5s ease;}
 @keyframes statPop{0%{transform:scale(1);}50%{transform:scale(1.12);}100%{transform:scale(1);}}
@@ -401,15 +391,34 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 
 <section class="hero" id="home">
-    <!-- Poster image shows instantly and acts as the iOS fallback if the video is ever blocked (e.g. Low Power Mode).
-         ?v={{ hero.updated_at|date:'U' }} is a cache-busting query param: it changes every time the
-         hero is saved (updated_at is auto_now=True on HeroSection), forcing browsers to fetch the new
-         file instead of reusing a cached copy of the previous video/image under a same-looking URL. -->
+    <!--
+      ============================================================
+      HERO MEDIA — explicit if / else (video wins if it exists,
+      photo is the fallback). No stray <source> tag is ever
+      rendered when hero.video_url is empty, and the video/poster
+      elements are set to the correct initial display right away —
+      so a deleted video can never show up again just because the
+      element happened to still exist in the DOM.
+
+      Both #heroVideo and #heroPoster are ALWAYS rendered (their
+      visibility is controlled by inline style, not by removing
+      them from the page) so the admin's live-preview picker and
+      the iOS autoplay-fallback script below keep working no
+      matter which one is "active".
+      ============================================================
+    -->
     {% if hero.poster_url %}
-    <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}" alt="" aria-hidden="true">
+    <img class="hero-bg-poster" id="heroPoster"
+         src="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}"
+         alt="" aria-hidden="true"
+         style="display:{% if hero.video_url %}none{% else %}block{% endif %};">
     {% else %}
-    <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
+    <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"
+         style="display:{% if hero.video_url %}none{% else %}block{% endif %};"></div>
     {% endif %}
+
+    {% if hero.video_url %}
+    <!-- VIDEO PRESENT -> show the video -->
     <video
         class="hero-bg-video"
         id="heroVideo"
@@ -421,19 +430,32 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         preload="auto"
         disableRemotePlayback
         x-webkit-airplay="allow"
+        style="display:block;"
         {% if hero.poster_url %}poster="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}"{% endif %}>
-        
-        {% if hero.video_url %}
         <source src="{{ hero.video_url }}?v={{ hero.updated_at|date:'U' }}" type="video/mp4">
-        {% endif %}
     </video>
+    {% else %}
+    <!-- NO VIDEO -> photo is shown instead (kept hidden + empty, no source) -->
+    <video
+        class="hero-bg-video"
+        id="heroVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline="true"
+        preload="auto"
+        disableRemotePlayback
+        x-webkit-airplay="allow"
+        style="display:none;">
+    </video>
+    {% endif %}
+
     <div class="hero-bg-overlay"></div>
 
     {% if user.is_staff %}
     <!-- Admin-only: pick a video or image and see it appear in the hero
-         IMMEDIATELY (client-side preview), before it's ever uploaded/saved.
-         Wire heroFileInput's change event (see script at bottom) to your
-         real upload endpoint whenever you're ready to persist the choice. -->
+         IMMEDIATELY (client-side preview), before it's ever uploaded/saved. -->
     <div class="hero-media-editor">
         <label class="hero-media-editor-btn" for="heroFileInput">🖼️ Change Hero Media</label>
         <input type="file" id="heroFileInput" accept="image/*,video/*" hidden>
@@ -531,22 +553,18 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     {% endfor %}
     </div>
 
-    <!-- Only the first 4 products are shown on the homepage; the rest live on the full Shop page -->
     <div class="product-grid" id="productGrid">
     {% for p in products|slice:":4" %}
         <div class="product-card reveal" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
 
-        <!-- Clicking the image goes straight to the Shop page -->
         <a href="{% url 'shop' %}" class="product-img">
             {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
             <img src="{{ p.image }}" alt="{{ p.name }}">
         </a>
 
         <div class="product-body">
-            <!-- Clicking the name also goes to the Shop page -->
             <a href="{% url 'shop' %}"><h3 class="product-title-link">{{ p.name }}</h3></a>
 
-            <!-- Price now updates live based on the size picked below -->
             <div class="price" id="price-{{ p.id }}">
                 {% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}<span class="price-value">₹{{ p.price|floatformat:0 }}</span>
             </div>
@@ -568,7 +586,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     {% endfor %}
     </div>
 
-    <!-- See more / Shop button below the 4 preview products -->
     <div class="shop-more-wrap">
         <a href="{% url 'shop' %}" class="btn btn-primary reveal">See More — Shop All Products →</a>
     </div>
@@ -739,7 +756,7 @@ function updateRail(){
 window.addEventListener('scroll', updateRail, {passive:true});
 updateRail();
 
-/* ============ HERO PARALLAX — subtle depth as you start scrolling down ============ */
+/* ============ HERO PARALLAX ============ */
 const heroVideoEl = document.getElementById('heroVideo');
 const heroPosterEl = document.getElementById('heroPoster');
 function updateHeroParallax(){
@@ -755,9 +772,7 @@ function updateHeroParallax(){
 window.addEventListener('scroll', updateHeroParallax, {passive:true});
 updateHeroParallax();
 
-/* ============ SCROLL REVEAL — fade/rise elements in as they enter view,
-   with an automatic stagger for anything repeated inside the same grid
-   (product cards, gallery photos, reviews, footer columns) ============ */
+/* ============ SCROLL REVEAL ============ */
 (function(){
   const staggerGroups = [
     '#productGrid', '#galleryGridEl', '#reviewGrid', '.footer-grid', '.services-grid'
@@ -789,7 +804,7 @@ updateHeroParallax();
   }
 })();
 
-/* ============ HERO STAT COUNTERS — count up from 0 the first time they're seen ============ */
+/* ============ HERO STAT COUNTERS ============ */
 (function(){
   const statBlocks = document.querySelectorAll('.hero-stats > div');
   if(!statBlocks.length || !('IntersectionObserver' in window)) return;
@@ -832,32 +847,28 @@ document.getElementById('mobileNavClose').addEventListener('click', ()=>mobileNa
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileNav.classList.remove('open')));
 
 /* ============ HERO VIDEO — iOS/Safari autoplay + resume fix ============
-   iOS Safari will silently pause a background <video> when:
-   - the tab/app goes to the background or the screen locks
-   - Low Power Mode blocks autoplay entirely
-   - the element is reflowed/hidden briefly during scroll
-   The fixes below (a) always attempt play() again on resume events,
-   (b) fall back to a static poster image if playback keeps failing,
-   (c) retry play() on first user touch, since iOS sometimes needs a
-       user gesture even for muted videos in certain power/data-saving states.
+   If there's no video (server rendered display:none, no <source>), play()
+   simply fails immediately and showPosterFallback() confirms the poster
+   is visible — it's a no-op safety net, not the source of truth. The
+   template if/else above is the source of truth for which one is shown.
 */
 (function(){
   const video = document.getElementById('heroVideo');
   const poster = document.getElementById('heroPoster');
   if(!video) return;
 
-  let usingFallback = false;
+  let usingFallback = video.style.display === 'none';
   function showPosterFallback(){
     if(usingFallback) return;
     usingFallback = true;
     video.style.display = 'none';
-    poster.style.display = 'block';
+    if(poster) poster.style.display = 'block';
   }
   function hidePosterFallback(){
     if(!usingFallback) return;
     usingFallback = false;
     video.style.display = 'block';
-    poster.style.display = 'none';
+    if(poster) poster.style.display = 'none';
   }
 
   function attemptPlay(){
@@ -866,36 +877,26 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
       playPromise
         .then(hidePosterFallback)
         .catch(()=>{
-          // Autoplay blocked (e.g. Low Power Mode) — show the poster instead
-          // of a frozen/paused video, and try again on the next interaction.
           showPosterFallback();
         });
     }
   }
 
-  // Initial attempt once metadata is ready
   video.addEventListener('loadedmetadata', attemptPlay);
   attemptPlay();
 
-  // iOS pauses the video when the page is backgrounded (app switch, lock
-  // screen, tab switch). Resume as soon as the page is visible again.
   document.addEventListener('visibilitychange', ()=>{
     if(document.visibilityState === 'visible') attemptPlay();
   });
 
-  // bfcache restores (Safari back/forward gesture) can leave the video paused
   window.addEventListener('pageshow', (e)=>{ attemptPlay(); });
 
-  // Belt-and-braces: if the video ever fires 'pause' unexpectedly while the
-  // tab is active and visible, try to resume it.
   video.addEventListener('pause', ()=>{
     if(document.visibilityState === 'visible' && !usingFallback){
       attemptPlay();
     }
   });
 
-  // Some iOS versions only allow (re)play after a user gesture — catch the
-  // very first tap/scroll anywhere on the page and retry once.
   function firstGestureRetry(){
     attemptPlay();
     window.removeEventListener('touchstart', firstGestureRetry);
@@ -925,25 +926,23 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   fileInput.addEventListener('change', function(e){
     const file = e.target.files && e.target.files[0];
     if(!file) return;
+    if(!heroVideoEl || !heroPosterEl) return;
 
-    // Release the previous blob URL (if any) to avoid leaking memory
     if(lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
     const url = URL.createObjectURL(file);
     lastObjectUrl = url;
 
     if(file.type.startsWith('video/')){
-      // Show the picked video immediately in the hero background
       heroVideoEl.querySelectorAll('source').forEach(s => s.remove());
       heroVideoEl.src = url;
       heroVideoEl.style.display = 'block';
       heroVideoEl.load();
-      heroVideoEl.play().catch(()=>{ /* autoplay may need a user gesture on some browsers */ });
+      heroVideoEl.play().catch(()=>{});
 
       heroPosterEl.style.display = 'none';
       setStatus('Previewing video — not yet saved');
 
     } else if(file.type.startsWith('image/')){
-      // Show the picked image immediately as the hero background
       heroVideoEl.pause();
       heroVideoEl.removeAttribute('src');
       heroVideoEl.style.display = 'none';
@@ -961,16 +960,11 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
       return;
     }
 
-    // TODO: when ready to persist this choice, upload `file` here, e.g.:
-    // const fd = new FormData();
-    // fd.append('hero_media', file);
-    // fetch(HERO_UPLOAD_URL, { method:'POST', headers:{'X-CSRFToken':CSRF_TOKEN}, body: fd })
-    //   .then(r => r.json())
-    //   .then(data => setStatus(data.ok ? 'Saved!' : 'Save failed'));
+    // TODO: when ready to persist this choice, upload `file` here.
   });
 })();
 
-/* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
+/* ============ SHOP TABS ============ */
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
 document.getElementById('shopTabs').addEventListener('click', e=>{
@@ -990,7 +984,6 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   const priceValueEl = card.querySelector('.price-value');
   let qty = 1;
 
-  // Update the displayed price whenever the customer picks a different size
   function updatePriceDisplay(){
     const opt = sizeSelect.options[sizeSelect.selectedIndex];
     if(opt && priceValueEl){
@@ -999,7 +992,7 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   }
   if(sizeSelect){
     sizeSelect.addEventListener('change', updatePriceDisplay);
-    updatePriceDisplay(); // set correct price for whichever size is selected by default
+    updatePriceDisplay();
   }
 
   card.querySelector('.qty-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty-1); qtyVal.textContent = qty; });
@@ -1022,7 +1015,7 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   });
 });
 
-/* ============ CART (in-memory for this visit) ============ */
+/* ============ CART ============ */
 let cart = [];
 function addToCart(product, size, qty){
   const existing = cart.find(c=>c.id===product.id && c.size===size);
@@ -1056,7 +1049,7 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
 overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); });
 
-/* ============ CHECKOUT -> saves to real DB via fetch, then opens WhatsApp ============ */
+/* ============ CHECKOUT ============ */
 const checkoutModal = document.getElementById('checkoutModal');
 function openModal(){ if(cart.length===0){ showToast("Your cart is empty"); return; } checkoutModal.classList.add('show'); overlay.classList.add('show'); }
 function closeModal(){ checkoutModal.classList.remove('show'); overlay.classList.remove('show'); }
@@ -1109,7 +1102,7 @@ document.getElementById('cSend').addEventListener('click', ()=>{
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 });
 
-/* ============ REVIEWS -> saves to real DB via fetch (multipart, with media) ============ */
+/* ============ REVIEWS ============ */
 let pickedRating = 5;
 const ratingPick = document.getElementById('ratingPick');
 function paintStars(){ [...ratingPick.children].forEach(s=>{ s.classList.toggle('active', parseInt(s.dataset.v) <= pickedRating); }); }
