@@ -54,20 +54,31 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .mobile-nav-close{position:absolute;top:24px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:var(--white);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .mobile-nav-close:hover{background:var(--brass);color:var(--ink);border-color:var(--brass);}
 
-/* ============ HERO — video block on top, text then carousel stacked below ============ */
-.hero{position:relative;z-index:0;padding:170px 0 70px;overflow:hidden;background:var(--ink);}
-.hero-video-box{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:var(--ink);box-shadow:var(--shadow);margin-bottom:52px;}
-.hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.88);background:var(--ink);}
-.hero-bg-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.88);background:var(--ink);}
+/* ============ HERO — full-bleed background video, text overlaid on top (alleppeytourism.in style) ============ */
+.hero{
+  position:relative;z-index:0;overflow:hidden;background:var(--ink);
+  min-height:100svh;min-height:100vh;
+  display:flex;align-items:center;
+  padding:140px 0 56px;
+}
+.hero-bg-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.62);background:var(--ink);z-index:0;}
+.hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.62);background:var(--ink);z-index:0;}
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(9,26,24,.55) 0%, rgba(9,26,24,.25) 30%, rgba(9,26,24,.35) 65%, rgba(7,20,18,.92) 100%),
+    linear-gradient(90deg, rgba(6,18,16,.55) 0%, rgba(6,18,16,0) 55%);
+}
+.hero > .wrap{position:relative;z-index:2;width:100%;}
 
-/* CHANGED: hero-grid is now a single stacked column — text first, carousel below it — on all screen sizes */
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;align-items:center;}
+/* text sits directly over the video, carousel floats below it — both inside the same wrap */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0;align-items:center;}
 
-.hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:1;margin:0 auto;width:100%;}
+.hero-text{max-width:640px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;width:100%;}
 .hero-text .eyebrow{color:var(--brass-light);}
 .hero-text .eyebrow::before{background:var(--seafoam);}
-.hero-text h1{font-size:clamp(2.3rem,4.6vw,3.7rem);color:var(--white);margin-bottom:20px;font-weight:500;}
-.hero-text p{color:rgba(255,255,255,.82);font-size:1.08rem;max-width:480px;margin-bottom:28px;font-weight:400;}
+.hero-text h1{font-size:clamp(2.3rem,4.6vw,3.7rem);color:var(--white);margin-bottom:20px;font-weight:500;text-shadow:0 4px 24px rgba(0,0,0,.35);}
+.hero-text p{color:rgba(255,255,255,.88);font-size:1.08rem;max-width:480px;margin-bottom:28px;font-weight:400;}
 .hero-cta{display:flex;gap:16px;flex-wrap:wrap;}
 .hero-stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.22);max-width:560px;margin-top:34px;}
 .hero-stats div{flex:1;padding:20px 10px 0;text-align:center;color:var(--white);border-right:1px solid rgba(255,255,255,.18);}
@@ -75,8 +86,8 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-stats strong{display:block;font-family:'Fraunces',serif;font-size:1.5rem;color:var(--seafoam);font-weight:600;}
 .hero-stats small{color:rgba(255,255,255,.65);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;}
 
-/* ---- sliding card carousel — now sits BELOW the text, centered ---- */
-.carousel-wrap{position:relative;width:100%;max-width:460px;min-width:0;margin:0 auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:2;}
+/* ---- sliding card carousel — floats near the bottom of the hero, over the video ---- */
+.carousel-wrap{position:relative;width:100%;max-width:460px;min-width:0;margin:44px auto 0 0;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
 .carousel-mask{
   position:relative;overflow:hidden;border-radius:var(--radius);
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
@@ -125,19 +136,21 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
 
 @media(max-width:980px){
-  .hero{padding:24px 0 60px;}
-  .hero-video-box{aspect-ratio:4/3;margin-bottom:36px;}
+  .hero{padding:120px 0 44px;min-height:100svh;min-height:100vh;}
   .hero-grid{grid-template-columns:minmax(0,1fr);}
-  .carousel-wrap{max-width:460px;margin:0 auto;}
+  .carousel-wrap{max-width:460px;margin:36px auto 0 0;}
 }
 @media(max-width:600px){
   .hero{
-    padding:16px 0 40px;
+    padding:104px 0 32px;
+    min-height:100svh;min-height:100vh;
+    align-items:flex-end;
   }
-  .hero-video-box{aspect-ratio:1/1;margin-bottom:28px;}
-  .carousel-wrap{margin-top:12px;max-width:100%;}
-  .plant-card{width:200px;}
-  .plant-card img{height:130px;}
+  .hero-text{max-width:100%;}
+  .hero-text p{max-width:100%;}
+  .carousel-wrap{margin:28px auto 0 0;max-width:100%;}
+  .plant-card{width:180px;}
+  .plant-card img{height:120px;}
 }
 
 /* ============ SERVICES ============ */
@@ -347,54 +360,22 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 
 <section class="hero" id="home">
+
+        <!-- Video is now a full-bleed background for the whole hero section -->
+        {% if hero.poster_url %}
+        <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
+        {% else %}
+        <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
+        {% endif %}
+        <video id="heroVideo" class="hero-bg-video" autoplay muted loop playsinline poster="{% static 'images/hero-poster.jpg' %}">
+          <source src="{% static 'images/mastr.mp4' %}" type="video/mp4">
+        </video>
+        <div class="hero-overlay" aria-hidden="true"></div>
+
     <div class="wrap">
 
-        <!-- Video sits as its own rounded block at the TOP of the hero, above the text -->
-        <div class="hero-video-box">
-            {% if hero.poster_url %}
-            <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
-            {% else %}
-            <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
-            {% endif %}
-            <video id="heroVideo" class="hero-bg-video" autoplay muted loop playsinline poster="{% static 'images/hero-poster.jpg' %}">
-              <source src="{% static 'images/mastr.mp4' %}" type="video/mp4">
-            </video>
-        </div>
-
-<!-- product card carousel: now sits BELOW the text -->
-            <div class="carousel-wrap">
-                <div class="carousel-mask">
-                    <div class="carousel-track" id="track">
-                        {% for p in products %}
-                        <a href="{% url 'shop' %}" class="plant-card">
-                            <img src="{{ p.image }}" alt="{{ p.name }}">
-                            <div class="name">{{ p.name }}</div>
-                            <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
-                        </a>
-                        {% endfor %}
-                        {% for p in products %}
-                        <a href="{% url 'shop' %}" class="plant-card" aria-hidden="true" tabindex="-1">
-                            <img src="{{ p.image }}" alt="">
-                            <div class="name">{{ p.name }}</div>
-                            <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
-                        </a>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="carousel-dots"><span></span><span></span><span></span></div>
-
-                <a href="{% url 'shop' %}" class="btn-pill">
-                    Open Catalog
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
-                </a>
-            </div>
-
-
-
         <div class="hero-grid">
-
-            <!-- hero text: first, full width -->
+            <!-- hero text: sits directly over the video -->
             <div class="hero-text">
                 <div class="eyebrow">{{ hero.eyebrow }}</div>
                 <h1>{{ hero.heading|safe }}</h1>
@@ -408,8 +389,35 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                     {% endfor %}
                 </div>
             </div>
+        </div>
 
-            
+        <!-- product card carousel: floats below the text, still over the video -->
+        <div class="carousel-wrap">
+            <div class="carousel-mask">
+                <div class="carousel-track" id="track">
+                    {% for p in products %}
+                    <a href="{% url 'shop' %}" class="plant-card">
+                        <img src="{{ p.image }}" alt="{{ p.name }}">
+                        <div class="name">{{ p.name }}</div>
+                        <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
+                    </a>
+                    {% endfor %}
+                    {% for p in products %}
+                    <a href="{% url 'shop' %}" class="plant-card" aria-hidden="true" tabindex="-1">
+                        <img src="{{ p.image }}" alt="">
+                        <div class="name">{{ p.name }}</div>
+                        <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="carousel-dots"><span></span><span></span><span></span></div>
+
+            <a href="{% url 'shop' %}" class="btn-pill">
+                Open Catalog
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+            </a>
         </div>
     </div>
 </section>
