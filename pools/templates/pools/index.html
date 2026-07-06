@@ -54,18 +54,16 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .mobile-nav-close{position:absolute;top:24px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:var(--white);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .mobile-nav-close:hover{background:var(--brass);color:var(--ink);border-color:var(--brass);}
 
-/* ============ HERO — video block on top, text + sliding card carousel below ============ */
+/* ============ HERO — video block on top, text then carousel stacked below ============ */
 .hero{position:relative;z-index:0;padding:170px 0 70px;overflow:hidden;background:var(--ink);}
-/* NEW: video is no longer a full-bleed background. It's now an in-flow,
-   rounded "media card" that sits at the TOP of the hero, above the text. */
 .hero-video-box{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:var(--ink);box-shadow:var(--shadow);margin-bottom:52px;}
 .hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.88);background:var(--ink);}
 .hero-bg-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.88);background:var(--ink);}
-/* text column is first/wider (1.3fr, left), carousel column is second/narrower (1fr, right) */
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px;align-items:center;}
 
-/* SWAPPED: hero-text now order:1 (left side) */
-.hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:1;}
+/* CHANGED: hero-grid is now a single stacked column — text first, carousel below it — on all screen sizes */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;align-items:center;}
+
+.hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:1;margin:0 auto;width:100%;}
 .hero-text .eyebrow{color:var(--brass-light);}
 .hero-text .eyebrow::before{background:var(--seafoam);}
 .hero-text h1{font-size:clamp(2.3rem,4.6vw,3.7rem);color:var(--white);margin-bottom:20px;font-weight:500;}
@@ -77,15 +75,13 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-stats strong{display:block;font-family:'Fraunces',serif;font-size:1.5rem;color:var(--seafoam);font-weight:600;}
 .hero-stats small{color:rgba(255,255,255,.65);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;}
 
-/* ---- sliding card carousel (borrowed from the plant-shop hero) ---- */
-/* SWAPPED: carousel-wrap now order:2 (right side); margin-left:auto so it hugs the right edge of its column */
-.carousel-wrap{position:relative;width:100%;max-width:340px;min-width:0;margin-left:auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:2;}
+/* ---- sliding card carousel — now sits BELOW the text, centered ---- */
+.carousel-wrap{position:relative;width:100%;max-width:460px;min-width:0;margin:0 auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:2;}
 .carousel-mask{
   position:relative;overflow:hidden;border-radius:var(--radius);
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
   mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
 }
-/* Slowed down: was 20s, now 45s for a calmer, slower slide */
 .carousel-track{display:flex;gap:20px;width:max-content;animation:slideLTR 150s linear infinite;}
 .carousel-wrap:hover .carousel-track{animation-play-state:paused;}
 .plant-card{
@@ -129,21 +125,17 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
 
 @media(max-width:980px){
-  /* Header no longer floats over the hero video on mobile/tablet (see the
-     nav media-query block below where header switches to position:static),
-     so the hero doesn't need extra top padding to "clear" a fixed navbar —
-     the video box now simply starts right after the navbar in normal flow. */
   .hero{padding:24px 0 60px;}
   .hero-video-box{aspect-ratio:4/3;margin-bottom:36px;}
   .hero-grid{grid-template-columns:minmax(0,1fr);}
-  .carousel-wrap{max-width:460px;margin:0 auto 36px;}
+  .carousel-wrap{max-width:460px;margin:0 auto;}
 }
 @media(max-width:600px){
   .hero{
-    padding:16px 0 40px; /* header is in normal flow now, so no fixed-navbar clearance needed */
+    padding:16px 0 40px;
   }
   .hero-video-box{aspect-ratio:1/1;margin-bottom:28px;}
-  .carousel-wrap{margin-top:40px;max-width:100%;}
+  .carousel-wrap{margin-top:12px;max-width:100%;}
   .plant-card{width:200px;}
   .plant-card img{height:130px;}
 }
@@ -281,16 +273,12 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 @media(max-width:980px){
-    /* NEW: on mobile/tablet the header becomes part of the normal page flow
-       instead of a fixed overlay, so it sits ABOVE the hero video as a solid
-       navbar, and the video begins right below it — instead of the video
-       being full-bleed with the navbar floating transparently on top. */
     header{
         position:static;
         background:var(--ink);
     }
     header.scrolled{
-        padding:14px 32px; /* keep the same subtle compact-on-scroll effect */
+        padding:14px 32px;
     }
     nav{display:none;}
     .menu-toggle{display:block;}
@@ -361,11 +349,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <section class="hero" id="home">
     <div class="wrap">
 
-        <!-- Video now sits as its own rounded block at the TOP of the hero, above the text -->
+        <!-- Video sits as its own rounded block at the TOP of the hero, above the text -->
         <div class="hero-video-box">
-            <!-- Poster image shows instantly and acts as the iOS fallback if the video is ever blocked (e.g. Low Power Mode).
-                 Uses hero.poster_url if your model has it; otherwise falls back to nothing extra is needed —
-                 the video's own poster="" attribute below covers the same purpose without requiring a new field. -->
             {% if hero.poster_url %}
             <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
             {% else %}
@@ -376,24 +361,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
             </video>
         </div>
 
-        <div class="hero-grid">
 
-            <!-- hero text sits below the video (left side, wider column) -->
-            <div class="hero-text">
-                <div class="eyebrow">{{ hero.eyebrow }}</div>
-                <h1>{{ hero.heading|safe }}</h1>
-                <p>{{ hero.sub }}</p>
-                <div class="hero-cta">
-                    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20a%20free%20pool%20design%20consultation." id="heroConsultBtn" class="btn btn-outline" target="_blank">Get Free Consultation</a>
-                </div>
-                <div class="hero-stats">
-                    {% for s in hero.stats %}
-                    <div><strong>{{ s.v }}</strong><small>{{ s.l }}</small></div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- SWAPPED: sliding card carousel now appears second (right side, narrower column) -->
+        <!-- product card carousel: now sits BELOW the text -->
             <div class="carousel-wrap">
                 <div class="carousel-mask">
                     <div class="carousel-track" id="track">
@@ -421,6 +390,25 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
                 </a>
             </div>
+
+        <div class="hero-grid">
+
+            <!-- hero text: first, full width -->
+            <div class="hero-text">
+                <div class="eyebrow">{{ hero.eyebrow }}</div>
+                <h1>{{ hero.heading|safe }}</h1>
+                <p>{{ hero.sub }}</p>
+                <div class="hero-cta">
+                    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20a%20free%20pool%20design%20consultation." id="heroConsultBtn" class="btn btn-outline" target="_blank">Get Free Consultation</a>
+                </div>
+                <div class="hero-stats">
+                    {% for s in hero.stats %}
+                    <div><strong>{{ s.v }}</strong><small>{{ s.l }}</small></div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            
 
         </div>
     </div>
@@ -461,22 +449,18 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     {% endfor %}
     </div>
 
-    <!-- Only the first 4 products are shown on the homepage; the rest live on the full Shop page -->
     <div class="product-grid" id="productGrid">
     {% for p in products|slice:":4" %}
         <div class="product-card" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
 
-        <!-- Clicking the image goes straight to the Shop page -->
         <a href="{% url 'shop' %}" class="product-img">
             {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
             <img src="{{ p.image }}" alt="{{ p.name }}">
         </a>
 
         <div class="product-body">
-            <!-- Clicking the name also goes to the Shop page -->
             <a href="{% url 'shop' %}"><h3 class="product-title-link">{{ p.name }}</h3></a>
 
-            <!-- Price now updates live based on the size picked below -->
             <div class="price" id="price-{{ p.id }}">
                 {% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}<span class="price-value">₹{{ p.price|floatformat:0 }}</span>
             </div>
@@ -498,7 +482,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     {% endfor %}
     </div>
 
-    <!-- See more / Shop button below the 4 preview products -->
     <div class="shop-more-wrap">
         <a href="{% url 'shop' %}" class="btn btn-primary">See More — Shop All Products →</a>
     </div>
@@ -662,27 +645,14 @@ document.getElementById('menuToggle').addEventListener('click', ()=>mobileNav.cl
 document.getElementById('mobileNavClose').addEventListener('click', ()=>mobileNav.classList.remove('open'));
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileNav.classList.remove('open')));
 
-/* ============ HERO VIDEO — iOS/Safari autoplay + resume fix ============
-   iOS Safari will silently pause a background <video> when:
-   - the tab/app goes to the background or the screen locks
-   - Low Power Mode blocks autoplay entirely
-   - the element is reflowed/hidden briefly during scroll
-   The fixes below (a) always attempt play() again on resume events,
-   (b) fall back to a static poster image if playback keeps failing,
-   (c) retry play() on first user touch, since iOS sometimes needs a
-       user gesture even for muted videos in certain power/data-saving states.
-*/
+/* ============ HERO VIDEO — iOS/Safari autoplay + resume fix ============ */
 (function(){
   const video = document.getElementById('heroVideo');
   const poster = document.getElementById('heroPoster');
   if(!video) return;
 
-  // Playback speed for the hero background video. 1 = normal speed,
-  // 1.5 = 50% faster, 2 = double speed. Adjust this single number to taste.
   const HERO_VIDEO_SPEED = 1.5;
   function applySpeed(){ video.playbackRate = HERO_VIDEO_SPEED; }
-  // Some browsers reset playbackRate when metadata loads or the video loops,
-  // so we re-apply it on every relevant event rather than setting it once.
   video.addEventListener('loadedmetadata', applySpeed);
   video.addEventListener('play', applySpeed);
   video.addEventListener('playing', applySpeed);
@@ -709,36 +679,26 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
       playPromise
         .then(hidePosterFallback)
         .catch(()=>{
-          // Autoplay blocked (e.g. Low Power Mode) — show the poster instead
-          // of a frozen/paused video, and try again on the next interaction.
           showPosterFallback();
         });
     }
   }
 
-  // Initial attempt once metadata is ready
   video.addEventListener('loadedmetadata', attemptPlay);
   attemptPlay();
 
-  // iOS pauses the video when the page is backgrounded (app switch, lock
-  // screen, tab switch). Resume as soon as the page is visible again.
   document.addEventListener('visibilitychange', ()=>{
     if(document.visibilityState === 'visible') attemptPlay();
   });
 
-  // bfcache restores (Safari back/forward gesture) can leave the video paused
   window.addEventListener('pageshow', (e)=>{ attemptPlay(); });
 
-  // Belt-and-braces: if the video ever fires 'pause' unexpectedly while the
-  // tab is active and visible, try to resume it.
   video.addEventListener('pause', ()=>{
     if(document.visibilityState === 'visible' && !usingFallback){
       attemptPlay();
     }
   });
 
-  // Some iOS versions only allow (re)play after a user gesture — catch the
-  // very first tap/scroll anywhere on the page and retry once.
   function firstGestureRetry(){
     attemptPlay();
     window.removeEventListener('touchstart', firstGestureRetry);
@@ -768,7 +728,6 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   const priceValueEl = card.querySelector('.price-value');
   let qty = 1;
 
-  // Update the displayed price whenever the customer picks a different size
   function updatePriceDisplay(){
     const opt = sizeSelect.options[sizeSelect.selectedIndex];
     if(opt && priceValueEl){
@@ -777,7 +736,7 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   }
   if(sizeSelect){
     sizeSelect.addEventListener('change', updatePriceDisplay);
-    updatePriceDisplay(); // set correct price for whichever size is selected by default
+    updatePriceDisplay();
   }
 
   card.querySelector('.qty-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty-1); qtyVal.textContent = qty; });
