@@ -32,9 +32,9 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-sp
 .btn-outline:hover{background:var(--white);color:var(--deep);border-color:var(--white);}
 .btn-dark{background:var(--deep);color:var(--white);}
 .btn-dark:hover{background:var(--ink);}
-.section{padding:104px 0;}
+.section{padding:30px 0;}
 .section-head{max-width:640px;margin-bottom:52px;}
-.section-head p{color:var(--muted);font-size:1.06rem;margin-top:16px;}
+.section-head p{color:var(--muted);font-size:1.06rem;}
 header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;transition:transform .35s ease, background .3s ease, padding .3s ease, box-shadow .3s ease;background:linear-gradient(to bottom, rgba(11,33,31,.5), transparent);}
 header.scrolled{background:var(--ink);box-shadow:var(--shadow);padding:14px 32px;}
 header.header-hidden{transform:translateY(0);}
@@ -478,11 +478,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
             </button>
 
             <div class="carousel-dots"><span></span><span></span><span></span></div>
-
-            <a href="{% url 'shop' %}" class="btn-pill">
-                Open Catalog
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
-            </a>
         </div>
     </div>
 </section>
