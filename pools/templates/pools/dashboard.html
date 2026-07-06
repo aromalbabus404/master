@@ -390,7 +390,7 @@
   }
   .color-row input{max-width:220px;}
 
-  /* NEW: rounded live-preview swatch shown next to each color input */
+  /* rounded live-preview swatch shown next to each color input */
   .color-swatch{
     width:34px;height:34px;border-radius:50%;flex:0 0 34px;
     border:2px solid var(--border);background:#fff;
@@ -407,7 +407,7 @@
     background-image:none;
   }
 
-  /* ===== NEW: variant type toggle ===== */
+  /* ===== variant type toggle ===== */
   .variant-type-toggle{
     display:flex;gap:8px;background:var(--bg);border:1px solid var(--border);
     border-radius:999px;padding:4px;width:fit-content;
@@ -419,7 +419,7 @@
   .variant-type-toggle input{display:none;}
   .variant-type-toggle input:checked + label{background:var(--navy);color:#fff;}
 
-  /* ===== NEW: hero video preview + upload size feedback ===== */
+  /* ===== hero video preview + upload size feedback ===== */
   .hero-video-preview{
     width:100%;max-height:160px;border-radius:12px;object-fit:cover;
     background:#000;display:block;
@@ -665,21 +665,28 @@
               <div class="col-md-6">
                 {% if hero.video_file %}
                   <small class="text-success d-block mb-2">Current video (updates immediately after a successful save):</small>
-                  <!-- Visible proof the video actually changed — previously this
-                       just said "Current Video Uploaded" as plain text with no
-                       way to confirm a save really took effect. -->
                   <video class="hero-video-preview" src="{{ hero.video_url }}" muted autoplay loop playsinline></video>
+                  <button type="button"
+                          class="btn btn-sm btn-outline-danger mt-2 remove-hero-file-btn"
+                          data-field="video_file">
+                    ✕ Remove Video
+                  </button>
                 {% else %}
-                  <small class="text-muted">No video uploaded yet.</small>
+                  <small class="text-muted">No video uploaded yet — the poster image is shown instead.</small>
                 {% endif %}
               </div>
 
               <div class="col-md-6">
                 {% if hero.poster_image_file %}
                   <small class="text-success d-block mb-2">Current poster image:</small>
-                  <img src="{{ hero.poster_image_file.url }}"
+                  <img src="{{ hero.poster_url }}"
                        class="img-fluid rounded"
                        style="max-height:160px;">
+                  <button type="button"
+                          class="btn btn-sm btn-outline-danger mt-2 remove-hero-file-btn"
+                          data-field="poster_image_file">
+                    ✕ Remove Poster Image
+                  </button>
                 {% else %}
                   <small class="text-muted">No poster image uploaded yet.</small>
                 {% endif %}
@@ -1095,14 +1102,6 @@ function submitAjaxForm(form){
   .then(async (res) => {
     const text = await res.text();
 
-    // FIX: previously this block never checked res.ok, so any non-200
-    // response (413 Request Entity Too Large from a reverse proxy body
-    // limit, a 500 from the server, a 504 timeout on a slow upload,
-    // etc.) fell straight through to updateContentFromHTML(). That
-    // function looks for a ".content" element inside the response —
-    // which doesn't exist on a raw error page — so it silently did
-    // nothing. Net effect: a failed video upload looked exactly like
-    // "nothing happened", with zero indication of what actually broke.
     if(!res.ok){
       let detail = 'HTTP ' + res.status;
       if(res.status === 413){
@@ -1133,6 +1132,26 @@ function submitAjaxForm(form){
   })
   .finally(()=>{
     restoreForm(btn);
+  });
+}
+
+function submitAjaxAction(url, params){
+  const fd = new FormData();
+  Object.entries(params || {}).forEach(([k, v]) => fd.append(k, v));
+  fd.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+  return fetch(url, {
+    method: 'POST',
+    body: fd,
+    headers: {'X-Requested-With': 'XMLHttpRequest'},
+    credentials: 'same-origin'
+  })
+  .then(async (res) => {
+    const text = await res.text();
+    if(!res.ok){
+      throw new Error('HTTP ' + res.status);
+    }
+    return text;
   });
 }
 
@@ -1190,6 +1209,24 @@ function bindAjaxForms(){
       const confirmMsg = form.dataset.confirm;
       if(confirmMsg && !confirm(confirmMsg)) return;
       submitAjaxForm(form);
+    });
+  });
+}
+
+/* ---- NEW: Hero "Remove Video" / "Remove Poster Image" buttons ---- */
+function bindHeroRemoveButtons(){
+  document.querySelectorAll('.remove-hero-file-btn').forEach(btn=>{
+    if(btn.dataset.bound) return;
+    btn.dataset.bound = "1";
+    btn.addEventListener('click', ()=>{
+      const label = btn.dataset.field === 'video_file' ? 'video' : 'poster image';
+      if(!confirm(`Remove the current hero ${label}? This can't be undone.`)) return;
+
+      btn.disabled = true;
+      submitAjaxAction("{% url 'hero_remove_file' %}", { field: btn.dataset.field })
+        .then(html => updateContentFromHTML(html))
+        .catch(()=> alert('Could not remove the file — please try again.'))
+        .finally(()=> btn.disabled = false);
     });
   });
 }
@@ -1345,9 +1382,6 @@ function bindSizeRowButtons(){
 /* ---- Colors: dynamic, optional, unlimited rows, each with a
    live rounded swatch preview that updates as you type ---- */
 
-/* Uses the browser's own CSS color parser to validate whatever the
-   admin types (color name, hex, rgb(), hsl(), etc.) — if the browser
-   can render it as a background-color, we treat it as valid. */
 function isValidCssColor(value){
   if(!value) return false;
   const s = new Option().style;
@@ -1392,8 +1426,6 @@ function bindColorRowButtons(){
     addBtn.dataset.bound = "1";
     addBtn.addEventListener('click', ()=> makeColorRow(colorRowsAdd));
   }
-  // Start with one empty row purely for UX — it's still optional,
-  // an empty color[] value is ignored/stripped on the backend.
   if(colorRowsAdd && colorRowsAdd.children.length === 0){
     makeColorRow(colorRowsAdd);
   }
@@ -1451,11 +1483,10 @@ function reloadPreview(){
   previewFrame.src = base + (base.includes('?') ? '&' : '?') + '_preview=' + Date.now();
 }
 
-/* ---- NEW: hero video upload — instant client-side size feedback.
-   The server (see HeroForm.clean_video_file) rejects videos over
-   20MB, but previously the admin had no idea until AFTER a long
-   upload finished (or silently failed — see the fetch fix above).
-   This warns immediately when a file is picked. ---- */
+/* ---- Hero video upload — instant client-side size feedback. The
+   server (HeroForm.clean_video_file) rejects videos over 20MB, but
+   without this the admin had no idea until AFTER a long upload
+   finished. This warns immediately when a file is picked. ---- */
 function bindHeroVideoSizeCheck(){
   const videoInput = document.getElementById('id_video_file');
   const info = document.getElementById('heroVideoSizeInfo');
@@ -1480,6 +1511,7 @@ function bindHeroVideoSizeCheck(){
 
 function initDynamicHandlers(){
   bindAjaxForms();
+  bindHeroRemoveButtons();
   bindEditProductButtons();
   bindSizeRowButtons();
   bindColorRowButtons();

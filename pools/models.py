@@ -130,9 +130,10 @@ class HeroSection(models.Model):
         # self.poster_image_file are guaranteed to be real Cloudinary
         # objects (or None, if cleared). Compare against the OLD
         # public_ids captured in Step 1, and delete whichever old
-        # asset(s) were actually replaced — so Cloudinary storage
-        # doesn't quietly fill up with orphaned files every time an
-        # admin uploads a new hero video or image.
+        # asset(s) were actually replaced OR removed — so Cloudinary
+        # storage doesn't quietly fill up with orphaned files every
+        # time an admin uploads a new hero video/image, or explicitly
+        # removes one via hero_remove_file.
         # ------------------------------------------------------------
         new_video_public_id = self.video_file.public_id if self.video_file else None
         new_poster_public_id = self.poster_image_file.public_id if self.poster_image_file else None
@@ -175,6 +176,17 @@ class HeroSection(models.Model):
             {"v": self.stat3_value, "l": self.stat3_label},
             {"v": self.stat4_value, "l": self.stat4_label},
         ]
+
+    @property
+    def poster_url(self):
+        """Alias so templates can use hero.poster_url regardless of
+        whether the poster came from an uploaded file or a plain URL —
+        `poster_image` already holds the correct delivery URL either way
+        (save() above rewrites it to the Cloudinary URL on upload).
+        Previously templates referenced hero.poster_url, which did not
+        exist on this model — Django templates fail silently on missing
+        attributes, so the poster fallback never actually rendered."""
+        return self.poster_image or ""
 
     def __str__(self):
         return "Hero Section"

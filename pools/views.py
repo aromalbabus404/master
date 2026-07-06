@@ -1,4 +1,5 @@
 import json
+import os
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -194,6 +195,38 @@ def hero_save(request):
 
 @login_required
 @require_POST
+def hero_remove_file(request):
+    """Clears just the hero's uploaded video OR poster image (not the
+    whole hero row). Reuses HeroSection.save()'s existing cleanup logic:
+    setting the field to None and saving triggers the same old-vs-new
+    public_id comparison that already deletes replaced files on upload,
+    so the orphaned Cloudinary asset gets destroyed here too — not just
+    on replacement, but on explicit removal."""
+    hero = HeroSection.load()
+    field = request.POST.get("field")
+
+    if field not in ("video_file", "poster_image_file"):
+        messages.error(request, "Invalid field to remove.")
+        return redirect("dashboard")
+
+    setattr(hero, field, None)
+
+    # Also clear the paired legacy URL field, otherwise the storefront
+    # keeps pointing at the last Cloudinary URL for a file that's gone.
+    if field == "video_file":
+        hero.video_url = ""
+    else:
+        hero.poster_image = ""
+
+    hero.save()
+
+    label = "Video" if field == "video_file" else "Poster image"
+    messages.success(request, f"{label} removed.")
+    return redirect("dashboard")
+
+
+@login_required
+@require_POST
 def settings_save(request):
     settings_obj = SiteSettings.load()
     form = SiteSettingsForm(request.POST, instance=settings_obj)
@@ -284,8 +317,6 @@ def product_delete(request, pk):
     messages.success(request, "Product deleted.")
     return redirect("dashboard")
 
-
-import os
 
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_IMAGE_SIZE_MB = 5
