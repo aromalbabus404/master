@@ -280,6 +280,18 @@
 
   .modal.fade .modal-dialog{transition:transform .25s ease, opacity .25s ease;}
 
+  /* ============================================================
+     EDIT PRODUCT MODAL — scroll fix
+     The key bug: .modal-body was a flex child with `flex:1` and
+     `overflow-y:auto`, but its flex parent (.modal-content) never
+     got `min-height:0`. Per the flexbox spec, a flex item's default
+     minimum size is "auto" (i.e. its content size), so the browser
+     refused to shrink .modal-body below the height of the form
+     inside it — the extra content just got clipped by the parent's
+     overflow:hidden instead of becoming scrollable. Adding
+     min-height:0 on the scrolling flex item fixes it on both the
+     mobile sheet layout and the desktop centered layout below.
+     ============================================================ */
   @media (max-width:575.98px){
 
     #editProductModal{
@@ -304,6 +316,7 @@
         display:flex;
         flex-direction:column;
         overflow:hidden;
+        min-height:0;
     }
 
     #editProductModal .modal-content::before{
@@ -323,7 +336,8 @@
     }
 
     #editProductModal .modal-body{
-        flex:1;
+        flex:1 1 auto;
+        min-height:0;
         overflow-y:auto;
         overflow-x:hidden;
         -webkit-overflow-scrolling:touch;
@@ -352,6 +366,7 @@
     #editProductModal .modal-content{
       display:flex;
       flex-direction:column;
+      min-height:0;
     }
     #editProductModal .modal-body{
       overflow-y:auto;
@@ -1389,7 +1404,21 @@ function initDynamicHandlers(){
 /* Initial bind on first page load */
 initDynamicHandlers();
 
-/* Safety net: clear any stuck modal backdrop on load */
+/* Safety net: clear any stuck modal backdrop/body-lock whenever the
+   edit modal closes (not just on first page load). Without this,
+   if the modal instance ever gets recreated or a stray backdrop is
+   left behind, the whole page can appear "stuck" — unscrollable and
+   unresponsive — even after the modal visually disappears. */
+const editProductModalEl = document.getElementById('editProductModal');
+if(editProductModalEl){
+  editProductModalEl.addEventListener('hidden.bs.modal', ()=>{
+    document.querySelectorAll('.modal-backdrop').forEach(el=>el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+  });
+}
+
 window.addEventListener('DOMContentLoaded', ()=>{
   document.querySelectorAll('.modal-backdrop').forEach(el=>el.remove());
   document.body.classList.remove('modal-open');
