@@ -54,17 +54,18 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .mobile-nav-close{position:absolute;top:24px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:var(--white);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .mobile-nav-close:hover{background:var(--brass);color:var(--ink);border-color:var(--brass);}
 
-/* ============ HERO — image background + sliding card carousel ============ */
-/* NEW: solid fallback color on the hero itself so any letterboxed/pillarboxed
-   space around the video (once we switch to object-fit:contain on smaller
-   screens) blends into the theme instead of showing a gap. */
+/* ============ HERO — video block on top, text + sliding card carousel below ============ */
 .hero{position:relative;z-index:0;padding:170px 0 70px;overflow:hidden;background:var(--ink);}
-.hero-bg-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
-.hero-bg-poster{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
-.hero-bg-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(11,33,31,.6) 0%, rgba(11,33,31,.5) 45%, rgba(11,33,31,.72) 100%);}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:56px;align-items:center;}
+/* NEW: video is no longer a full-bleed background. It's now an in-flow,
+   rounded "media card" that sits at the TOP of the hero, above the text. */
+.hero-video-box{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;background:var(--ink);box-shadow:var(--shadow);margin-bottom:52px;}
+.hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.88);background:var(--ink);}
+.hero-bg-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.88);background:var(--ink);}
+/* text column is first/wider (1.3fr, left), carousel column is second/narrower (1fr, right) */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px;align-items:center;}
 
-.hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:2;}
+/* SWAPPED: hero-text now order:1 (left side) */
+.hero-text{max-width:600px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;order:1;}
 .hero-text .eyebrow{color:var(--brass-light);}
 .hero-text .eyebrow::before{background:var(--seafoam);}
 .hero-text h1{font-size:clamp(2.3rem,4.6vw,3.7rem);color:var(--white);margin-bottom:20px;font-weight:500;}
@@ -77,7 +78,8 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-stats small{color:rgba(255,255,255,.65);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;}
 
 /* ---- sliding card carousel (borrowed from the plant-shop hero) ---- */
-.carousel-wrap{position:relative;width:100%;max-width:340px;min-width:0;margin-right:auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:1;}
+/* SWAPPED: carousel-wrap now order:2 (right side); margin-left:auto so it hugs the right edge of its column */
+.carousel-wrap{position:relative;width:100%;max-width:340px;min-width:0;margin-left:auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;order:2;}
 .carousel-mask{
   position:relative;overflow:hidden;border-radius:var(--radius);
   -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%);
@@ -130,36 +132,20 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   /* Header no longer floats over the hero video on mobile/tablet (see the
      nav media-query block below where header switches to position:static),
      so the hero doesn't need extra top padding to "clear" a fixed navbar —
-     the video now simply starts right after the navbar in normal flow. */
+     the video box now simply starts right after the navbar in normal flow. */
   .hero{padding:24px 0 60px;}
+  .hero-video-box{aspect-ratio:4/3;margin-bottom:36px;}
   .hero-grid{grid-template-columns:minmax(0,1fr);}
   .carousel-wrap{max-width:460px;margin:0 auto 36px;}
-
-  /* NEW: fit the whole video/poster inside the box on tablets — no cropping.
-     object-fit:contain scales the video proportionally so nothing important
-     gets cut off; the .hero background color fills any leftover space. */
-  .hero-bg-video,
-  .hero-bg-poster{
-    object-fit:contain;
-    background:var(--ink);
-  }
 }
 @media(max-width:600px){
   .hero{
     padding:16px 0 40px; /* header is in normal flow now, so no fixed-navbar clearance needed */
   }
+  .hero-video-box{aspect-ratio:1/1;margin-bottom:28px;}
   .carousel-wrap{margin-top:40px;max-width:100%;}
   .plant-card{width:200px;}
   .plant-card img{height:130px;}
-
-  /* NEW: same proportional, uncropped fit as tablet — compact and fully
-     contained inside the phone viewport, similar to Flipkart's fitted
-     video/banner cards. */
-  .hero-bg-video,
-  .hero-bg-poster{
-    object-fit:contain;
-    background:var(--ink);
-  }
 }
 
 /* ============ SERVICES ============ */
@@ -373,21 +359,26 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 
 <section class="hero" id="home">
-    <!-- Poster image shows instantly and acts as the iOS fallback if the video is ever blocked (e.g. Low Power Mode).
-         Uses hero.poster_url if your model has it; otherwise falls back to nothing extra is needed —
-         the video's own poster="" attribute below covers the same purpose without requiring a new field. -->
-    {% if hero.poster_url %}
-    <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
-    {% else %}
-    <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
-    {% endif %}
-    <video id="heroVideo" class="hero-bg-video" autoplay muted loop playsinline poster="{% static 'images/hero-poster.jpg' %}">
-  <source src="{% static 'images/mastr.mp4' %}" type="video/mp4">
-</video>
-    <div class="hero-bg-overlay"></div>
     <div class="wrap">
+
+        <!-- Video now sits as its own rounded block at the TOP of the hero, above the text -->
+        <div class="hero-video-box">
+            <!-- Poster image shows instantly and acts as the iOS fallback if the video is ever blocked (e.g. Low Power Mode).
+                 Uses hero.poster_url if your model has it; otherwise falls back to nothing extra is needed —
+                 the video's own poster="" attribute below covers the same purpose without requiring a new field. -->
+            {% if hero.poster_url %}
+            <img class="hero-bg-poster" id="heroPoster" src="{{ hero.poster_url }}" alt="" aria-hidden="true">
+            {% else %}
+            <div class="hero-bg-poster" id="heroPoster" aria-hidden="true"></div>
+            {% endif %}
+            <video id="heroVideo" class="hero-bg-video" autoplay muted loop playsinline poster="{% static 'images/hero-poster.jpg' %}">
+              <source src="{% static 'images/mastr.mp4' %}" type="video/mp4">
+            </video>
+        </div>
+
         <div class="hero-grid">
 
+            <!-- hero text sits below the video (left side, wider column) -->
             <div class="hero-text">
                 <div class="eyebrow">{{ hero.eyebrow }}</div>
                 <h1>{{ hero.heading|safe }}</h1>
@@ -402,7 +393,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                 </div>
             </div>
 
-            <!-- sliding card carousel: same pattern as the plant-shop hero, wired to real products -->
+            <!-- SWAPPED: sliding card carousel now appears second (right side, narrower column) -->
             <div class="carousel-wrap">
                 <div class="carousel-mask">
                     <div class="carousel-track" id="track">
