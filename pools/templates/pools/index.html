@@ -411,9 +411,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         disableRemotePlayback
         x-webkit-airplay="allow"
         {% if hero.poster_url %}poster="{{ hero.poster_url }}?v={{ hero.updated_at|date:'U' }}"{% endif %}>
-        <!-- Guarded with {% if hero.video_url %} so removing the hero video (via the admin's
-             "Remove Video" button) doesn't leave an empty src="" here, which some browsers try
-             to resolve against the current page URL and log a spurious load error for. -->
+        
         {% if hero.video_url %}
         <source src="{{ hero.video_url }}?v={{ hero.updated_at|date:'U' }}" type="video/mp4">
         {% endif %}
