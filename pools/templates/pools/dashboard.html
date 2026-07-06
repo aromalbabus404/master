@@ -419,13 +419,6 @@
   .variant-type-toggle input{display:none;}
   .variant-type-toggle input:checked + label{background:var(--navy);color:#fff;}
 
-  /* ===== hero video preview + upload size feedback ===== */
-  .hero-video-preview{
-    width:100%;max-height:160px;border-radius:12px;object-fit:cover;
-    background:#000;display:block;
-  }
-  .hero-upload-hint{font-size:.78rem;margin-top:4px;}
-
   @media(max-width:900px){
     .sidebar{display:none;}
     .hamburger-btn{display:flex;}
@@ -480,7 +473,6 @@
     <a class="nav-link" data-panel="preview"><span class="nav-icon">👁</span> Preview Site</a>
 
     <div class="nav-section-label">Storefront</div>
-    <a class="nav-link" data-panel="hero"><span class="nav-icon">🌊</span> Hero Section</a>
     <a class="nav-link" data-panel="products"><span class="nav-icon">🛒</span> Products</a>
     <a class="nav-link" data-panel="gallery"><span class="nav-icon">🖼</span> Gallery</a>
     <a class="nav-link" data-panel="reviews"><span class="nav-icon">⭐</span> Reviews</a>
@@ -537,7 +529,6 @@
         <a class="nav-link" data-panel="preview"><span class="nav-icon">👁</span> Preview Site</a>
 
         <div class="nav-section-label">Storefront</div>
-        <a class="nav-link" data-panel="hero"><span class="nav-icon">🌊</span> Hero Section</a>
         <a class="nav-link" data-panel="products"><span class="nav-icon">🛒</span> Products</a>
         <a class="nav-link" data-panel="gallery"><span class="nav-icon">🖼</span> Gallery</a>
         <a class="nav-link" data-panel="reviews"><span class="nav-icon">⭐</span> Reviews</a>
@@ -592,7 +583,7 @@
           <div class="col-lg-8">
             <div class="card-section h-100">
               <div class="section-head"><span class="head-icon">📋</span><h5>Quick Notes</h5></div>
-              <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — hero text, products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp. Use <strong>Preview Site</strong> in the sidebar to see the live storefront update in real time, right here in the dashboard.</p>
+              <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp. Use <strong>Preview Site</strong> in the sidebar to see the live storefront update in real time, right here in the dashboard.</p>
             </div>
           </div>
           <div class="col-lg-4">
@@ -618,90 +609,11 @@
             </div>
             <span class="url-pill"><span class="dot"></span><span class="url-text">{{ request.scheme }}://{{ request.get_host }}{% url 'index' %}</span></span>
           </div>
-          <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Hero, Products, Gallery or Reviews, then hit Refresh to see them update below.</p>
+          <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Products, Gallery or Reviews, then hit Refresh to see them update below.</p>
           <div class="preview-frame-wrap" id="previewFrameWrap">
             <div class="preview-loading" id="previewLoading"><span class="spinner-dot"></span>Loading live site…</div>
             <iframe id="previewFrame" src="{% url 'index' %}" title="AquaCraft Pools — live storefront preview"></iframe>
           </div>
-        </div>
-      </div>
-
-      <!-- HERO -->
-      <div class="panel" id="panel-hero">
-        <div class="card-section">
-          <div class="section-head"><span class="head-icon">🌊</span><h5>Hero Section</h5></div>
-          <form method="post"
-    action="{% url 'hero_save' %}"
-    enctype="multipart/form-data" class="ajax-form">
-            {% csrf_token %}
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Eyebrow text</label>
-                {{ hero_form.eyebrow }}
-              </div>
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Heading (use &lt;br&gt; for a line break)</label>
-                {{ hero_form.heading }}
-              </div>
-              <div class="col-12">
-                <label class="form-label fw-bold">Subtext</label>
-                {{ hero_form.sub }}
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Upload Background Video (MP4, max 20MB)</label>
-                {{ hero_form.video_file }}
-                <!-- Live client-side size feedback: warns BEFORE upload if the
-                     chosen file is over the server's 20MB limit, instead of
-                     silently failing after a long upload with no explanation. -->
-                <div class="hero-upload-hint text-muted" id="heroVideoSizeInfo"></div>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Upload Background Image</label>
-                {{ hero_form.poster_image_file }}
-              </div>
-
-              <div class="col-md-6">
-                {% if hero.video_file %}
-                  <small class="text-success d-block mb-2">Current video (updates immediately after a successful save):</small>
-                  <video class="hero-video-preview" src="{{ hero.video_url }}" muted autoplay loop playsinline></video>
-                  <button type="button"
-                          class="btn btn-sm btn-outline-danger mt-2 remove-hero-file-btn"
-                          data-field="video_file">
-                    ✕ Remove Video
-                  </button>
-                {% else %}
-                  <small class="text-muted">No video uploaded yet — the poster image is shown instead.</small>
-                {% endif %}
-              </div>
-
-              <div class="col-md-6">
-                {% if hero.poster_image_file %}
-                  <small class="text-success d-block mb-2">Current poster image:</small>
-                  <img src="{{ hero.poster_url }}"
-                       class="img-fluid rounded"
-                       style="max-height:160px;">
-                  <button type="button"
-                          class="btn btn-sm btn-outline-danger mt-2 remove-hero-file-btn"
-                          data-field="poster_image_file">
-                    ✕ Remove Poster Image
-                  </button>
-                {% else %}
-                  <small class="text-muted">No poster image uploaded yet.</small>
-                {% endif %}
-              </div>
-
-              <div class="col-md-3"><label class="form-label fw-bold">Stat 1</label>{{ hero_form.stat1_value }}<div class="mt-1">{{ hero_form.stat1_label }}</div></div>
-              <div class="col-md-3"><label class="form-label fw-bold">Stat 2</label>{{ hero_form.stat2_value }}<div class="mt-1">{{ hero_form.stat2_label }}</div></div>
-              <div class="col-md-3"><label class="form-label fw-bold">Stat 3</label>{{ hero_form.stat3_value }}<div class="mt-1">{{ hero_form.stat3_label }}</div></div>
-              <div class="col-md-3"><label class="form-label fw-bold">Stat 4</label>{{ hero_form.stat4_value }}<div class="mt-1">{{ hero_form.stat4_label }}</div></div>
-            </div>
-            <div class="form-actions mt-3">
-              <button class="btn btn-dark" type="submit">Save Hero Section</button>
-              <button class="btn btn-outline-secondary" type="reset">Cancel</button>
-            </div>
-          </form>
         </div>
       </div>
 
@@ -1105,7 +1017,7 @@ function submitAjaxForm(form){
     if(!res.ok){
       let detail = 'HTTP ' + res.status;
       if(res.status === 413){
-        detail += ' — the file is too large for the server/proxy to accept. Try a smaller or shorter video.';
+        detail += ' — the file is too large for the server/proxy to accept. Try a smaller file.';
       } else if(res.status === 504 || res.status === 502){
         detail += ' — the server took too long to respond or is unreachable. Try again, or use a smaller file.';
       } else if(text){
@@ -1209,24 +1121,6 @@ function bindAjaxForms(){
       const confirmMsg = form.dataset.confirm;
       if(confirmMsg && !confirm(confirmMsg)) return;
       submitAjaxForm(form);
-    });
-  });
-}
-
-/* ---- NEW: Hero "Remove Video" / "Remove Poster Image" buttons ---- */
-function bindHeroRemoveButtons(){
-  document.querySelectorAll('.remove-hero-file-btn').forEach(btn=>{
-    if(btn.dataset.bound) return;
-    btn.dataset.bound = "1";
-    btn.addEventListener('click', ()=>{
-      const label = btn.dataset.field === 'video_file' ? 'video' : 'poster image';
-      if(!confirm(`Remove the current hero ${label}? This can't be undone.`)) return;
-
-      btn.disabled = true;
-      submitAjaxAction("{% url 'hero_remove_file' %}", { field: btn.dataset.field })
-        .then(html => updateContentFromHTML(html))
-        .catch(()=> alert('Could not remove the file — please try again.'))
-        .finally(()=> btn.disabled = false);
     });
   });
 }
@@ -1483,41 +1377,13 @@ function reloadPreview(){
   previewFrame.src = base + (base.includes('?') ? '&' : '?') + '_preview=' + Date.now();
 }
 
-/* ---- Hero video upload — instant client-side size feedback. The
-   server (HeroForm.clean_video_file) rejects videos over 20MB, but
-   without this the admin had no idea until AFTER a long upload
-   finished. This warns immediately when a file is picked. ---- */
-function bindHeroVideoSizeCheck(){
-  const videoInput = document.getElementById('id_video_file');
-  const info = document.getElementById('heroVideoSizeInfo');
-  if(!videoInput || !info || videoInput.dataset.bound) return;
-  videoInput.dataset.bound = "1";
-
-  const MAX_BYTES = 20 * 1024 * 1024; // matches HeroForm.clean_video_file
-
-  videoInput.addEventListener('change', ()=>{
-    const file = videoInput.files && videoInput.files[0];
-    if(!file){ info.textContent = ""; return; }
-    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-    if(file.size > MAX_BYTES){
-      info.className = 'hero-upload-hint text-danger';
-      info.textContent = `"${file.name}" is ${sizeMB}MB — over the 20MB limit. Please trim or compress it before uploading.`;
-    } else {
-      info.className = 'hero-upload-hint text-muted';
-      info.textContent = `Selected: ${file.name} (${sizeMB}MB)`;
-    }
-  });
-}
-
 function initDynamicHandlers(){
   bindAjaxForms();
-  bindHeroRemoveButtons();
   bindEditProductButtons();
   bindSizeRowButtons();
   bindColorRowButtons();
   bindVariantTypeToggle();
   bindPreviewControls();
-  bindHeroVideoSizeCheck();
 }
 
 /* Initial bind on first page load */

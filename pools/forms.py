@@ -12,16 +12,6 @@ IMAGE_TYPES = [
     "application/octet-stream",  # Some browsers upload HEIC with this type
 ]
 
-VIDEO_TYPES = [
-    "video/mp4",
-    "video/webm",
-    "video/quicktime",  # .mov — very common from iPhones
-    "video/x-msvideo",
-    "video/mpeg",
-    "video/3gpp",
-    "video/x-matroska",
-]
-
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -95,6 +85,10 @@ class ProductForm(forms.ModelForm):
 
 
 class HeroForm(forms.ModelForm):
+    """Text-only now — the hero video/poster image are static files shipped
+    with the project (static/pools/hero.mp4, static/pools/hero-poster.jpg),
+    not managed through this form or the dashboard."""
+
     class Meta:
         model = HeroSection
 
@@ -102,13 +96,6 @@ class HeroForm(forms.ModelForm):
             "eyebrow",
             "heading",
             "sub",
-
-            "video_url",
-            "poster_image",
-
-            "video_file",
-            "poster_image_file",
-
             "stat1_value",
             "stat1_label",
             "stat2_value",
@@ -129,26 +116,6 @@ class HeroForm(forms.ModelForm):
                 "rows": 3,
             }),
 
-            "video_url": forms.URLInput(attrs={
-                "class": "form-control",
-                "placeholder": "https://...",
-            }),
-
-            "poster_image": forms.URLInput(attrs={
-                "class": "form-control",
-                "placeholder": "https://...",
-            }),
-
-            "video_file": forms.ClearableFileInput(attrs={
-                "class": "form-control",
-                "accept": "video/*",
-            }),
-
-            "poster_image_file": forms.ClearableFileInput(attrs={
-                "class": "form-control",
-                "accept": "image/*,.heic,.heif",
-            }),
-
             "stat1_value": forms.TextInput(attrs={"class": "form-control"}),
             "stat1_label": forms.TextInput(attrs={"class": "form-control"}),
 
@@ -161,63 +128,6 @@ class HeroForm(forms.ModelForm):
             "stat4_value": forms.TextInput(attrs={"class": "form-control"}),
             "stat4_label": forms.TextInput(attrs={"class": "form-control"}),
         }
-
-    def clean_video_file(self):
-        video = self.cleaned_data.get("video_file")
-
-        if not video:
-            return video
-
-        if not hasattr(video, "size"):
-            return video
-
-        # Hero background video is capped at 20MB — enough for a short,
-        # compressed looping clip, while keeping page-load fast and
-        # Cloudinary bandwidth usage low.
-        max_size = 20 * 1024 * 1024  # 20 MB
-
-        if video.size > max_size:
-            raise forms.ValidationError(
-                f"Video must be smaller than 20 MB (yours is "
-                f"{video.size / (1024 * 1024):.1f} MB). Try trimming the "
-                f"clip or compressing it before uploading."
-            )
-
-        if hasattr(video, "content_type"):
-            ct = video.content_type.lower()
-
-            if ct not in VIDEO_TYPES and not ct.startswith("video/"):
-                raise forms.ValidationError(
-                    "Please upload a valid video (MP4, MOV, WEBM, AVI, MKV)."
-                )
-
-        return video
-
-    def clean_poster_image_file(self):
-        image = self.cleaned_data.get("poster_image_file")
-
-        if not image:
-            return image
-
-        if not hasattr(image, "size"):
-            return image
-
-        max_size = 20 * 1024 * 1024  # 20 MB
-
-        if image.size > max_size:
-            raise forms.ValidationError(
-                "Image must be smaller than 20 MB."
-            )
-
-        if hasattr(image, "content_type"):
-            ct = image.content_type.lower()
-
-            if ct not in IMAGE_TYPES and not ct.startswith("image/"):
-                raise forms.ValidationError(
-                    "Supported image formats: JPG, JPEG, PNG, WEBP, HEIC and HEIF."
-                )
-
-        return image
 
 
 class SiteSettingsForm(forms.ModelForm):

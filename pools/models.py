@@ -1,11 +1,15 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
-import cloudinary.uploader
 import json
 
 
 class HeroSection(models.Model):
-    """Singleton row (pk=1) holding the storefront hero content."""
+    """Singleton row (pk=1) holding the storefront hero TEXT content only.
+    The background video/poster image are now plain static files bundled
+    with the project (see static/pools/hero.mp4 and static/pools/hero-poster.jpg)
+    — no upload, no Cloudinary, no admin-dashboard management needed for them.
+    To change the video/image, just replace those files in your static
+    folder and run collectstatic / redeploy."""
 
     eyebrow = models.CharField(
         max_length=200,
@@ -23,31 +27,6 @@ class HeroSection(models.Model):
                 "custom swimming pools, renovations and premium accessories, delivered as one seamless build."
     )
 
-    # URL fields (optional)
-    video_url = models.URLField(
-        blank=True,
-        default="https://cdn.coverr.co/videos/coverr-aerial-view-of-a-swimming-pool-2633/1080p.mp4",
-    )
-
-    poster_image = models.URLField(
-        blank=True,
-        default="https://images.unsplash.com/photo-1572331165267-854da2b10ccf?q=80&w=1600&auto=format&fit=crop",
-    )
-
-    # Cloudinary Video
-    video_file = CloudinaryField(
-        resource_type="video",
-        blank=True,
-        null=True,
-    )
-
-    # Cloudinary Image
-    poster_image_file = CloudinaryField(
-        "image",
-        blank=True,
-        null=True,
-    )
-
     stat1_value = models.CharField(max_length=20, default="240+")
     stat1_label = models.CharField(max_length=40, default="Pools Built")
 
@@ -60,112 +39,11 @@ class HeroSection(models.Model):
     stat4_value = models.CharField(max_length=20, default="60+")
     stat4_label = models.CharField(max_length=40, default="Accessories")
 
-    # Stamped automatically on every save (Django handles this — no code
-    # needed elsewhere). Used purely as a cache-busting query param on the
-    # video/poster URLs in index.html, so replacing the hero video/image
-    # forces browsers to fetch the new file instead of showing a cached
-    # copy of the old one under the same-looking URL.
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         self.pk = 1
-
-        # ------------------------------------------------------------
-        # STEP 1 — capture the OLD Cloudinary public_id(s) from the
-        # database BEFORE saving, so we know what to clean up
-        # afterwards. This is safe to read now because `old` comes
-        # straight from the DB, so its video_file/poster_image_file are
-        # already real Cloudinary objects (not raw upload data).
-        # ------------------------------------------------------------
-        old_video_public_id = None
-        old_poster_public_id = None
-
-        try:
-            old = HeroSection.objects.get(pk=self.pk)
-            old_video_public_id = old.video_file.public_id if old.video_file else None
-            old_poster_public_id = old.poster_image_file.public_id if old.poster_image_file else None
-        except HeroSection.DoesNotExist:
-            # First-ever save (no existing row yet) — nothing old to delete.
-            pass
-
-        # ------------------------------------------------------------
-        # STEP 2 — save now. IMPORTANT: if a new video/image was just
-        # submitted, `self.video_file` / `self.poster_image_file` are
-        # STILL the raw uploaded file objects at this point (e.g. an
-        # InMemoryUploadedFile) — NOT yet Cloudinary objects. They only
-        # get converted (and gain a `.public_id`) during this
-        # super().save() call, inside CloudinaryField's own pre_save().
-        # Reading `.public_id` any earlier than this raises
-        # AttributeError — which is exactly the bug this fixes.
-        # ------------------------------------------------------------
         super().save(*args, **kwargs)
-
-        update_fields = []
-
-        if self.video_file:
-            # Force delivery as .mp4 regardless of the source format the
-            # admin uploaded (iPhones commonly upload .mov, some browsers/
-            # cameras send .mkv/.avi/.3gp). Without forcing the format,
-            # Cloudinary keeps the ORIGINAL container in the delivery URL —
-            # meanwhile the storefront template hard-codes
-            # <source type="video/mp4">. That mismatch is exactly why an
-            # uploaded video can "successfully upload" but never actually
-            # play: the browser is told it's MP4 while the URL serves a
-            # .mov (or other) file.
-            new_video_url = self.video_file.build_url(
-                resource_type="video",
-                format="mp4",
-            )
-            if new_video_url != self.video_url:
-                self.video_url = new_video_url
-                update_fields.append("video_url")
-
-        if self.poster_image_file:
-            new_poster_url = self.poster_image_file.build_url()
-            if new_poster_url != self.poster_image:
-                self.poster_image = new_poster_url
-                update_fields.append("poster_image")
-
-        # Only issue a second UPDATE if something actually changed —
-        # avoids an unnecessary extra query on every plain text-field save.
-        if update_fields:
-            super().save(update_fields=update_fields)
-
-        # ------------------------------------------------------------
-        # STEP 3 — NOW it's safe to read .public_id on the new files:
-        # super().save() has already run, so self.video_file and
-        # self.poster_image_file are guaranteed to be real Cloudinary
-        # objects (or None, if cleared). Compare against the OLD
-        # public_ids captured in Step 1, and delete whichever old
-        # asset(s) were actually replaced OR removed — so Cloudinary
-        # storage doesn't quietly fill up with orphaned files every
-        # time an admin uploads a new hero video/image, or explicitly
-        # removes one via hero_remove_file.
-        # ------------------------------------------------------------
-        new_video_public_id = self.video_file.public_id if self.video_file else None
-        new_poster_public_id = self.poster_image_file.public_id if self.poster_image_file else None
-
-        if old_video_public_id and old_video_public_id != new_video_public_id:
-            try:
-                cloudinary.uploader.destroy(
-                    old_video_public_id,
-                    resource_type="video",
-                )
-            except Exception:
-                # Never let a Cloudinary cleanup failure break the save —
-                # worst case an old file lingers, which is recoverable
-                # manually; a raised exception here would be worse (it
-                # would look like the whole hero-section save failed).
-                pass
-
-        if old_poster_public_id and old_poster_public_id != new_poster_public_id:
-            try:
-                cloudinary.uploader.destroy(
-                    old_poster_public_id,
-                    resource_type="image",
-                )
-            except Exception:
-                pass
 
     def delete(self, *args, **kwargs):
         pass
@@ -183,17 +61,6 @@ class HeroSection(models.Model):
             {"v": self.stat3_value, "l": self.stat3_label},
             {"v": self.stat4_value, "l": self.stat4_label},
         ]
-
-    @property
-    def poster_url(self):
-        """Alias so templates can use hero.poster_url regardless of
-        whether the poster came from an uploaded file or a plain URL —
-        `poster_image` already holds the correct delivery URL either way
-        (save() above rewrites it to the Cloudinary URL on upload).
-        Previously templates referenced hero.poster_url, which did not
-        exist on this model — Django templates fail silently on missing
-        attributes, so the poster fallback never actually rendered."""
-        return self.poster_image or ""
 
     def __str__(self):
         return "Hero Section"
@@ -244,9 +111,6 @@ def _safe_json_list(value):
       - a JSON string like '["Blue", "Red"]'                -> parsed
       - a plain comma string like "Blue, Red"                -> split
       - None / "" / [] / garbage                             -> []
-    This protects color_list/colors_json from ever throwing or silently
-    returning nothing, even if a row was edited manually via /admin/,
-    a fixture, or an older version of this model.
     """
     if not value:
         return []
@@ -277,22 +141,12 @@ class Product(models.Model):
     mrp = models.PositiveIntegerField(blank=True, null=True, verbose_name="MRP (strikethrough price)")
     sizes = models.CharField(max_length=300, help_text="Comma separated, e.g. 20x10 ft, 25x12 ft")
 
-    # Per-size pricing, e.g. {"6": 300, "8": 500} — size (inches) -> price (₹).
-    # `price` above is kept in sync automatically (set to the lowest size price)
-    # so anything still reading `product.price` continues to work.
     size_prices = models.JSONField(default=dict, blank=True)
 
-    # Whether the sizes above represent "inches" (numeric, e.g. 6, 8, 10)
-    # or "sizes" (text, e.g. S, M, L, XL). Purely drives how the admin
-    # dashboard renders/edits the size rows and picks an input type.
     variant_type = models.CharField(
         max_length=10, choices=VARIANT_TYPE_CHOICES, default="inches"
     )
 
-    # Optional colors this product is available in, e.g. ["Blue", "Red"].
-    # Completely optional — defaults to an empty list, meaning "no color
-    # options", and the storefront simply hides the color swatches row
-    # for any product with no colors.
     colors = models.JSONField(default=list, blank=True)
 
     image_url = models.URLField(blank=True, null=True, help_text="Use this OR upload a file below.")
@@ -314,8 +168,6 @@ class Product(models.Model):
 
     @property
     def sorted_sizes(self):
-        """[('6', 300), ('8', 500)] sorted by size number — for storefront
-        display, so sizes always list smallest to largest."""
         if not self.size_prices:
             return []
         try:
@@ -325,23 +177,14 @@ class Product(models.Model):
 
     @property
     def size_prices_json(self):
-        """JSON string version, safe to drop into a data-* attribute in
-        templates for the admin dashboard's Edit modal."""
         return json.dumps(self.size_prices or {})
 
     @property
     def color_list(self):
-        """Plain Python list of color names, e.g. ["Blue", "Red"].
-        Empty list if this product has no colors — always safe to
-        iterate over in a template with {% if product.color_list %}.
-        Defensively parses the stored value so this never breaks even
-        if `colors` ever ends up as something other than a clean list."""
         return _safe_json_list(self.colors)
 
     @property
     def colors_json(self):
-        """JSON string version, safe to drop into a data-* attribute in
-        templates for the admin dashboard's Edit modal."""
         return json.dumps(self.color_list)
 
     def __str__(self):

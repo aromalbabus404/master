@@ -1,4 +1,5 @@
 import json
+import os
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -48,8 +49,6 @@ def submit_order(request):
         if not all([name, mobile, state, pincode, address]) or not items:
             return JsonResponse({"ok": False, "error": "Missing fields"}, status=400)
 
-        # Re-validate each item's price against the product's real size_prices,
-        # so a tampered price from devtools can never be saved as an order.
         validated_total = 0
         for it in items:
             product = Product.objects.filter(name=it["name"]).first()
@@ -130,7 +129,6 @@ def dashboard(request):
 
 
 def admin_login(request):
-    # Already logged in
     if request.user.is_authenticated:
         return redirect("dashboard")
 
@@ -138,11 +136,7 @@ def admin_login(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password,
-        )
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
@@ -153,9 +147,6 @@ def admin_login(request):
     return render(request, "registration/login.html")
 
 
-# ----------------------------
-# LOGOUT
-# ----------------------------
 def admin_logout(request):
     logout(request)
     return redirect("admin_login")
@@ -164,24 +155,12 @@ def admin_logout(request):
 @login_required
 @require_POST
 def hero_save(request):
+    """Hero is now text-only (eyebrow/heading/sub/stats) — the background
+    video/poster image are static files, not handled here at all."""
     hero = HeroSection.load()
-
-    form = HeroForm(
-        request.POST,
-        request.FILES,
-        instance=hero,
-    )
+    form = HeroForm(request.POST, instance=hero)
 
     if form.is_valid():
-        # form.save() already assigns every bound field (including
-        # video_file / poster_image_file from request.FILES) onto the
-        # instance and calls hero.save(), which triggers the model's own
-        # save() override — that override already uploads the file to
-        # Cloudinary and rebuilds video_url / poster_image from the result.
-        # There is no need to repeat any of that logic here: doing it twice
-        # was harmless but confusing, and any future change to the URL/
-        # format logic (e.g. the mp4 fix) then has to be kept in sync in
-        # two places instead of one.
         form.save()
         messages.success(request, "Hero section updated successfully.")
     else:
@@ -206,9 +185,6 @@ def settings_save(request):
 
 
 def _parse_size_prices(request):
-    """Reads size[] and price[] arrays submitted from the dynamic
-    'Add Size' rows and returns a clean dict like {"6": 300.0, "8": 500.0},
-    skipping any incomplete rows."""
     sizes = request.POST.getlist("size[]")
     prices = request.POST.getlist("price[]")
     size_prices = {}
@@ -225,10 +201,6 @@ def _parse_size_prices(request):
 
 
 def _parse_colors(request):
-    """Reads the color[] array submitted from the dynamic 'Add Color' rows.
-    Colors are entirely OPTIONAL — empty/blank rows are silently skipped,
-    duplicates are dropped, and if nothing was entered this simply returns
-    an empty list (which is a perfectly valid, expected result)."""
     raw_colors = request.POST.getlist("color[]")
     colors = []
     for c in raw_colors:
@@ -241,7 +213,6 @@ def _parse_colors(request):
 
 
 def _parse_variant_type(request):
-    """'inches' or 'sizes' — defaults to 'inches' if not sent/invalid."""
     vtype = request.POST.get("variant_type", "inches").strip().lower()
     return vtype if vtype in ("inches", "sizes") else "inches"
 
@@ -249,7 +220,6 @@ def _parse_variant_type(request):
 @login_required
 @require_POST
 def product_save(request, pk=None):
-    """Handles both Add Product (pk=None) and any legacy full-form edit."""
     instance = get_object_or_404(Product, pk=pk) if pk else None
     form = ProductForm(request.POST, request.FILES, instance=instance)
     if form.is_valid():
@@ -258,7 +228,6 @@ def product_save(request, pk=None):
         size_prices = _parse_size_prices(request)
         if size_prices:
             product.size_prices = size_prices
-            # Keep legacy fields in sync so any old code/templates still work
             product.sizes = ", ".join(f'{s}"' for s in size_prices.keys())
             product.price = min(size_prices.values())
         elif not pk:
@@ -266,8 +235,6 @@ def product_save(request, pk=None):
             return redirect("dashboard")
 
         product.variant_type = _parse_variant_type(request)
-
-        # Colors are optional — an empty list is a valid, expected value.
         product.colors = _parse_colors(request)
 
         product.save()
@@ -284,8 +251,6 @@ def product_delete(request, pk):
     messages.success(request, "Product deleted.")
     return redirect("dashboard")
 
-
-import os
 
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_IMAGE_SIZE_MB = 5
@@ -391,8 +356,6 @@ def product_edit(request, pk):
         product.price = min(size_prices.values())
 
     product.variant_type = _parse_variant_type(request)
-
-    # Colors are optional — saving an empty list clears any previously set colors.
     product.colors = _parse_colors(request)
 
     if request.FILES.get("image_file"):
