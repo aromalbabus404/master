@@ -55,7 +55,10 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .mobile-nav-close:hover{background:var(--brass);color:var(--ink);border-color:var(--brass);}
 
 /* ============ HERO — image background + sliding card carousel ============ */
-.hero{position:relative;padding:170px 0 70px;overflow:hidden;}
+/* NEW: solid fallback color on the hero itself so any letterboxed/pillarboxed
+   space around the video (once we switch to object-fit:contain on smaller
+   screens) blends into the theme instead of showing a gap. */
+.hero{position:relative;padding:170px 0 70px;overflow:hidden;background:var(--ink);}
 .hero-bg-video{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
 .hero-bg-poster{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.78);background:var(--ink);}
 .hero-bg-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(11,33,31,.6) 0%, rgba(11,33,31,.5) 45%, rgba(11,33,31,.72) 100%);}
@@ -127,15 +130,35 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   .hero{padding:150px 0 60px;}
   .hero-grid{grid-template-columns:minmax(0,1fr);}
   .carousel-wrap{max-width:460px;margin:0 auto 36px;}
+
+  /* NEW: fit the whole video/poster inside the box on tablets — no cropping.
+     object-fit:contain scales the video proportionally so nothing important
+     gets cut off; the .hero background color fills any leftover space. */
+  .hero-bg-video,
+  .hero-bg-poster{
+    object-fit:contain;
+    background:var(--ink);
+  }
 }
 @media(max-width:600px){
-  .hero{padding:140px 0 50px;}
+  .hero{
+    padding:130px 0 40px; /* tighter vertical space on phones */
+  }
    .carousel-track {
         margin-top: 170px;
     }
   .carousel-wrap{margin-top:40px;max-width:100%;}
   .plant-card{width:200px;}
   .plant-card img{height:130px;}
+
+  /* NEW: same proportional, uncropped fit as tablet — compact and fully
+     contained inside the phone viewport, similar to Flipkart's fitted
+     video/banner cards. */
+  .hero-bg-video,
+  .hero-bg-poster{
+    object-fit:contain;
+    background:var(--ink);
+  }
 }
 
 /* ============ SERVICES ============ */
