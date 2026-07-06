@@ -90,74 +90,76 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-stats strong{display:block;font-family:'Manrope',sans-serif;font-size:1.02rem;font-weight:800;color:var(--white);line-height:1.2;}
 .hero-stats small{color:rgba(255,255,255,.65);font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;}
 
-/* ---- sliding card carousel — moved to its own strip just below the hero ---- */
-/* Restyled to a full-bleed image + big overlaid label carousel, with a scaled-up
-   "active" center card and prev/next arrow controls (scroll-snap based). */
-.carousel-wrap{position:relative;width:100%;max-width:920px;min-width:0;margin:0 auto;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
+/* ============ PROMO BANNER CAROUSEL (GOAT-SALE style) — full-width gradient cards, one per view, dot pagination ============ */
+.promo-carousel{position:relative;width:100%;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
 
-.carousel-mask{
-  position:relative;overflow-x:auto;overflow-y:hidden;
-  padding:26px 8px 34px;
+.promo-mask{
+  position:relative;width:100%;overflow-x:auto;overflow-y:hidden;
   scroll-snap-type:x mandatory;
   scrollbar-width:none;-ms-overflow-style:none;
-  -webkit-mask-image:linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
-  mask-image:linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  border-radius:22px;
 }
-.carousel-mask::-webkit-scrollbar{display:none;}
+.promo-mask::-webkit-scrollbar{display:none;}
 
-.carousel-track{display:flex;gap:22px;width:max-content;align-items:center;padding:0 8%;}
+.promo-track{display:flex;width:100%;}
 
-.plant-card{
-  position:relative;display:block;overflow:hidden;flex-shrink:0;
-  width:210px;height:290px;border-radius:26px;scroll-snap-align:center;
-  box-shadow:0 16px 36px rgba(0,0,0,.26);
-  transform:scale(.86);opacity:.65;
-  transition:transform .4s ease, opacity .4s ease, box-shadow .4s ease;
+.promo-card{
+  position:relative;flex:0 0 100%;width:100%;scroll-snap-align:start;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  min-height:230px;padding:30px 26px;overflow:hidden;
+  border-radius:22px;box-shadow:0 20px 46px rgba(11,33,31,.22);
 }
-.plant-card img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  transition:transform .6s ease;
-}
-.plant-card::after{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(to top, rgba(0,0,0,.62) 0%, rgba(0,0,0,.16) 46%, transparent 68%);
-}
-.plant-card .name{
-  position:absolute;left:22px;right:22px;bottom:46px;z-index:2;
-  font-family:'Fraunces',serif;font-weight:600;font-size:1.65rem;color:var(--white);
-  letter-spacing:-.5px;text-shadow:0 2px 10px rgba(0,0,0,.25);
-}
-.plant-card .price{
-  position:absolute;left:22px;right:22px;bottom:22px;z-index:2;
-  color:rgba(255,255,255,.9);font-size:.82rem;font-weight:700;
-}
-.plant-card:hover img{transform:scale(1.06);}
+.promo-card.promo-a{background:linear-gradient(135deg,#2c5f57 0%,var(--deep) 45%,#0c2422 100%);}
+.promo-card.promo-b{background:linear-gradient(135deg,#a9762f 0%,var(--brass) 45%,#123b37 100%);}
+.promo-card.promo-c{background:linear-gradient(135deg,#3FA79A 0%,#16554d 55%,#0B211F 100%);}
 
-.plant-card.is-active{
-  transform:scale(1);opacity:1;z-index:2;
-  box-shadow:0 30px 60px rgba(0,0,0,.4);
+.promo-card::before{
+  content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;
+  background:radial-gradient(circle,rgba(255,255,255,.16) 0%,transparent 70%);
+  pointer-events:none;
 }
-.plant-card.is-active .name{font-size:1.85rem;}
+.promo-card::after{
+  content:"%";position:absolute;bottom:-26px;right:14%;font-family:'Fraunces',serif;font-weight:700;
+  font-size:7rem;color:rgba(255,255,255,.06);pointer-events:none;line-height:1;
+}
+
+.promo-content{position:relative;z-index:2;max-width:58%;color:var(--white);}
+.promo-badge{
+  display:inline-block;background:var(--white);color:var(--ink);font-weight:800;font-size:.68rem;
+  text-transform:uppercase;letter-spacing:.4px;padding:5px 12px;border-radius:999px;margin-bottom:12px;
+}
+.promo-title{font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:10px;line-height:1.15;}
+.promo-offer{
+  display:inline-flex;align-items:baseline;gap:8px;background:rgba(255,255,255,.94);color:var(--ink);
+  border-radius:12px;padding:10px 16px;margin-bottom:14px;
+}
+.promo-offer-big{font-family:'Fraunces',serif;font-weight:700;font-size:1.5rem;color:var(--ink);}
+.promo-offer-sub{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;max-width:90px;line-height:1.2;}
+.promo-cta{
+  display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid rgba(255,255,255,.7);
+  color:var(--white);font-weight:700;font-size:.82rem;padding:9px 18px;border-radius:999px;
+}
+
+.promo-image{position:relative;z-index:2;flex:0 0 auto;width:36%;max-width:180px;}
+.promo-image img{width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 24px rgba(0,0,0,.35));}
+
+.promo-dots{display:flex;justify-content:center;gap:7px;margin-top:16px;}
+.promo-dot{width:7px;height:7px;border-radius:50%;background:rgba(11,33,31,.2);cursor:pointer;transition:.25s ease;border:none;padding:0;}
+.promo-dot.active{background:var(--brass);width:20px;border-radius:5px;}
 
 .carousel-arrow{
   position:absolute;top:50%;transform:translateY(-50%);
-  width:48px;height:48px;border-radius:50%;
-  background:rgba(255,255,255,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border:1px solid rgba(255,255,255,.4);
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.9);
+  border:1px solid var(--line);
   display:flex;align-items:center;justify-content:center;
-  color:var(--white);cursor:pointer;z-index:5;transition:.25s ease;
+  color:var(--ink);cursor:pointer;z-index:5;transition:.25s ease;
 }
-.carousel-arrow:hover{background:var(--white);color:var(--ink);}
+.carousel-arrow:hover{background:var(--brass);color:var(--ink);}
 .carousel-arrow:active{transform:translateY(-50%) scale(.94);}
-.carousel-arrow.prev{left:-4px;}
-.carousel-arrow.next{right:-4px;}
-.carousel-arrow svg{width:20px;height:20px;flex-shrink:0;}
-
-.carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:16px;}
-.carousel-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);animation:pulseDot 3s ease-in-out infinite;}
-.carousel-dots span:nth-child(1){animation-delay:0s;}
-.carousel-dots span:nth-child(2){animation-delay:1s;}
-.carousel-dots span:nth-child(3){animation-delay:2s;}
+.carousel-arrow.prev{left:-6px;}
+.carousel-arrow.next{right:-6px;}
+.carousel-arrow svg{width:18px;height:18px;flex-shrink:0;}
 
 .btn-pill{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--white);color:var(--ink);
@@ -169,19 +171,17 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .btn-pill:hover svg{transform:translate(3px,-3px);}
 
 @keyframes heroFadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-@keyframes pulseDot{0%,100%{background:rgba(255,255,255,.35);}50%{background:var(--brass-light);}}
 
 @media(prefers-reduced-motion:reduce){
-  .hero-text,.carousel-wrap,.carousel-dots span{animation:none!important;opacity:1!important;transform:none!important;}
-  .plant-card{transition:none!important;}
+  .hero-text,.promo-carousel{animation:none!important;opacity:1!important;transform:none!important;}
   header{transition:none!important;}
 }
 
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
 
 /* ---- carousel strip, sits right below the hero as its own dark section ---- */
-.carousel-strip{padding:44px 0 56px;}
-.carousel-strip .carousel-wrap{opacity:1;animation:none;}
+.carousel-strip{padding:24px 0 40px;}
+.carousel-strip .promo-carousel{opacity:1;animation:none;}
 
 @media(max-width:980px){
   .hero{padding:130px 0 48px;border-radius:0 0 28px 28px;}
@@ -196,12 +196,18 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   .hero-text p{max-width:100%;}
   .hero-stats{gap:18px 22px;}
   .hero-stats .stat-copy{text-align:left;}
-  .carousel-strip{padding:32px 0 40px;}
-  .plant-card{width:160px;height:230px;}
-  .plant-card .name{font-size:1.25rem;bottom:36px;}
-  .plant-card.is-active .name{font-size:1.4rem;}
-  .plant-card .price{font-size:.72rem;bottom:16px;}
-  .carousel-arrow{width:40px;height:40px;}
+  .carousel-strip{padding:18px 0 30px;}
+  .wrap{padding:0 16px;}
+  .promo-card{min-height:190px;padding:20px 16px;border-radius:18px;gap:10px;}
+  .promo-content{max-width:60%;}
+  .promo-title{font-size:1.05rem;margin-bottom:8px;}
+  .promo-badge{font-size:.6rem;padding:4px 10px;margin-bottom:8px;}
+  .promo-offer{padding:8px 12px;gap:6px;margin-bottom:10px;}
+  .promo-offer-big{font-size:1.15rem;}
+  .promo-offer-sub{font-size:.62rem;max-width:74px;}
+  .promo-cta{font-size:.72rem;padding:7px 14px;}
+  .promo-image{width:34%;max-width:110px;}
+  .carousel-arrow{display:none;}
 }
 
 /* ============ SERVICES ============ */
@@ -453,33 +459,38 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     </div>
 </section>
 
-<!-- product card carousel: its own strip right below the hero, restyled with full-bleed image
-     cards, big overlaid label, a scaled-up active/center card and prev/next arrows -->
+<!-- promo banner carousel: full-width gradient "sale card" per slide, dot pagination, fits mobile viewport -->
 <section class="carousel-strip">
     <div class="wrap">
-        <div class="carousel-wrap">
-            <button class="carousel-arrow prev" id="carPrev" type="button" aria-label="Previous product">
+        <div class="promo-carousel" id="promoCarousel">
+            <button class="carousel-arrow prev" id="carPrev" type="button" aria-label="Previous offer">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
 
-            <div class="carousel-mask" id="carMask">
-                <div class="carousel-track" id="track">
+            <div class="promo-mask" id="carMask">
+                <div class="promo-track" id="track">
                     {% for p in products %}
-                    <a href="{% url 'shop' %}" class="plant-card">
-                        <img src="{{ p.image }}" alt="{{ p.name }}">
-                        <div class="name">{{ p.name }}</div>
-                        <div class="price">from ₹{{ p.price|floatformat:0 }}</div>
+                    <a href="{% url 'shop' %}" class="promo-card promo-{% cycle 'a' 'b' 'c' %}">
+                        <div class="promo-content">
+                            <span class="promo-badge">{{ p.badge|default:"Pool Sale" }}</span>
+                            <h3 class="promo-title">{{ p.name }}</h3>
+                            <div class="promo-offer">
+                                <span class="promo-offer-big">₹{{ p.price|floatformat:0 }}</span>
+                                <span class="promo-offer-sub">Starting Price</span>
+                            </div>
+                            <span class="promo-cta">Shop Now →</span>
+                        </div>
+                        <div class="promo-image"><img src="{{ p.image }}" alt="{{ p.name }}"></div>
                     </a>
                     {% endfor %}
                 </div>
             </div>
 
-            <button class="carousel-arrow next" id="carNext" type="button" aria-label="Next product">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            <button class="carousel-arrow next" id="carNext" type="button" aria-label="Next offer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6 6-6"/></svg>
             </button>
-
-            <div class="carousel-dots"><span></span><span></span><span></span></div>
         </div>
+        <div class="promo-dots" id="promoDots"></div>
     </div>
 </section>
 <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none"><path d="M0,40 C320,90 1120,0 1440,40 L1440,70 L0,70 Z" fill="#F7F3E8"></path></svg>
@@ -810,66 +821,76 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   window.addEventListener('scroll', firstGestureRetry, {passive:true});
 })();
 
-/* ============ HERO PRODUCT CAROUSEL — scroll-snap based, arrows + auto-center "active" card ============ */
+/* ============ PROMO BANNER CAROUSEL — one full-width card per view, dot pagination, swipe + arrows, autoplay ============ */
 (function(){
   const mask = document.getElementById('carMask');
   const track = document.getElementById('track');
   const prevBtn = document.getElementById('carPrev');
   const nextBtn = document.getElementById('carNext');
+  const dotsWrap = document.getElementById('promoDots');
   if(!mask || !track) return;
 
-  const cards = [...track.querySelectorAll('.plant-card')];
+  const cards = [...track.querySelectorAll('.promo-card')];
   if(cards.length === 0) return;
 
-  function cardStep(){
-    const c = cards[0];
-    const style = getComputedStyle(track);
-    const gap = parseFloat(style.columnGap || style.gap) || 22;
-    return c.getBoundingClientRect().width + gap;
+  // build dots dynamically to match number of slides
+  cards.forEach((_, i)=>{
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'promo-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i+1));
+    dot.addEventListener('click', ()=> goToSlide(i));
+    dotsWrap.appendChild(dot);
+  });
+  const dots = [...dotsWrap.querySelectorAll('.promo-dot')];
+
+  function cardWidth(){
+    return cards[0].getBoundingClientRect().width;
   }
 
-  function updateActive(){
-    const maskRect = mask.getBoundingClientRect();
-    const center = maskRect.left + maskRect.width / 2;
-    let closest = null, minDist = Infinity;
-    cards.forEach(c=>{
-      const r = c.getBoundingClientRect();
-      const cCenter = r.left + r.width / 2;
-      const dist = Math.abs(cCenter - center);
-      if(dist < minDist){ minDist = dist; closest = c; }
-    });
-    cards.forEach(c=>c.classList.toggle('is-active', c === closest));
+  function currentIndex(){
+    return Math.round(mask.scrollLeft / cardWidth());
+  }
+
+  function goToSlide(i){
+    const idx = Math.max(0, Math.min(cards.length - 1, i));
+    mask.scrollTo({left: idx * cardWidth(), behavior:'smooth'});
+  }
+
+  function updateDots(){
+    const idx = currentIndex();
+    dots.forEach((d, i)=> d.classList.toggle('active', i === idx));
   }
 
   let rafPending = false;
   mask.addEventListener('scroll', ()=>{
     if(!rafPending){
       rafPending = true;
-      requestAnimationFrame(()=>{ updateActive(); rafPending = false; });
+      requestAnimationFrame(()=>{ updateDots(); rafPending = false; });
     }
   }, {passive:true});
 
-  if(prevBtn) prevBtn.addEventListener('click', ()=> mask.scrollBy({left:-cardStep(), behavior:'smooth'}));
-  if(nextBtn) nextBtn.addEventListener('click', ()=> mask.scrollBy({left:cardStep(), behavior:'smooth'}));
+  if(prevBtn) prevBtn.addEventListener('click', ()=> goToSlide(currentIndex() - 1));
+  if(nextBtn) nextBtn.addEventListener('click', ()=> goToSlide(currentIndex() + 1));
+
+  window.addEventListener('resize', updateDots);
 
   // gentle autoplay — loops back to the start, pauses on hover/touch
   let autoTimer;
   function startAuto(){
     stopAuto();
     autoTimer = setInterval(()=>{
-      const atEnd = mask.scrollLeft + mask.clientWidth >= track.scrollWidth - 4;
-      if(atEnd){ mask.scrollTo({left:0, behavior:'smooth'}); }
-      else{ mask.scrollBy({left:cardStep(), behavior:'smooth'}); }
-    }, 3200);
+      const next = currentIndex() + 1 >= cards.length ? 0 : currentIndex() + 1;
+      goToSlide(next);
+    }, 3800);
   }
   function stopAuto(){ clearInterval(autoTimer); }
 
   mask.addEventListener('mouseenter', stopAuto);
   mask.addEventListener('mouseleave', startAuto);
   mask.addEventListener('touchstart', stopAuto, {passive:true});
-  window.addEventListener('resize', updateActive);
 
-  updateActive();
+  updateDots();
   startAuto();
 })();
 
