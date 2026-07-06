@@ -35,8 +35,9 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-sp
 .section{padding:104px 0;}
 .section-head{max-width:640px;margin-bottom:52px;}
 .section-head p{color:var(--muted);font-size:1.06rem;margin-top:16px;}
-header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;transition:.3s;background:linear-gradient(to bottom, rgba(11,33,31,.5), transparent);}
+header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;transition:transform .35s ease, background .3s ease, padding .3s ease, box-shadow .3s ease;background:linear-gradient(to bottom, rgba(11,33,31,.5), transparent);}
 header.scrolled{background:var(--ink);box-shadow:var(--shadow);padding:14px 32px;}
+header.header-hidden{transform:translateY(0);}
 .logo{font-family:'Fraunces',serif;font-weight:600;color:var(--white);font-size:1.4rem;display:flex;align-items:center;gap:2px;font-style:italic;}
 .logo span{color:var(--seafoam);font-style:normal;}
 .logo-img{height:46px;width:auto;display:block;background:transparent;}
@@ -65,7 +66,6 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.4);background:var(--ink);z-index:0;}
 .hero-overlay{
   position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(180deg, rgba(9,26,24,.7) 0%, rgba(9,26,24,.55) 45%, rgba(7,20,18,.8) 100%);
 }
 .hero > .wrap{position:relative;z-index:2;width:100%;}
 
@@ -135,6 +135,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 
 @media(prefers-reduced-motion:reduce){
   .hero-text,.carousel-wrap,.carousel-track,.carousel-dots span{animation:none!important;opacity:1!important;transform:none!important;}
+  header{transition:none!important;}
 }
 
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
@@ -295,7 +296,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 @media(max-width:980px){
     header{
-        position:static;
         background:var(--ink);
     }
     header.scrolled{
@@ -666,11 +666,44 @@ const CSRF_TOKEN = document.querySelector('input[name=csrfmiddlewaretoken]').val
 const ORDER_URL = "{% url 'submit_order' %}";
 const REVIEW_URL = "{% url 'submit_review' %}";
 
-/* ============ HEADER SCROLL + MOBILE NAV ============ */
+/* ============ HEADER SCROLL BEHAVIOR: background swap + hide-on-scroll-down / show-on-scroll-up ============ */
 const header = document.getElementById('siteHeader');
-window.addEventListener('scroll', ()=>{ header.classList.toggle('scrolled', window.scrollY > 40); });
 const mobileNav = document.getElementById('mobileNav');
-document.getElementById('menuToggle').addEventListener('click', ()=>mobileNav.classList.toggle('open'));
+let lastScrollY = window.scrollY;
+let ticking = false;
+
+function handleHeaderScroll(){
+  const currentY = window.scrollY;
+
+  header.classList.toggle('scrolled', currentY > 40);
+
+  // Don't hide the header while the mobile menu is open, or right at the very top.
+  if(mobileNav.classList.contains('open') || currentY < 80){
+    header.classList.remove('header-hidden');
+  } else if(currentY > lastScrollY){
+    // scrolling down -> hide
+    header.classList.add('header-hidden');
+  } else if(currentY < lastScrollY){
+    // scrolling up -> reveal
+    header.classList.remove('header-hidden');
+  }
+
+  lastScrollY = currentY;
+  ticking = false;
+}
+
+window.addEventListener('scroll', ()=>{
+  if(!ticking){
+    window.requestAnimationFrame(handleHeaderScroll);
+    ticking = true;
+  }
+}, {passive:true});
+
+/* ============ MOBILE NAV TOGGLE ============ */
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  mobileNav.classList.toggle('open');
+  header.classList.remove('header-hidden'); // keep header visible while menu is open
+});
 document.getElementById('mobileNavClose').addEventListener('click', ()=>mobileNav.classList.remove('open'));
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileNav.classList.remove('open')));
 
