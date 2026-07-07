@@ -745,10 +745,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <h2>What Our <em style="color:var(--seafoam-deep);font-style:italic;">Customers</em> Are Saying</h2>
     </div>
 
-    <div class="testimonials-top reveal">
-        <div class="trust-stars">★★★★★ <span>Based on real customer reviews</span></div>
-        <button class="btn-write-review" id="openReviewModal" type="button">Write a Review</button>
-    </div>
 
     <div class="testimonial-carousel reveal">
         <div class="testimonial-mask" id="reviewsMask">
@@ -780,6 +776,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                         </div>
                     </div>
                 </div>
+
+                
             {% empty %}
                 <p class="no-reviews">Be the first to leave a review!</p>
             {% endfor %}
@@ -787,14 +785,37 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         </div>
 
         <div class="testimonial-nav">
-            <button id="reviewPrev" type="button" aria-label="Previous review">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-            <button id="reviewNext" type="button" aria-label="Next review">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6 6-6"/></svg>
-            </button>
-        </div>
+    <button id="reviewPrev" type="button" aria-label="Previous review">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18L9 12L15 6"/>
+        </svg>
+    </button>
+
+    <button id="reviewNext" type="button" aria-label="Next review">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 6L15 12L9 18"/>
+        </svg>
+    </button>
+</div>
     </div>
+</div>
+
+<div class="testimonials-top reveal">
+
+    <div class="review-company">
+        <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools Logo" class="review-logo">
+
+        <div class="review-stars">
+            ★★★★★
+        </div>
+
+        <p class="review-text">Based on real customer reviews</p>
+
+        <button class="btn-write-review" id="openReviewModal" type="button">
+            Write a Review
+        </button>
+    </div>
+
 </div>
 </section>
 
