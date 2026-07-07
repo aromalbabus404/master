@@ -185,6 +185,35 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .carousel-strip{padding:24px 0 40px;}
 .carousel-strip .promo-carousel{opacity:1;animation:none;}
 
+/* ============ ABOUT ============ */
+.about-wrap{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;}
+.about-media{position:relative;}
+.about-media-frame{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3;background:var(--stone);}
+.about-media-frame img{width:100%;height:100%;object-fit:cover;}
+.about-badge-card{
+  position:absolute;bottom:-26px;right:-22px;background:var(--white);border-radius:16px;
+  box-shadow:0 18px 40px rgba(18,50,64,.2);padding:20px 24px;display:flex;align-items:center;gap:14px;
+  border:1px solid var(--line);
+}
+.about-badge-card .num{font-family:'Fraunces',serif;font-weight:700;font-size:1.9rem;color:var(--seafoam-deep);line-height:1;}
+.about-badge-card .lbl{font-size:.74rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;max-width:110px;line-height:1.25;}
+.about-copy p{color:var(--muted);font-size:1rem;margin-bottom:18px;}
+.about-points{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0 30px;}
+.about-point{display:flex;align-items:flex-start;gap:12px;}
+.about-point .pt-ic{width:38px;height:38px;border-radius:50%;background:var(--stone);color:var(--seafoam-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.05rem;}
+.about-point h4{font-family:'Fraunces',serif;font-weight:600;font-size:.98rem;margin-bottom:3px;}
+.about-point p{color:var(--muted);font-size:.85rem;margin:0;}
+@media(max-width:980px){
+  .about-wrap{grid-template-columns:1fr;gap:50px;}
+  .about-badge-card{right:16px;}
+}
+@media(max-width:600px){
+  .about-points{grid-template-columns:1fr;gap:14px;}
+  .about-badge-card{padding:14px 18px;bottom:-18px;gap:10px;}
+  .about-badge-card .num{font-size:1.5rem;}
+  .about-badge-card .lbl{font-size:.66rem;max-width:96px;}
+}
+
 /* ============ SCROLL REVEAL ANIMATIONS ============ */
 .reveal{
   opacity:0;
@@ -501,6 +530,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <a href="#home" class="logo"><img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="logo-img"></a>
 <nav>
     <ul>
+    <li><a href="#about">About</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="{% url 'shop' %}">
         Shop
@@ -520,6 +550,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <div class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close menu">✕</button>
+  <a href="#about">About</a>
   <a href="#services">Services</a>
   <a href="{% url 'shop' %}">
         Shop
@@ -610,6 +641,50 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     </div>
 </section>
 <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none"><path d="M0,40 C320,90 1120,0 1440,40 L1440,70 L0,70 Z" fill="#F5FAFB"></path></svg>
+
+<section class="section" id="about">
+<div class="wrap">
+  <div class="eyebrow">About Us</div>
+    <div class="about-wrap">
+        <div class="about-media reveal reveal-left">
+          
+            <div class="about-media-frame">
+                <img src="{% static 'images/Gopi Sundar Site 4.JPG.jpeg' %}" alt="Master Pools workshop">
+            </div>
+            <div class="about-badge-card">
+                <span class="num">{{ about.years|default:"15+" }}</span>
+                <span class="lbl">Years building pools across Kerala</span>
+            </div>
+        </div>
+
+        <div class="about-copy reveal reveal-right">
+            
+            <h2 style="margin-bottom:18px;">Building Exceptional Pools Across Kerala</h2>
+            <p>{{ about.intro|default:"Master Pools has spent over a decade designing, building and maintaining swimming pools for homes, villas and resorts across Kerala. We handle every stage in-house — from the first sketch to the final water treatment — so you deal with one team, start to finish." }}</p>
+            <p>{{ about.mission|default:"Our goal is simple: pools that look beautiful, work reliably, and hold up season after season. That means honest advice, quality materials, and craftsmanship we stand behind long after handover." }}</p>
+
+            <div class="about-points">
+                <div class="about-point">
+                    <div class="pt-ic">🏆</div>
+                    <div><h4>Proven Craftsmanship</h4><p>Hundreds of pools built and still going strong.</p></div>
+                </div>
+                <div class="about-point">
+                    <div class="pt-ic">🤝</div>
+                    <div><h4>One Team, Start to Finish</h4><p>Design, build, fit-out and upkeep — all under one roof.</p></div>
+                </div>
+                <div class="about-point">
+                    <div class="pt-ic">💧</div>
+                    <div><h4>Genuine Materials</h4><p>Certified equipment and treatment chemicals only.</p></div>
+                </div>
+                <div class="about-point">
+                    <div class="pt-ic">📍</div>
+                    <div><h4>Local & Reachable</h4><p>Based in Kochi, serving clients across Kerala.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
 
 <section class="section" id="services">
 <div class="wrap">
@@ -853,7 +928,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <p style="font-size:.88rem;max-width:280px;">Master Pools designs and builds custom swimming pools and premium pool accessories across Kerala.</p>
     </div>
     <div><h4>Shop</h4><ul><li><a href="{% url 'shop' %}">Pool Designs</a></li><li><a href="{% url 'shop' %}">Pumps & Filters</a></li><li><a href="{% url 'shop' %}">Lighting</a></li><li><a href="{% url 'shop' %}">Cleaning</a></li></ul></div>
-    <div><h4>Company</h4><ul><li><a href="#services">Services</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#reviews">Reviews</a></li><li><a href="#contact">Contact</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a href="#about">About</a></li><li><a href="#services">Services</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#reviews">Reviews</a></li><li><a href="#contact">Contact</a></li></ul></div>
     <div><h4>Contact</h4><ul><li><a id="footerWA" href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}">WhatsApp</a></li><li><a href="mailto:hello@masterpools.com">hello@masterpools.com</a></li><li>Kochi, Kerala — 682001</li></ul></div>
     </div>
     <div class="footer-bottom">
