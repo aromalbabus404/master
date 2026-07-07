@@ -1310,7 +1310,7 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
     showToast("Thanks! Your review is now live.");
 
     const waMsg = `New review submitted on Master Pools site:%0A%0AName: ${name}%0ARating: ${pickedRating}/5%0AReview: ${text}`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`, '_blank');a
   }catch(err){
     console.error("Review submit failed:", err);
     showToast(err.message || "Could not submit your review — please try again");
