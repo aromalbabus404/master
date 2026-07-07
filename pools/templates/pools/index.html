@@ -176,6 +176,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 @media(prefers-reduced-motion:reduce){
   .hero-text,.promo-carousel{animation:none!important;opacity:1!important;transform:none!important;}
   header{transition:none!important;}
+  .reveal,.reveal-stagger > *{opacity:1!important;transform:none!important;transition:none!important;}
 }
 
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
@@ -183,6 +184,21 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 /* ---- carousel strip, sits right below the hero as its own dark section ---- */
 .carousel-strip{padding:24px 0 40px;}
 .carousel-strip .promo-carousel{opacity:1;animation:none;}
+
+/* ============ SCROLL REVEAL ANIMATIONS ============ */
+.reveal{
+  opacity:0;
+  transform:translateY(32px);
+  transition:opacity .75s cubic-bezier(.25,.8,.35,1), transform .75s cubic-bezier(.25,.8,.35,1);
+  will-change:opacity, transform;
+}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+.reveal-left{transform:translateX(-36px);}
+.reveal-left.in-view{transform:translateX(0);}
+.reveal-right{transform:translateX(36px);}
+.reveal-right.in-view{transform:translateX(0);}
+.reveal-zoom{transform:scale(.92);}
+.reveal-zoom.in-view{transform:scale(1);}
 
 @media(max-width:980px){
   .hero{padding:130px 0 48px;border-radius:0 0 28px 28px;}
@@ -305,6 +321,7 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
 .gallery-grid{column-count:3;column-gap:20px;}
 .gallery-grid img{width:100%;border-radius:12px;margin-bottom:20px;box-shadow:var(--shadow);cursor:pointer;transition:.3s;}
 .gallery-grid img:hover{transform:scale(1.02);}
+.gallery-more-wrap{display:flex;justify-content:center;margin-top:8px;}
 
 /* ============ CLIENTS (logo grid) ============ */
 .clients-section{background:var(--white);}
@@ -353,7 +370,7 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
 }
 
 /* ============ REVIEWS ============ */
-.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:50px;}
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:16px;}
 .review-card{background:var(--white);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);}
 .review-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .review-top img{width:46px;height:46px;border-radius:50%;object-fit:cover;}
@@ -363,9 +380,7 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
 .review-card p{color:var(--ink);font-size:.92rem;}
 .review-media{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
 .review-media img,.review-media video{width:70px;height:70px;object-fit:cover;border-radius:8px;}
-.review-form{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px;max-width:680px;margin:0 auto;}
-.review-form h3{font-family:'Fraunces',serif;font-weight:600;margin-bottom:6px;}
-.review-form p.sub{color:var(--muted);font-size:.88rem;margin-bottom:24px;}
+.review-cta-wrap{display:flex;justify-content:center;margin-top:12px;}
 .file-row{display:flex;gap:14px;flex-wrap:wrap;}
 .file-label{flex:1;border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;cursor:pointer;font-size:.85rem;color:var(--muted);font-weight:600;}
 .file-label:hover{border-color:var(--seafoam-deep);color:var(--seafoam-deep);}
@@ -558,18 +573,18 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="services">
 <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
     <div class="eyebrow">What We Offer</div>
     <h2>Everything for a pool that lasts</h2>
     <p>Whether it's a new build, a refit, or just the right pump for your filtration — one team handles the whole job.</p>
     </div>
     <div class="services-grid">
-    <div class="service-card"><div class="ic">🏗</div><h3>Custom Swimming pool construction</h3><p>From design to digging to the final finish, we build pools tailored to your space, budget and style — homes, villas and resorts alike.</p></div>
-    <div class="service-card"><div class="ic">🔧</div><h3>Maintainance</h3><p>Regular cleaning, equipment checks and water balancing so your pool stays safe, clear and ready to use all year round.</p></div>
-    <div class="service-card"><div class="ic">💧</div><h3>Accessories &  Pool water treatment chemicals</h3><p>Pumps, filters, lighting and genuine water-treatment chemicals — everything you need to keep your pool running right.</p></div>
-    <div class="service-card"><div class="ic">🛠</div><h3>Guidelines</h3><p>Not sure where to start? Our team offers honest guidance on design, upkeep and safety so you can make the right call for your pool.</p></div>
+    <div class="service-card reveal"><div class="ic">🏗</div><h3>Custom Swimming pool construction</h3><p>From design to digging to the final finish, we build pools tailored to your space, budget and style — homes, villas and resorts alike.</p></div>
+    <div class="service-card reveal"><div class="ic">🔧</div><h3>Maintainance</h3><p>Regular cleaning, equipment checks and water balancing so your pool stays safe, clear and ready to use all year round.</p></div>
+    <div class="service-card reveal"><div class="ic">💧</div><h3>Accessories &  Pool water treatment chemicals</h3><p>Pumps, filters, lighting and genuine water-treatment chemicals — everything you need to keep your pool running right.</p></div>
+    <div class="service-card reveal"><div class="ic">🛠</div><h3>Guidelines</h3><p>Not sure where to start? Our team offers honest guidance on design, upkeep and safety so you can make the right call for your pool.</p></div>
     </div>
-    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20pool%20construction%2C%20maintenance%20and%20accessory%20services." class="services-wa" target="_blank">
+    <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20pool%20construction%2C%20maintenance%20and%20accessory%20services." class="services-wa reveal" target="_blank">
         <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.42.71 4.673 1.933 6.568L4 29l7.617-1.897A11.93 11.93 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.7c-2.11 0-4.08-.62-5.735-1.687l-.411-.257-4.522 1.127 1.208-4.406-.27-.428A9.66 9.66 0 0 1 6.3 15c0-5.35 4.352-9.7 9.701-9.7 5.35 0 9.699 4.35 9.699 9.7 0 5.35-4.35 9.7-9.699 9.7zm5.316-7.268c-.29-.145-1.717-.848-1.983-.945-.266-.097-.46-.145-.653.145-.194.29-.75.945-.92 1.14-.169.194-.338.218-.628.073-.29-.145-1.223-.451-2.33-1.437-.861-.768-1.443-1.716-1.612-2.006-.169-.29-.018-.447.127-.591.13-.13.29-.339.435-.508.145-.169.194-.29.29-.484.097-.194.048-.363-.024-.508-.073-.145-.653-1.575-.896-2.156-.236-.567-.475-.49-.653-.499l-.556-.01c-.194 0-.508.073-.774.363-.266.29-1.014.99-1.014 2.42 0 1.428 1.038 2.808 1.183 3.002.145.194 2.043 3.12 4.951 4.376.692.299 1.232.477 1.653.61.694.221 1.326.19 1.826.115.557-.083 1.717-.702 1.96-1.38.242-.678.242-1.259.169-1.38-.073-.121-.266-.194-.556-.339z"/></svg>
         Chat with us on WhatsApp
     </a>
@@ -578,7 +593,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="shop" style="background:var(--white);">
 <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
     <div class="eyebrow">Pool Shop</div>
     <h2>Pools & accessories</h2>
     <p>A quick look at our pool designs and accessories — pick a size and color, choose quantity, add to cart or buy right away. Click any product, or tap "Shop All" below, to see our full catalog.</p>
@@ -592,7 +607,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
     <div class="product-grid" id="productGrid">
     {% for p in products|slice:":4" %}
-        <div class="product-card" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
+        <div class="product-card reveal" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
 
         <a href="{% url 'shop' %}" class="product-img">
             {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
@@ -650,27 +665,32 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="gallery">
 <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
     <div class="eyebrow">Recent Work</div>
     <h2>Gallery</h2>
     <p>A look at pools we've designed, built and fitted out.</p>
     </div>
     <div class="gallery-grid" id="galleryGridEl">
-    {% for g in gallery %}<img src="{{ g.image }}">{% endfor %}
+    {% for g in gallery %}<img src="{{ g.image }}" class="reveal{% if forloop.counter > 6 %} gallery-extra{% endif %}"{% if forloop.counter > 6 %} style="display:none;"{% endif %}>{% endfor %}
     </div>
+    {% if gallery|length > 6 %}
+    <div class="gallery-more-wrap">
+        <button class="btn btn-primary" id="galleryMoreBtn" type="button">Show More Photos →</button>
+    </div>
+    {% endif %}
 </div>
 </section>
 
 <section class="section clients-section" id="clients">
 <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
     <div class="eyebrow">Trusted By</div>
     <h2>Clients who trust our craftsmanship</h2>
     <p>Resorts, hotels, institutions and homes across Kerala rely on us for pools that perform and last.</p>
     </div>
     <div class="client-grid">
         {% for c in clients %}
-        <div class="client-card"><img src="{{ c.image }}" alt="{{ c.name }}"></div>
+        <div class="client-card reveal"><img src="{{ c.image }}" alt="{{ c.name }}"></div>
         {% empty %}
         <p style="grid-column:1/-1;color:var(--muted);text-align:center;padding:20px 0;">Client logos coming soon.</p>
         {% endfor %}
@@ -680,14 +700,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="reviews" style="background:var(--white);">
 <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
     <div class="eyebrow">Client Reviews</div>
     <h2>What pool owners say</h2>
     <p>Real feedback from people we've built and maintained pools for.</p>
     </div>
     <div class="review-grid" id="reviewGrid">
     {% for r in reviews %}
-        <div class="review-card">
+        <div class="review-card reveal">
         <div class="review-top"><img src="{{ r.avatar_url }}" alt="{{ r.name }}"><div><h4>{{ r.name }}</h4><small>Verified Customer</small></div></div>
         <div class="stars">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
         <p>{{ r.text }}</p>
@@ -703,33 +723,20 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <p style="grid-column:1/-1;color:var(--muted);">Be the first to leave a review!</p>
     {% endfor %}
     </div>
-    <div class="review-form">
-    <h3>Add your review</h3>
-    <p class="sub">Share your experience — add photos or a short video of your pool. Reviews are checked by our team before going live.</p>
-    <div class="field"><label>Your name</label><input type="text" id="rvName" placeholder="e.g. Anu Thomas"></div>
-    <div class="rating-pick" id="ratingPick">
-        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
-    </div>
-    <div class="field"><label>Your review</label><textarea id="rvText" rows="3" placeholder="Tell us how it went..."></textarea></div>
-    <div class="file-row">
-        <label class="file-label">📷 Add Photos<input type="file" id="rvImg" accept="image/*" multiple hidden></label>
-        <label class="file-label">🎥 Add Video<input type="file" id="rvVid" accept="video/*" hidden></label>
-    </div>
-    <div class="preview-strip" id="rvPreview"></div>
-    <br>
-    <button class="btn btn-dark" id="submitReview" style="width:100%;" type="button">Submit Review</button>
+    <div class="review-cta-wrap reveal">
+        <button class="btn btn-dark" id="openReviewModal" type="button">✎ Write a Review</button>
     </div>
 </div>
 </section>
 
 <section class="section" id="contact">
 <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
     <div class="eyebrow">Get In Touch</div>
     <h2>Let's talk about your pool</h2>
     </div>
     <div class="contact-wrap">
-    <div class="contact-info">
+    <div class="contact-info reveal reveal-left">
         <h3>Contact details</h3>
         <div class="contact-row"><div class="ic">📍</div><div><h4>Workshop & Showroom</h4><p>NH66, Near Marine Drive, Kochi, Kerala — 682001</p></div></div>
         <div class="contact-row"><div class="ic">📞</div><div><h4>Call us</h4><p>+91 98765 43210 · Mon–Sat, 9am–7pm</p></div></div>
@@ -737,7 +744,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <div class="contact-row"><div class="ic">✉️</div><div><h4>Email</h4><p>hello@masterpools.com</p></div></div>
         <div class="map-box"><iframe loading="lazy" src="https://www.google.com/maps?q=Kochi,Kerala&output=embed"></iframe></div>
     </div>
-    <div class="contact-form">
+    <div class="contact-form reveal reveal-right">
         <h3 style="font-family:'Fraunces',serif;font-weight:600;margin-bottom:20px;">Send an enquiry</h3>
         <div class="field"><label>Name</label><input type="text" id="cName" placeholder="Your name"></div>
         <div class="field"><label>Phone</label><input type="text" id="cPhone" placeholder="Your phone number"></div>
@@ -793,6 +800,27 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     </div>
     <div class="field"><label>Address</label><textarea id="chkAddress" rows="3" placeholder="House name, street, city"></textarea></div>
     <button class="btn btn-primary" style="width:100%;" id="sendOrder" type="button">Send Order on WhatsApp</button>
+</div>
+</div>
+
+<!-- Write a Review modal — opened from the "Write a Review" button in the Reviews section -->
+<div class="modal-bg" id="reviewModal">
+<div class="modal">
+    <button class="modal-close" id="reviewModalClose" type="button">✕</button>
+    <h3>Add your review</h3>
+    <p class="sub">Share your experience — add photos or a short video of your pool. Reviews are checked by our team before going live.</p>
+    <div class="field"><label>Your name</label><input type="text" id="rvName" placeholder="e.g. Anu Thomas"></div>
+    <div class="rating-pick" id="ratingPick">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+    </div>
+    <div class="field"><label>Your review</label><textarea id="rvText" rows="3" placeholder="Tell us how it went..."></textarea></div>
+    <div class="file-row">
+        <label class="file-label">📷 Add Photos<input type="file" id="rvImg" accept="image/*" multiple hidden></label>
+        <label class="file-label">🎥 Add Video<input type="file" id="rvVid" accept="video/*" hidden></label>
+    </div>
+    <div class="preview-strip" id="rvPreview"></div>
+    <br>
+    <button class="btn btn-dark" id="submitReview" style="width:100%;" type="button">Submit Review</button>
 </div>
 </div>
 
@@ -983,6 +1011,28 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   startAuto();
 })();
 
+/* ============ SCROLL REVEAL ANIMATIONS — fades/slides sections & cards in as they enter the viewport ============ */
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, {threshold:0.12, rootMargin:'0px 0px -60px 0px'});
+
+function observeReveals(scope){
+  const root = scope || document;
+  root.querySelectorAll('.reveal:not(.reveal-bound)').forEach((el, i)=>{
+    el.classList.add('reveal-bound');
+    if(!el.style.transitionDelay){
+      el.style.transitionDelay = ((i % 4) * 0.09).toFixed(2) + 's';
+    }
+    revealObserver.observe(el);
+  });
+}
+observeReveals();
+
 /* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
@@ -1106,7 +1156,7 @@ function openCart(){ cartDrawer.classList.add('open'); overlay.classList.add('sh
 function closeCart(){ cartDrawer.classList.remove('open'); overlay.classList.remove('show'); }
 document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
-overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); });
+overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); closeReviewModal(); });
 
 /* ============ CHECKOUT / BUY NOW -> saves to real DB via fetch, then opens WhatsApp ============ */
 const checkoutModal = document.getElementById('checkoutModal');
@@ -1170,7 +1220,14 @@ document.getElementById('cSend').addEventListener('click', ()=>{
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 });
 
-/* ============ REVIEWS -> saves to real DB via fetch (multipart, with media) ============ */
+/* ============ WRITE A REVIEW -> opens a popup modal instead of an inline form ============ */
+const reviewModal = document.getElementById('reviewModal');
+function openReviewModal(){ reviewModal.classList.add('show'); overlay.classList.add('show'); }
+function closeReviewModal(){ reviewModal.classList.remove('show'); overlay.classList.remove('show'); }
+document.getElementById('openReviewModal').addEventListener('click', openReviewModal);
+document.getElementById('reviewModalClose').addEventListener('click', closeReviewModal);
+
+/* ============ REVIEWS -> saves to real DB via fetch (multipart, with media), then also opens WhatsApp ============ */
 let pickedRating = 5;
 const ratingPick = document.getElementById('ratingPick');
 function paintStars(){ [...ratingPick.children].forEach(s=>{ s.classList.toggle('active', parseInt(s.dataset.v) <= pickedRating); }); }
@@ -1209,6 +1266,7 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
     document.getElementById('rvName').value='';
     document.getElementById('rvText').value='';
     rvPreview.innerHTML=''; reviewFiles=[]; pickedRating=5; paintStars();
+    closeReviewModal();
     showToast("Thanks! Your review is pending approval.");
 
     const waMsg = `New review submitted on Master Pools site:%0A%0AName: ${name}%0ARating: ${pickedRating}/5%0AReview: ${text}%0A%0APlease check the admin dashboard to approve or reject.`;
@@ -1218,6 +1276,18 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
   }
   btn.disabled = false; btn.textContent = "Submit Review";
 });
+
+/* ============ GALLERY — show first 6, reveal the rest on "Show More" ============ */
+const galleryMoreBtn = document.getElementById('galleryMoreBtn');
+if(galleryMoreBtn){
+  galleryMoreBtn.addEventListener('click', ()=>{
+    document.querySelectorAll('.gallery-extra').forEach(img=>{
+      img.style.display = 'block';
+    });
+    observeReveals(document.getElementById('galleryGridEl'));
+    galleryMoreBtn.remove();
+  });
+}
 
 /* ============ TOAST ============ */
 let toastTimer;
