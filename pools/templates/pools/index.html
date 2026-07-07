@@ -369,18 +369,52 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
   .client-card img{max-height:46px;}
 }
 
-/* ============ REVIEWS ============ */
-.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:16px;}
-.review-card{background:var(--white);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);}
-.review-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.review-top img{width:46px;height:46px;border-radius:50%;object-fit:cover;}
-.review-top h4{font-size:.94rem;font-family:'Fraunces',serif;font-weight:600;}
-.review-top small{color:var(--muted);}
-.stars{color:var(--brass);font-size:.88rem;margin-bottom:9px;}
-.review-card p{color:var(--ink);font-size:.92rem;}
+/* ============ REVIEWS — brand panel + Google-style review carousel ============ */
+.reviews-panel{display:flex;gap:0;align-items:stretch;background:var(--sand);border:1px solid var(--line);border-radius:24px;padding:36px;}
+.reviews-brand{flex:0 0 210px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:14px;padding-right:32px;border-right:1px solid var(--line);}
+.reviews-brand-logo{height:64px;width:auto;object-fit:contain;}
+.reviews-brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;color:var(--ink);}
+.reviews-brand-stars{color:var(--brass);font-size:1.25rem;letter-spacing:2px;}
+.btn-write-review{background:#1DAA4C;color:#fff;border:none;padding:13px 22px;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:.25s ease;white-space:nowrap;}
+.btn-write-review:hover{background:#169140;transform:translateY(-2px);}
+
+.reviews-carousel-wrap{position:relative;flex:1;min-width:0;padding-left:32px;}
+.reviews-track-mask{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;}
+.reviews-track-mask::-webkit-scrollbar{display:none;}
+.reviews-track{display:flex;gap:20px;}
+.review-tile{flex:0 0 calc(50% - 10px);scroll-snap-align:start;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:22px;min-width:230px;}
+.review-tile-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.review-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-family:'Manrope',sans-serif;flex-shrink:0;font-size:1rem;object-fit:cover;}
+.review-avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.review-tile-id{flex:1;min-width:0;}
+.review-tile-id h4{font-family:'Manrope',sans-serif;font-weight:700;font-size:.96rem;color:var(--ink);}
+.review-tile-id small{color:var(--muted);font-size:.78rem;}
+.google-g{width:20px;height:20px;flex-shrink:0;margin-top:2px;}
+.review-tile-stars{display:flex;align-items:center;gap:8px;color:var(--brass);font-size:.92rem;margin-bottom:10px;}
+.verified-badge{width:15px;height:15px;background:#4285F4;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0;}
+.review-tile p{color:var(--ink);font-size:.88rem;}
 .review-media{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.review-media img,.review-media video{width:70px;height:70px;object-fit:cover;border-radius:8px;}
-.review-cta-wrap{display:flex;justify-content:center;margin-top:12px;}
+.review-media img,.review-media video{width:60px;height:60px;object-fit:cover;border-radius:8px;}
+.no-reviews{color:var(--muted);text-align:center;padding:30px;}
+
+.review-arrow{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:var(--white);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;z-index:5;color:var(--ink);box-shadow:var(--shadow);}
+.review-arrow.prev{left:2px;}
+.review-arrow.next{right:-14px;}
+.review-arrow:hover{background:var(--brass);color:var(--white);border-color:var(--brass);}
+
+@media(max-width:900px){
+  .reviews-panel{flex-direction:column;padding:24px;border-radius:18px;}
+  .reviews-brand{border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:20px;width:100%;flex-direction:row;justify-content:space-between;align-items:center;}
+  .reviews-carousel-wrap{padding-left:0;padding-top:20px;}
+  .review-tile{flex:0 0 85%;}
+  .review-arrow.prev{left:-8px;}
+  .review-arrow.next{right:-8px;}
+}
+@media(max-width:600px){
+  .reviews-brand{flex-direction:column;align-items:flex-start;gap:10px;}
+  .review-tile{flex:0 0 92%;padding:18px;}
+}
+
 .file-row{display:flex;gap:14px;flex-wrap:wrap;}
 .file-label{flex:1;border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;cursor:pointer;font-size:.85rem;color:var(--muted);font-weight:600;}
 .file-label:hover{border-color:var(--seafoam-deep);color:var(--seafoam-deep);}
@@ -427,7 +461,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .mobile-nav{display:block;}
     .services-grid{grid-template-columns:repeat(2,1fr);}
     .product-grid{grid-template-columns:repeat(2,1fr);}
-    .review-grid{grid-template-columns:1fr;}
     .contact-wrap{grid-template-columns:1fr;}
     .footer-grid{grid-template-columns:1fr 1fr;}
     .hero-text{padding-left:0;}
@@ -705,26 +738,61 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <h2>What pool owners say</h2>
     <p>Real feedback from people we've built and maintained pools for.</p>
     </div>
-    <div class="review-grid" id="reviewGrid">
-    {% for r in reviews %}
-        <div class="review-card reveal">
-        <div class="review-top"><img src="{{ r.avatar_url }}" alt="{{ r.name }}"><div><h4>{{ r.name }}</h4><small>Verified Customer</small></div></div>
-        <div class="stars">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
-        <p>{{ r.text }}</p>
-        {% if r.media.all %}
-        <div class="review-media">
-            {% for m in r.media.all %}
-                {% if m.is_video %}<video src="{{ m.file.url }}" muted></video>{% else %}<img src="{{ m.file.url }}">{% endif %}
-            {% endfor %}
+
+    <div class="reviews-panel reveal">
+        <!-- brand column: logo, star rating, write-a-review button -->
+        <div class="reviews-brand">
+            <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="reviews-brand-logo">
+            <div class="reviews-brand-stars">★★★★★</div>
+            <button class="btn-write-review" id="openReviewModal" type="button">Write a Review</button>
         </div>
-        {% endif %}
+
+        <!-- review carousel: Google-review-style tiles, horizontally scrollable, arrow navigation -->
+        <div class="reviews-carousel-wrap">
+            <button class="review-arrow prev" id="reviewPrev" type="button" aria-label="Previous review">‹</button>
+
+            <div class="reviews-track-mask" id="reviewsMask">
+                <div class="reviews-track" id="reviewsTrack">
+                {% for r in reviews %}
+                    <div class="review-tile">
+                        <div class="review-tile-top">
+                            {% if r.avatar_url %}
+                                <img class="review-avatar-img" src="{{ r.avatar_url }}" alt="{{ r.name }}">
+                            {% else %}
+                                <div class="review-avatar" style="background:{% cycle '#4FA8BE' '#E07A5F' '#3D9970' '#B08968' '#6C5CE7' '#D6764F' %};">{{ r.name|slice:":1"|upper }}</div>
+                            {% endif %}
+                            <div class="review-tile-id">
+                                <h4>{{ r.name }}</h4>
+                                <small>{{ r.created_at|date:"d/m/Y" }}</small>
+                            </div>
+                            <svg class="google-g" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v9h11.8c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.6-9.47 6.6-16.16z"/>
+                                <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.34l-7.11-5.52c-1.97 1.32-4.49 2.11-7.45 2.11-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+                                <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C3.12 16.53 2.4 20.14 2.4 24s.72 7.47 1.94 10.88z"/>
+                                <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+                            </svg>
+                        </div>
+                        <div class="review-tile-stars">
+                            {% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}
+                            <span class="verified-badge" title="Verified">✓</span>
+                        </div>
+                        <p>{{ r.text }}</p>
+                        {% if r.media.all %}
+                        <div class="review-media">
+                            {% for m in r.media.all %}
+                                {% if m.is_video %}<video src="{{ m.file.url }}" muted></video>{% else %}<img src="{{ m.file.url }}">{% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p class="no-reviews">Be the first to leave a review!</p>
+                {% endfor %}
+                </div>
+            </div>
+
+            <button class="review-arrow next" id="reviewNext" type="button" aria-label="Next review">›</button>
         </div>
-    {% empty %}
-        <p style="grid-column:1/-1;color:var(--muted);">Be the first to leave a review!</p>
-    {% endfor %}
-    </div>
-    <div class="review-cta-wrap reveal">
-        <button class="btn btn-dark" id="openReviewModal" type="button">✎ Write a Review</button>
     </div>
 </div>
 </section>
@@ -1054,6 +1122,23 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   startAuto();
 })();
 
+/* ============ REVIEWS CAROUSEL — arrow navigation for the Google-style review tiles ============ */
+(function(){
+  const mask = document.getElementById('reviewsMask');
+  const prevBtn = document.getElementById('reviewPrev');
+  const nextBtn = document.getElementById('reviewNext');
+  if(!mask) return;
+
+  function step(){
+    const tile = mask.querySelector('.review-tile');
+    if(!tile) return 300;
+    return tile.getBoundingClientRect().width + 20; // tile width + track gap
+  }
+
+  if(prevBtn) prevBtn.addEventListener('click', ()=> mask.scrollBy({left: -step(), behavior:'smooth'}));
+  if(nextBtn) nextBtn.addEventListener('click', ()=> mask.scrollBy({left: step(), behavior:'smooth'}));
+})();
+
 /* ============ SCROLL REVEAL ANIMATIONS — fades/slides sections & cards in as they enter the viewport ============ */
 const revealObserver = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
@@ -1286,6 +1371,56 @@ function addPreview(file){
 document.getElementById('rvImg').addEventListener('change', e=>{ [...e.target.files].forEach(addPreview); });
 document.getElementById('rvVid').addEventListener('change', e=>{ [...e.target.files].forEach(addPreview); });
 
+/* Builds one Google-style review tile (matches the server-rendered markup above)
+   and drops it in at the front of the carousel — no page reload, no WhatsApp
+   redirect, the review just stays there right after submitting. */
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+const GOOGLE_G_SVG = `<svg class="google-g" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v9h11.8c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.6-9.47 6.6-16.16z"/>
+  <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.34l-7.11-5.52c-1.97 1.32-4.49 2.11-7.45 2.11-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+  <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C3.12 16.53 2.4 20.14 2.4 24s.72 7.47 1.94 10.88z"/>
+  <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+</svg>`;
+const AVATAR_COLORS = ['#4FA8BE','#E07A5F','#3D9970','#B08968','#6C5CE7','#D6764F'];
+
+function addReviewTileToDOM({name, text, rating}){
+  const track = document.getElementById('reviewsTrack');
+  if(!track) return;
+
+  const noRev = track.querySelector('.no-reviews');
+  if(noRev) noRev.remove();
+
+  const initial = escapeHtml((name.charAt(0) || '?').toUpperCase());
+  const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+  const today = new Date();
+  const dateStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
+  const full = '★'.repeat(rating);
+  const empty = '☆'.repeat(5 - rating);
+
+  const tile = document.createElement('div');
+  tile.className = 'review-tile';
+  tile.innerHTML = `
+    <div class="review-tile-top">
+        <div class="review-avatar" style="background:${color};">${initial}</div>
+        <div class="review-tile-id">
+            <h4>${escapeHtml(name)}</h4>
+            <small>${dateStr}</small>
+        </div>
+        ${GOOGLE_G_SVG}
+    </div>
+    <div class="review-tile-stars">${full}${empty}<span class="verified-badge" title="Verified">✓</span></div>
+    <p>${escapeHtml(text)}</p>
+  `;
+  track.insertBefore(tile, track.firstChild);
+
+  const mask = document.getElementById('reviewsMask');
+  if(mask) mask.scrollTo({left:0, behavior:'smooth'});
+}
+
 document.getElementById('submitReview').addEventListener('click', async ()=>{
   const name = document.getElementById('rvName').value.trim();
   const text = document.getElementById('rvText').value.trim();
@@ -1303,14 +1438,15 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
   try{
     await postForServer(REVIEW_URL, { method:"POST", headers:{"X-CSRFToken": CSRF_TOKEN}, body: fd });
 
+    // Review is saved on the server — now just drop it into the carousel
+    // right away so it stays visible on the page (no WhatsApp redirect).
+    addReviewTileToDOM({ name, text, rating: pickedRating });
+
     document.getElementById('rvName').value='';
     document.getElementById('rvText').value='';
     rvPreview.innerHTML=''; reviewFiles=[]; pickedRating=5; paintStars();
     closeReviewModal();
     showToast("Thanks! Your review is now live.");
-
-    const waMsg = `New review submitted on Master Pools site:%0A%0AName: ${name}%0ARating: ${pickedRating}/5%0AReview: ${text}`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`, '_blank');a
   }catch(err){
     console.error("Review submit failed:", err);
     showToast(err.message || "Could not submit your review — please try again");
