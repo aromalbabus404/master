@@ -369,50 +369,50 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
   .client-card img{max-height:46px;}
 }
 
-/* ============ REVIEWS — brand panel + Google-style review carousel ============ */
-.reviews-panel{display:flex;gap:0;align-items:stretch;background:var(--sand);border:1px solid var(--line);border-radius:24px;padding:36px;}
-.reviews-brand{flex:0 0 210px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:14px;padding-right:32px;border-right:1px solid var(--line);}
-.reviews-brand-logo{height:64px;width:auto;object-fit:contain;}
-.reviews-brand-name{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;color:var(--ink);}
-.reviews-brand-stars{color:var(--brass);font-size:1.25rem;letter-spacing:2px;}
-.btn-write-review{background:#1DAA4C;color:#fff;border:none;padding:13px 22px;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:.25s ease;white-space:nowrap;}
+/* ============ REVIEWS — center-focus testimonial carousel (screenshot style) ============ */
+.testimonials-top{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-bottom:34px;text-align:center;}
+.trust-stars{color:var(--brass);font-size:1.05rem;letter-spacing:2px;display:flex;align-items:center;gap:10px;}
+.trust-stars span{color:var(--muted);font-size:.82rem;letter-spacing:normal;font-family:'Manrope',sans-serif;font-weight:600;}
+.btn-write-review{background:#1DAA4C;color:#fff;border:none;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.86rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:.25s ease;white-space:nowrap;}
 .btn-write-review:hover{background:#169140;transform:translateY(-2px);}
 
-.reviews-carousel-wrap{position:relative;flex:1;min-width:0;padding-left:32px;}
-.reviews-track-mask{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;}
-.reviews-track-mask::-webkit-scrollbar{display:none;}
-.reviews-track{display:flex;gap:20px;}
-.review-tile{flex:0 0 calc(50% - 10px);scroll-snap-align:start;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:22px;min-width:230px;}
-.review-tile-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
-.review-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-family:'Manrope',sans-serif;flex-shrink:0;font-size:1rem;object-fit:cover;}
-.review-avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;}
-.review-tile-id{flex:1;min-width:0;}
-.review-tile-id h4{font-family:'Manrope',sans-serif;font-weight:700;font-size:.96rem;color:var(--ink);}
-.review-tile-id small{color:var(--muted);font-size:.78rem;}
-.google-g{width:20px;height:20px;flex-shrink:0;margin-top:2px;}
-.review-tile-stars{display:flex;align-items:center;gap:8px;color:var(--brass);font-size:.92rem;margin-bottom:10px;}
-.verified-badge{width:15px;height:15px;background:#4285F4;color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0;}
-.review-tile p{color:var(--ink);font-size:.88rem;}
-.review-media{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.review-media img,.review-media video{width:60px;height:60px;object-fit:cover;border-radius:8px;}
-.no-reviews{color:var(--muted);text-align:center;padding:30px;}
+.testimonial-carousel{position:relative;}
+.testimonial-mask{overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-ms-overflow-style:none;padding:18px 0 26px;}
+.testimonial-mask::-webkit-scrollbar{display:none;}
+.testimonial-track{display:flex;gap:22px;}
 
-.review-arrow{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:var(--white);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;z-index:5;color:var(--ink);box-shadow:var(--shadow);}
-.review-arrow.prev{left:2px;}
-.review-arrow.next{right:-14px;}
-.review-arrow:hover{background:var(--brass);color:var(--white);border-color:var(--brass);}
+.testimonial-card{
+  flex:0 0 auto;width:320px;scroll-snap-align:center;background:var(--white);
+  border-radius:22px;box-shadow:0 14px 30px rgba(18,50,64,.10);overflow:hidden;
+  opacity:.5;transform:scale(.84);transition:transform .4s cubic-bezier(.25,.8,.35,1),opacity .4s ease,box-shadow .4s ease;
+  cursor:pointer;
+}
+.testimonial-card.active{opacity:1;transform:scale(1);box-shadow:0 30px 60px rgba(18,50,64,.20);z-index:5;}
+.testimonial-img{width:100%;aspect-ratio:16/11;overflow:hidden;background:var(--stone);}
+.testimonial-img img{width:100%;height:100%;object-fit:cover;}
+.testimonial-body{padding:26px 24px 28px;text-align:center;}
+.testimonial-card.no-image .testimonial-body{padding-top:36px;}
+.testimonial-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;margin-bottom:10px;color:var(--ink);}
+.testimonial-quote{color:var(--muted);font-size:.9rem;margin-bottom:20px;}
+.testimonial-person{display:flex;align-items:center;justify-content:center;gap:10px;}
+.testimonial-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.95rem;font-family:'Manrope',sans-serif;}
+.testimonial-id{text-align:left;}
+.testimonial-id h4{font-family:'Manrope',sans-serif;font-weight:700;font-size:.9rem;color:var(--ink);}
+.testimonial-id .t-stars{color:var(--brass);font-size:.8rem;letter-spacing:1px;}
+
+.testimonial-nav{display:flex;justify-content:center;gap:14px;margin-top:8px;}
+.testimonial-nav button{width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.25s ease;}
+.testimonial-nav button:hover{background:var(--brass);}
+.testimonial-nav svg{width:18px;height:18px;flex-shrink:0;}
+.no-reviews{color:var(--muted);text-align:center;padding:30px;width:100%;}
 
 @media(max-width:900px){
-  .reviews-panel{flex-direction:column;padding:24px;border-radius:18px;}
-  .reviews-brand{border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:20px;width:100%;flex-direction:row;justify-content:space-between;align-items:center;}
-  .reviews-carousel-wrap{padding-left:0;padding-top:20px;}
-  .review-tile{flex:0 0 85%;}
-  .review-arrow.prev{left:-8px;}
-  .review-arrow.next{right:-8px;}
+  .testimonial-card{width:78vw;max-width:340px;}
 }
 @media(max-width:600px){
-  .reviews-brand{flex-direction:column;align-items:flex-start;gap:10px;}
-  .review-tile{flex:0 0 92%;padding:18px;}
+  .testimonials-top{flex-direction:column;gap:12px;margin-bottom:24px;}
+  .testimonial-card{width:82vw;}
+  .testimonial-body{padding:20px 18px 22px;}
 }
 
 .file-row{display:flex;gap:14px;flex-wrap:wrap;}
@@ -733,65 +733,59 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="reviews" style="background:var(--white);">
 <div class="wrap">
-    <div class="section-head reveal">
-    <div class="eyebrow">Client Reviews</div>
-    <h2>What pool owners say</h2>
-    <p>Real feedback from people we've built and maintained pools for.</p>
+    <div class="section-head reveal" style="text-align:center;max-width:100%;margin-left:auto;margin-right:auto;">
+    <div class="eyebrow" style="justify-content:center;">Testimonials</div>
+    <h2>What Our <em style="color:var(--seafoam-deep);font-style:italic;">Customers</em> Are Saying</h2>
     </div>
 
-    <div class="reviews-panel reveal">
-        <!-- brand column: logo, star rating, write-a-review button -->
-        <div class="reviews-brand">
-            <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="reviews-brand-logo">
-            <div class="reviews-brand-stars">★★★★★</div>
-            <button class="btn-write-review" id="openReviewModal" type="button">Write a Review</button>
+    <div class="testimonials-top reveal">
+        <div class="trust-stars">★★★★★ <span>Based on real customer reviews</span></div>
+        <button class="btn-write-review" id="openReviewModal" type="button">Write a Review</button>
+    </div>
+
+    <div class="testimonial-carousel reveal">
+        <div class="testimonial-mask" id="reviewsMask">
+            <div class="testimonial-track" id="reviewsTrack">
+            {% for r in reviews %}
+                <div class="testimonial-card{% if not r.media.all %} no-image{% endif %}">
+                    {% if r.media.all %}
+                    <div class="testimonial-img">
+                        {% with m=r.media.all.0 %}
+                            {% if m.is_video %}<video src="{{ m.file.url }}" muted playsinline></video>{% else %}<img src="{{ m.file.url }}" alt="{{ r.name }}">{% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endif %}
+                    <div class="testimonial-body">
+                        <h3 class="testimonial-title">
+                            {% if r.rating >= 5 %}Excellent Work!{% elif r.rating == 4 %}Great Experience!{% else %}Good Service{% endif %}
+                        </h3>
+                        <p class="testimonial-quote">"{{ r.text }}"</p>
+                        <div class="testimonial-person">
+                            {% if r.avatar_url %}
+                                <img class="testimonial-avatar" src="{{ r.avatar_url }}" alt="{{ r.name }}">
+                            {% else %}
+                                <div class="testimonial-avatar" style="background:{% cycle '#4FA8BE' '#E07A5F' '#3D9970' '#B08968' '#6C5CE7' '#D6764F' %};">{{ r.name|slice:":1"|upper }}</div>
+                            {% endif %}
+                            <div class="testimonial-id">
+                                <h4>{{ r.name }}</h4>
+                                <div class="t-stars">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="no-reviews">Be the first to leave a review!</p>
+            {% endfor %}
+            </div>
         </div>
 
-        <!-- review carousel: Google-review-style tiles, horizontally scrollable, arrow navigation -->
-        <div class="reviews-carousel-wrap">
-            <button class="review-arrow prev" id="reviewPrev" type="button" aria-label="Previous review">‹</button>
-
-            <div class="reviews-track-mask" id="reviewsMask">
-                <div class="reviews-track" id="reviewsTrack">
-                {% for r in reviews %}
-                    <div class="review-tile">
-                        <div class="review-tile-top">
-                            {% if r.avatar_url %}
-                                <img class="review-avatar-img" src="{{ r.avatar_url }}" alt="{{ r.name }}">
-                            {% else %}
-                                <div class="review-avatar" style="background:{% cycle '#4FA8BE' '#E07A5F' '#3D9970' '#B08968' '#6C5CE7' '#D6764F' %};">{{ r.name|slice:":1"|upper }}</div>
-                            {% endif %}
-                            <div class="review-tile-id">
-                                <h4>{{ r.name }}</h4>
-                                <small>{{ r.created_at|date:"d/m/Y" }}</small>
-                            </div>
-                            <svg class="google-g" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v9h11.8c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.6-9.47 6.6-16.16z"/>
-                                <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.34l-7.11-5.52c-1.97 1.32-4.49 2.11-7.45 2.11-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
-                                <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C3.12 16.53 2.4 20.14 2.4 24s.72 7.47 1.94 10.88z"/>
-                                <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
-                            </svg>
-                        </div>
-                        <div class="review-tile-stars">
-                            {% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}
-                            <span class="verified-badge" title="Verified">✓</span>
-                        </div>
-                        <p>{{ r.text }}</p>
-                        {% if r.media.all %}
-                        <div class="review-media">
-                            {% for m in r.media.all %}
-                                {% if m.is_video %}<video src="{{ m.file.url }}" muted></video>{% else %}<img src="{{ m.file.url }}">{% endif %}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                {% empty %}
-                    <p class="no-reviews">Be the first to leave a review!</p>
-                {% endfor %}
-                </div>
-            </div>
-
-            <button class="review-arrow next" id="reviewNext" type="button" aria-label="Next review">›</button>
+        <div class="testimonial-nav">
+            <button id="reviewPrev" type="button" aria-label="Previous review">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button id="reviewNext" type="button" aria-label="Next review">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6 6-6"/></svg>
+            </button>
         </div>
     </div>
 </div>
@@ -1121,21 +1115,87 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   startAuto();
 })();
 
-/* ============ REVIEWS CAROUSEL — arrow navigation for the Google-style review tiles ============ */
+/* ============ TESTIMONIAL CAROUSEL — center-focus, larger active card, works on desktop + mobile ============ */
 (function(){
   const mask = document.getElementById('reviewsMask');
+  const track = document.getElementById('reviewsTrack');
   const prevBtn = document.getElementById('reviewPrev');
   const nextBtn = document.getElementById('reviewNext');
-  if(!mask) return;
+  if(!mask || !track) return;
 
-  function step(){
-    const tile = mask.querySelector('.review-tile');
-    if(!tile) return 300;
-    return tile.getBoundingClientRect().width + 20; // tile width + track gap
+  function getCards(){ return [...track.querySelectorAll('.testimonial-card')]; }
+
+  // Pad the mask so the first/last card can still be scrolled to dead-center,
+  // and recompute on resize since card width changes across breakpoints.
+  function setMaskPadding(){
+    const cards = getCards();
+    if(cards.length === 0) return;
+    const cardW = cards[0].getBoundingClientRect().width;
+    const pad = Math.max(0, (mask.clientWidth - cardW) / 2);
+    mask.style.paddingLeft = pad + 'px';
+    mask.style.paddingRight = pad + 'px';
   }
 
-  if(prevBtn) prevBtn.addEventListener('click', ()=> mask.scrollBy({left: -step(), behavior:'smooth'}));
-  if(nextBtn) nextBtn.addEventListener('click', ()=> mask.scrollBy({left: step(), behavior:'smooth'}));
+  function updateActiveCard(){
+    const cards = getCards();
+    if(cards.length === 0) return;
+    const maskRect = mask.getBoundingClientRect();
+    const centerX = maskRect.left + maskRect.width / 2;
+    let closest = null, minDist = Infinity;
+    cards.forEach(card=>{
+      const r = card.getBoundingClientRect();
+      const cCenter = r.left + r.width / 2;
+      const dist = Math.abs(cCenter - centerX);
+      if(dist < minDist){ minDist = dist; closest = card; }
+    });
+    cards.forEach(c => c.classList.toggle('active', c === closest));
+    return closest;
+  }
+
+  function scrollToCard(card){
+    if(!card) return;
+    const maskRect = mask.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const delta = (cardRect.left + cardRect.width / 2) - (maskRect.left + maskRect.width / 2);
+    mask.scrollTo({ left: mask.scrollLeft + delta, behavior: 'smooth' });
+  }
+
+  function goToOffset(offset){
+    const cards = getCards();
+    if(cards.length === 0) return;
+    const activeIdx = cards.findIndex(c => c.classList.contains('active'));
+    const nextIdx = Math.max(0, Math.min(cards.length - 1, (activeIdx === -1 ? 0 : activeIdx) + offset));
+    scrollToCard(cards[nextIdx]);
+  }
+
+  let rafPending = false;
+  mask.addEventListener('scroll', ()=>{
+    if(!rafPending){
+      rafPending = true;
+      requestAnimationFrame(()=>{ updateActiveCard(); rafPending = false; });
+    }
+  }, {passive:true});
+
+  // clicking a side card brings it to center
+  track.addEventListener('click', (e)=>{
+    const card = e.target.closest('.testimonial-card');
+    if(card) scrollToCard(card);
+  });
+
+  if(prevBtn) prevBtn.addEventListener('click', ()=> goToOffset(-1));
+  if(nextBtn) nextBtn.addEventListener('click', ()=> goToOffset(1));
+
+  window.addEventListener('resize', ()=>{ setMaskPadding(); updateActiveCard(); });
+
+  // run once layout has settled (images/fonts can shift widths right after load)
+  setMaskPadding();
+  updateActiveCard();
+  setTimeout(()=>{ setMaskPadding(); updateActiveCard(); }, 250);
+  window.addEventListener('load', ()=>{ setMaskPadding(); updateActiveCard(); });
+
+  // expose for the "review submitted" handler further down, which adds a
+  // new card to the DOM and needs the carousel to re-measure itself
+  window.__refreshTestimonialCarousel = function(){ setMaskPadding(); updateActiveCard(); };
 })();
 
 /* ============ SCROLL REVEAL ANIMATIONS — fades/slides sections & cards in as they enter the viewport ============ */
@@ -1368,9 +1428,8 @@ function addPreview(file){
   rvPreview.insertAdjacentHTML('beforeend', file.type.startsWith('video') ? `<video src="${url}" muted></video>` : `<img src="${url}">`);
 }
 document.getElementById('rvImg').addEventListener('change', e=>{ [...e.target.files].forEach(addPreview); });
-document.getElementById('rvVid').addEventListener('change', e=>{ [...e.target.files].forEach(addPreview); });
 
-/* Builds one Google-style review tile (matches the server-rendered markup above)
+/* Builds one testimonial-card (matches the server-rendered markup above)
    and drops it in at the front of the carousel — no page reload, no WhatsApp
    redirect, the review just stays there right after submitting. */
 function escapeHtml(str){
@@ -1378,12 +1437,6 @@ function escapeHtml(str){
   d.textContent = str;
   return d.innerHTML;
 }
-const GOOGLE_G_SVG = `<svg class="google-g" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-  <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v9h11.8c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.6-9.47 6.6-16.16z"/>
-  <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.34l-7.11-5.52c-1.97 1.32-4.49 2.11-7.45 2.11-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
-  <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C3.12 16.53 2.4 20.14 2.4 24s.72 7.47 1.94 10.88z"/>
-  <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
-</svg>`;
 const AVATAR_COLORS = ['#4FA8BE','#E07A5F','#3D9970','#B08968','#6C5CE7','#D6764F'];
 
 function addReviewTileToDOM({name, text, rating}){
@@ -1395,29 +1448,36 @@ function addReviewTileToDOM({name, text, rating}){
 
   const initial = escapeHtml((name.charAt(0) || '?').toUpperCase());
   const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
-  const today = new Date();
-  const dateStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
   const full = '★'.repeat(rating);
   const empty = '☆'.repeat(5 - rating);
+  const title = rating >= 5 ? 'Excellent Work!' : (rating === 4 ? 'Great Experience!' : 'Good Service');
 
-  const tile = document.createElement('div');
-  tile.className = 'review-tile';
-  tile.innerHTML = `
-    <div class="review-tile-top">
-        <div class="review-avatar" style="background:${color};">${initial}</div>
-        <div class="review-tile-id">
-            <h4>${escapeHtml(name)}</h4>
-            <small>${dateStr}</small>
+  const card = document.createElement('div');
+  card.className = 'testimonial-card no-image';
+  card.innerHTML = `
+    <div class="testimonial-body">
+        <h3 class="testimonial-title">${title}</h3>
+        <p class="testimonial-quote">"${escapeHtml(text)}"</p>
+        <div class="testimonial-person">
+            <div class="testimonial-avatar" style="background:${color};">${initial}</div>
+            <div class="testimonial-id">
+                <h4>${escapeHtml(name)}</h4>
+                <div class="t-stars">${full}${empty}</div>
+            </div>
         </div>
-        ${GOOGLE_G_SVG}
     </div>
-    <div class="review-tile-stars">${full}${empty}<span class="verified-badge" title="Verified">✓</span></div>
-    <p>${escapeHtml(text)}</p>
   `;
-  track.insertBefore(tile, track.firstChild);
+  track.insertBefore(card, track.firstChild);
 
+  // re-measure the carousel now that a new card exists, then center on it
+  if(window.__refreshTestimonialCarousel) window.__refreshTestimonialCarousel();
   const mask = document.getElementById('reviewsMask');
-  if(mask) mask.scrollTo({left:0, behavior:'smooth'});
+  if(mask){
+    const maskRect = mask.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const delta = (cardRect.left + cardRect.width/2) - (maskRect.left + maskRect.width/2);
+    mask.scrollTo({left: mask.scrollLeft + delta, behavior:'smooth'});
+  }
 }
 
 document.getElementById('submitReview').addEventListener('click', async ()=>{
@@ -1453,14 +1513,25 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
   btn.disabled = false; btn.textContent = "Submit Review";
 });
 
-/* ============ GALLERY — show first 6, reveal the rest on "Show More" ============ */
+/* ============ GALLERY — show first 6, reveal the rest on "Show More" ============
+   FIX: previously this only set display:block and relied on the
+   IntersectionObserver to add the .in-view class that actually makes the
+   image visible (opacity/transform). On many mobile browsers an
+   IntersectionObserver does NOT reliably re-fire just because an element's
+   display changed from none -> block without an accompanying scroll/resize
+   event, so the extra photos stayed at opacity:0 (invisible) even though
+   the button worked and removed itself. We now add .in-view directly and
+   in the same tick, so the photos are guaranteed to appear immediately,
+   regardless of any IntersectionObserver timing quirks.                 */
 const galleryMoreBtn = document.getElementById('galleryMoreBtn');
 if(galleryMoreBtn){
   galleryMoreBtn.addEventListener('click', ()=>{
-    document.querySelectorAll('.gallery-extra').forEach(img=>{
+    const extras = document.querySelectorAll('.gallery-extra');
+    extras.forEach(img=>{
       img.style.display = 'block';
+      img.classList.add('reveal-bound', 'in-view'); // force-show immediately
+      revealObserver.unobserve(img); // stop watching, it's already visible now
     });
-    observeReveals(document.getElementById('galleryGridEl'));
     galleryMoreBtn.remove();
   });
 }
