@@ -224,7 +224,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .services-wa:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(37,211,102,.36);color:#fff;}
 .services-wa svg{width:20px;height:20px;flex-shrink:0;}
 
-/* ============ SHOP ============ */
+/* ============ SHOP (product card style now matches shop.html: colors + Buy Now) ============ */
 .shop-tabs{display:flex;gap:10px;margin-bottom:40px;flex-wrap:wrap;}
 .tab-btn{padding:11px 22px;border-radius:999px;border:1.5px solid var(--line);background:var(--white);font-weight:700;font-size:.84rem;cursor:pointer;color:var(--muted);font-family:'Manrope',sans-serif;}
 .tab-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
@@ -247,11 +247,26 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
 .qty-box{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;}
 .qty-box button{width:32px;height:34px;border:none;background:var(--stone);cursor:pointer;font-weight:800;color:var(--ink);}
 .qty-box span{width:30px;text-align:center;font-weight:700;font-size:.9rem;}
-.add-cart-btn{margin-top:10px;background:var(--deep);color:var(--white);border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;}
+
+/* Color swatches — optional row, only rendered when a product has colors */
+.color-row{align-items:flex-start;}
+.color-row label{padding-top:4px;}
+.color-swatches{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.color-swatch{width:24px;height:24px;border-radius:50%;flex:0 0 24px;border:2px solid var(--white);outline:1.5px solid var(--line);cursor:pointer;transition:.2s ease;position:relative;}
+.color-swatch:hover{transform:scale(1.12);}
+.color-swatch.selected{outline-color:var(--brass);box-shadow:0 0 0 2px var(--brass-light);}
+.color-name{font-size:.74rem;color:var(--muted);font-weight:700;margin-left:2px;}
+
+/* Add to Cart + Buy Now sit side by side */
+.btn-row{display:flex;gap:10px;margin-top:10px;}
+.btn-row .add-cart-btn{margin-top:0;flex:1;}
+.add-cart-btn{background:var(--deep);color:var(--white);border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;}
 .add-cart-btn:hover{background:var(--deep2);}
 .add-cart-btn.added{background:var(--brass);color:var(--white);}
+.buy-now-btn{flex:1;border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;font-size:.85rem;background:var(--brass);color:var(--white);}
+.buy-now-btn:hover{background:var(--brass-light);}
+.buy-now-btn:disabled{opacity:.65;cursor:not-allowed;}
 .shop-more-wrap{display:flex;justify-content:center;margin-top:44px;}
-.services-wa{ } /* keep existing rule above unaffected */
 
 /* ============ CART DRAWER ============ */
 .cart-drawer{position:fixed;top:0;right:-440px;width:420px;max-width:92vw;height:100%;background:var(--white);z-index:300;box-shadow:-14px 0 44px rgba(0,0,0,.22);transition:right .35s ease;display:flex;flex-direction:column;}
@@ -369,7 +384,10 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .product-body .price{font-size:.98rem;}
     .opt-row label{font-size:.64rem;}
     select.opt-select{padding:6px 8px;font-size:.76rem;}
-    .add-cart-btn{padding:10px;font-size:.82rem;}
+    .color-swatch{width:20px;height:20px;flex-basis:20px;}
+    .color-name{font-size:.66rem;}
+    .btn-row{flex-direction:column;gap:6px;}
+    .add-cart-btn,.buy-now-btn{padding:10px;font-size:.82rem;}
     .hero-text h1{font-size:2.15rem;}
     .section{padding:10px 0;}
     .field-row{flex-direction:column;}
@@ -521,7 +539,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <div class="section-head">
     <div class="eyebrow">Pool Shop</div>
     <h2>Pools & accessories</h2>
-    <p>A quick look at our pool designs and accessories — pick a size, choose quantity, add to cart. Click any product, or tap "Shop All" below, to see our full catalog.</p>
+    <p>A quick look at our pool designs and accessories — pick a size and color, choose quantity, add to cart or buy right away. Click any product, or tap "Shop All" below, to see our full catalog.</p>
     </div>
     <div class="shop-tabs" id="shopTabs">
     <button class="tab-btn active" data-cat="all">All</button>
@@ -546,6 +564,21 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                 {% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}<span class="price-value">₹{{ p.price|floatformat:0 }}</span>
             </div>
 
+            {% if p.color_list %}
+            <div class="opt-row color-row">
+                <label>Color</label>
+                <div class="color-swatches">
+                    {% for c in p.color_list %}
+                    <span class="color-swatch{% if forloop.first %} selected{% endif %}"
+                          style="background-color:{{ c|lower }};"
+                          data-color="{{ c }}"
+                          title="{{ c }}"></span>
+                    {% endfor %}
+                    <span class="color-name">{{ p.color_list.0 }}</span>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="opt-row"><label>Size</label><select class="opt-select size-select">
                 {% if p.sorted_sizes %}
                     {% for s, pr in p.sorted_sizes %}<option value="{{ s }}" data-price="{{ pr|floatformat:0 }}">{{ s }}</option>{% endfor %}
@@ -555,7 +588,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
             </select></div>
 
             <div class="opt-row"><label>Qty</label><div class="qty-box"><button class="qty-minus" type="button">−</button><span class="qty-val">1</span><button class="qty-plus" type="button">+</button></div></div>
-            <button class="add-cart-btn" type="button">Add to Cart</button>
+
+            <div class="btn-row">
+                <button class="add-cart-btn" type="button">Add to Cart</button>
+                <button class="buy-now-btn" type="button">Buy Now</button>
+            </div>
         </div>
         </div>
     {% empty %}
@@ -908,7 +945,9 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
   });
 });
 
-/* ============ PRODUCT QTY / SIZE→PRICE / ADD TO CART ============ */
+/* ============ PRODUCT QTY / SIZE→PRICE / COLOR / ADD TO CART / BUY NOW (matches shop.html card behaviour) ============ */
+let pendingBuyNow = null; // set when a per-product "Buy Now" is clicked; null means the modal is for cart checkout
+
 document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   const qtyVal = card.querySelector('.qty-val');
   const sizeSelect = card.querySelector('.size-select');
@@ -929,30 +968,68 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
   card.querySelector('.qty-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty-1); qtyVal.textContent = qty; });
   card.querySelector('.qty-plus').addEventListener('click', ()=>{ qty = Math.min(20, qty+1); qtyVal.textContent = qty; });
 
-  const addBtn = card.querySelector('.add-cart-btn');
-  addBtn.addEventListener('click', ()=>{
+  // Colors — optional. If present, first swatch is pre-selected; clicking another swatch swaps the selection.
+  const colorSwatches = card.querySelectorAll('.color-swatch');
+  const colorNameEl = card.querySelector('.color-name');
+  let selectedColor = colorSwatches.length ? colorSwatches[0].dataset.color : '';
+
+  colorSwatches.forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      colorSwatches.forEach(s=>s.classList.remove('selected'));
+      sw.classList.add('selected');
+      selectedColor = sw.dataset.color;
+      if(colorNameEl) colorNameEl.textContent = selectedColor;
+    });
+  });
+
+  function currentSelection(){
     const opt = sizeSelect ? sizeSelect.options[sizeSelect.selectedIndex] : null;
     const size = opt ? opt.value : '';
     const price = opt ? parseInt(opt.dataset.price) : parseInt(card.dataset.price);
+    return { size, price };
+  }
+
+  const addBtn = card.querySelector('.add-cart-btn');
+  addBtn.addEventListener('click', ()=>{
+    const { size, price } = currentSelection();
 
     addToCart({
       id: card.dataset.id, name: card.dataset.name,
       img: card.dataset.img, price: price
-    }, size, qty);
+    }, size, qty, selectedColor);
 
     addBtn.textContent = "Added ✓"; addBtn.classList.add('added');
     setTimeout(()=>{ addBtn.textContent="Add to Cart"; addBtn.classList.remove('added'); }, 1300);
     showToast(`${card.dataset.name} added to cart`);
   });
+
+  const buyNowBtn = card.querySelector('.buy-now-btn');
+  if(buyNowBtn){
+    buyNowBtn.addEventListener('click', ()=>{
+      const { size, price } = currentSelection();
+      pendingBuyNow = {
+        id: card.dataset.id, name: card.dataset.name, img: card.dataset.img,
+        price: price, size: size, color: selectedColor, qty: qty
+      };
+      openModal(true);
+    });
+  }
 });
 
 /* ============ CART (in-memory for this visit) ============ */
 let cart = [];
-function addToCart(product, size, qty){
-  const existing = cart.find(c=>c.id===product.id && c.size===size);
+function addToCart(product, size, qty, color){
+  const existing = cart.find(c=>c.id===product.id && c.size===size && c.color===(color||''));
   if(existing){ existing.qty += qty; }
-  else{ cart.push({id:product.id,name:product.name,img:product.img,price:product.price,size,qty}); }
+  else{ cart.push({id:product.id,name:product.name,img:product.img,price:product.price,size,color:color||'',qty}); }
   renderCart();
+}
+function itemLabel(c){
+  const extras = [];
+  if(c.size) extras.push('Size: '+c.size);
+  if(c.color) extras.push('Color: '+c.color);
+  extras.push('Qty: '+c.qty);
+  return extras.join(' · ');
 }
 function renderCart(){
   const itemsEl = document.getElementById('cartItems');
@@ -963,7 +1040,7 @@ function renderCart(){
     cart.map((c,i)=>`
       <div class="cart-item">
         <img src="${c.img}" alt="${c.name}">
-        <div class="ci-info"><h4>${c.name}</h4><small>Size: ${c.size} · Qty: ${c.qty}</small><br><strong>${fmt(c.price*c.qty)}</strong></div>
+        <div class="ci-info"><h4>${c.name}</h4><small>${itemLabel(c)}</small><br><strong>${fmt(c.price*c.qty)}</strong></div>
         <button class="ci-remove" data-i="${i}" type="button">Remove</button>
       </div>
     `).join('');
@@ -980,11 +1057,14 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
 overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); });
 
-/* ============ CHECKOUT -> saves to real DB via fetch, then opens WhatsApp ============ */
+/* ============ CHECKOUT / BUY NOW -> saves to real DB via fetch, then opens WhatsApp ============ */
 const checkoutModal = document.getElementById('checkoutModal');
-function openModal(){ if(cart.length===0){ showToast("Your cart is empty"); return; } checkoutModal.classList.add('show'); overlay.classList.add('show'); }
-function closeModal(){ checkoutModal.classList.remove('show'); overlay.classList.remove('show'); }
-document.getElementById('checkoutBtn').addEventListener('click', openModal);
+function openModal(fromBuyNow){
+  if(!fromBuyNow && cart.length===0){ showToast("Your cart is empty"); return; }
+  checkoutModal.classList.add('show'); overlay.classList.add('show');
+}
+function closeModal(){ checkoutModal.classList.remove('show'); overlay.classList.remove('show'); pendingBuyNow = null; }
+document.getElementById('checkoutBtn').addEventListener('click', ()=> openModal(false));
 document.getElementById('modalClose').addEventListener('click', closeModal);
 
 document.getElementById('sendOrder').addEventListener('click', async ()=>{
@@ -996,7 +1076,10 @@ document.getElementById('sendOrder').addEventListener('click', async ()=>{
   if(!name || !mobile || !state || !pincode || !address){ showToast("Please fill all details"); return; }
   if(!/^\d{10}$/.test(mobile)){ showToast("Enter a valid 10-digit mobile number"); return; }
 
-  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const isBuyNow = !!pendingBuyNow;
+  const items = isBuyNow ? [pendingBuyNow] : cart;
+  const total = items.reduce((s,c)=>s+c.price*c.qty,0);
+
   const sendBtn = document.getElementById('sendOrder');
   sendBtn.disabled = true; sendBtn.textContent = "Saving order...";
 
@@ -1004,19 +1087,22 @@ document.getElementById('sendOrder').addEventListener('click', async ()=>{
     const res = await fetch(ORDER_URL, {
       method: "POST",
       headers: {"Content-Type":"application/json", "X-CSRFToken": CSRF_TOKEN},
-      body: JSON.stringify({ name, mobile, state, pincode, address, total, items: cart })
+      body: JSON.stringify({ name, mobile, state, pincode, address, total, items })
     });
     const data = await res.json();
     if(!data.ok){ showToast(data.error || "Could not save order"); sendBtn.disabled=false; sendBtn.textContent="Send Order on WhatsApp"; return; }
 
-    let msg = `Hi! I'd like to place an order from Master Pools (Order #${data.order_id}):%0A%0A`;
-    cart.forEach(c=>{ msg += `• ${c.name} (${c.size}) x${c.qty} - ${fmt(c.price*c.qty)}%0A`; });
+    let msg = `Hi! I'd like to ${isBuyNow ? 'buy' : 'place an order'} from Master Pools (Order #${data.order_id}):%0A%0A`;
+    items.forEach(c=>{
+      const extras = [c.size, c.color].filter(Boolean).join(', ');
+      msg += `• ${c.name}${extras ? ` (${extras})` : ''} x${c.qty} - ${fmt(c.price*c.qty)}%0A`;
+    });
     msg += `%0ATotal: ${fmt(total)}%0A%0AName: ${name}%0AMobile: ${mobile}%0AState: ${state}%0APincode: ${pincode}%0AAddress: ${address}`;
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
     closeModal(); closeCart();
-    cart = []; renderCart();
-    showToast("Order saved & sent on WhatsApp!");
+    if(!isBuyNow){ cart = []; renderCart(); }
+    showToast(isBuyNow ? "Order saved & sent on WhatsApp!" : "Order saved & sent on WhatsApp!");
   }catch(err){
     showToast("Network error — please try again");
   }
