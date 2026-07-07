@@ -24,5 +24,5 @@ urlpatterns = [
     path("dashboard/products/<int:pk>/delete/", views.product_delete, name="product_delete"),
     path("dashboard/gallery/add/", views.gallery_add, name="gallery_add"),
     path("dashboard/gallery/<int:pk>/delete/", views.gallery_delete, name="gallery_delete"),
-    path("dashboard/reviews/<int:pk>/<str:status>/", views.review_set_status, name="review_set_status"),
+    path("dashboard/reviews/<int:pk>/delete/", views.review_delete, name="review_delete"),
 ]

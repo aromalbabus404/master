@@ -81,7 +81,9 @@ def submit_order(request):
 @csrf_protect
 @require_POST
 def submit_review(request):
-    """Called via fetch() with multipart/form-data (name, rating, text, media[])."""
+    """Called via fetch() with multipart/form-data (name, rating, text, media[]).
+    Reviews go live immediately — there is no moderation queue. Admins can
+    only delete a review from the dashboard if they don't want it shown."""
     name = request.POST.get("name", "").strip()
     text = request.POST.get("text", "").strip()
     rating = request.POST.get("rating", "5")
@@ -94,7 +96,7 @@ def submit_review(request):
     except ValueError:
         rating = 5
 
-    review = Review.objects.create(name=name, text=text, rating=rating, status="pending")
+    review = Review.objects.create(name=name, text=text, rating=rating, status="approved")
 
     for f in request.FILES.getlist("media"):
         ReviewMedia.objects.create(
@@ -125,7 +127,7 @@ def dashboard(request):
         "stat_products": Product.objects.count(),
         "stat_gallery": GalleryImage.objects.count(),
         "stat_clients": Client.objects.count(),
-        "stat_pending": Review.objects.filter(status="pending").count(),
+        "stat_reviews": Review.objects.count(),
         "stat_orders": Order.objects.count(),
     }
     return render(request, "pools/dashboard.html", context)
@@ -367,14 +369,12 @@ def client_delete(request, pk):
 
 @login_required
 @require_POST
-def review_set_status(request, pk, status):
-    if status not in ("approved", "rejected", "pending"):
-        messages.error(request, "Invalid status.")
-        return redirect("dashboard")
+def review_delete(request, pk):
+    """Reviews have no moderation status anymore — the only admin action
+    available is deleting a review outright."""
     review = get_object_or_404(Review, pk=pk)
-    review.status = status
-    review.save()
-    messages.success(request, f"Review marked {status}.")
+    review.delete()
+    messages.success(request, "Review deleted.")
     return redirect("dashboard")
 
 

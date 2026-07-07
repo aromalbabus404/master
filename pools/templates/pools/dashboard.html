@@ -212,9 +212,6 @@
   .table tbody tr:hover{background:var(--bg);}
 
   .badge{border-radius:999px;font-weight:600;padding:.4em .8em;}
-  .badge-pending{background:var(--gold-tint);color:#8A6412;}
-  .badge-approved{background:var(--aqua-tint);color:var(--aqua-deep);}
-  .badge-rejected{background:#FBEAEA;color:var(--danger);}
   .badge-color-chip{
     background:var(--aqua-tint);color:var(--aqua-deep);margin:2px;display:inline-flex;
     align-items:center;gap:6px;
@@ -636,7 +633,7 @@
           <div class="col-6 col-md-3">
             <div class="stat-card">
               <div class="stat-icon">⭐</div>
-              <div><strong>{{ stat_pending }}</strong><small>Pending Reviews</small></div>
+              <div><strong>{{ stat_reviews }}</strong><small>Reviews</small></div>
             </div>
           </div>
           <div class="col-6 col-md-3">
@@ -866,29 +863,17 @@
       <div class="panel" id="panel-reviews">
         <div class="card-section">
           <div class="section-head"><span class="head-icon">⭐</span><h5>Customer Reviews</h5></div>
-          <p class="text-muted">New reviews submitted on the storefront start as <span class="badge badge-pending">Pending</span>. Approve to publish them live, or reject to hide.</p>
+          <p class="text-muted">Reviews submitted on the storefront go live immediately. There's no approval step — the only action available here is to delete a review you don't want to keep visible.</p>
           {% for r in reviews %}
           <div class="d-flex gap-3 align-items-start border-bottom py-3">
             <img src="{{ r.avatar_url }}" class="thumb rounded-circle">
             <div class="flex-grow-1">
-              <div class="d-flex justify-content-between">
-                <strong>{{ r.name }}</strong>
-                <span class="badge {% if r.status == 'approved' %}badge-approved{% elif r.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">{{ r.status }}</span>
-              </div>
+              <strong>{{ r.name }}</strong>
               <div class="text-warning small mb-1">{% for _ in r.stars_full %}★{% endfor %}{% for _ in r.stars_empty %}☆{% endfor %}</div>
               <p class="mb-2">{{ r.text }}</p>
-              {% if r.status == 'pending' %}
-                <form method="post" action="{% url 'review_set_status' r.id 'approved' %}" style="display:inline;" class="ajax-form">
-                  {% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Approve</button>
-                </form>
-                <form method="post" action="{% url 'review_set_status' r.id 'rejected' %}" style="display:inline;" class="ajax-form">
-                  {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Reject</button>
-                </form>
-              {% else %}
-                <form method="post" action="{% url 'review_set_status' r.id 'pending' %}" class="ajax-form">
-                  {% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit">Mark Pending</button>
-                </form>
-              {% endif %}
+              <form method="post" action="{% url 'review_delete' r.id %}" style="display:inline;" class="ajax-form" data-confirm="Delete this review?">
+                {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+              </form>
             </div>
           </div>
           {% empty %}
