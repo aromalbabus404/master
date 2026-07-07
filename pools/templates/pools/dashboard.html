@@ -179,6 +179,7 @@
   .row.g-3.mb-4 .col-6:nth-child(2) .stat-card{animation-delay:.08s;}
   .row.g-3.mb-4 .col-6:nth-child(3) .stat-card{animation-delay:.14s;}
   .row.g-3.mb-4 .col-6:nth-child(4) .stat-card{animation-delay:.2s;}
+  .row.g-3.mb-4 .col-6:nth-child(5) .stat-card{animation-delay:.26s;}
   .stat-card .stat-icon{
     width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;
     font-size:1.25rem;flex:0 0 46px;transition:transform .22s ease;
@@ -188,6 +189,7 @@
   .stat-card:nth-child(2) .stat-icon{background:var(--aqua-tint);}
   .stat-card:nth-child(3) .stat-icon{background:#FBEAEA;}
   .stat-card:nth-child(4) .stat-icon{background:var(--gold-tint);}
+  .stat-card:nth-child(5) .stat-icon{background:var(--aqua-tint);}
   .stat-card strong{font-family:'Archivo Black';font-size:1.5rem;display:block;color:var(--navy);line-height:1;}
   .stat-card small{color:var(--text-muted);text-transform:uppercase;font-size:.68rem;font-weight:700;letter-spacing:.03em;}
 
@@ -231,6 +233,25 @@
     border-radius:50%;width:26px;height:26px;font-size:.8rem;line-height:1;transition:transform .18s ease, opacity .18s ease;
   }
   .gallery-item .del-btn:hover{transform:scale(1.12);}
+
+  /* Client logo cards — same look as gallery-item, but with a white
+     tile background (like the storefront's client-card) so transparent
+     PNG logos are still legible in the dashboard grid. */
+  .client-item{position:relative;overflow:hidden;border-radius:14px;background:#fff;border:1px solid var(--border);}
+  .client-item .client-thumb-wrap{
+    width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:14px;
+  }
+  .client-item .client-thumb{max-width:100%;max-height:100%;object-fit:contain;transition:transform .25s ease;}
+  .client-item:hover .client-thumb{transform:scale(1.06);}
+  .client-item .client-name{
+    font-size:.76rem;font-weight:700;color:var(--navy);text-align:center;padding:0 8px 10px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .client-item .del-btn{
+    position:absolute;top:8px;right:8px;background:var(--danger);color:#fff;border:none;
+    border-radius:50%;width:26px;height:26px;font-size:.8rem;line-height:1;transition:transform .18s ease, opacity .18s ease;
+  }
+  .client-item .del-btn:hover{transform:scale(1.12);}
 
   .btn{border-radius:999px;font-weight:600;transition:background-color .18s ease, border-color .18s ease, color .18s ease, transform .12s ease, box-shadow .18s ease;}
   .btn:active{transform:scale(.97);}
@@ -281,43 +302,17 @@
   .modal.fade .modal-dialog{transition:transform .25s ease, opacity .25s ease;}
 
   /* ============================================================
-     EDIT PRODUCT MODAL — scroll fix (v2)
-     Previous fix relied purely on flex-grow + min-height:0 to let
-     .modal-body shrink and become scrollable. That chain depends on
-     .modal-content having a hard max-height AND every ancestor
-     resolving percentage/vh heights correctly — fragile, and broke
-     silently (no scrollbar, modal just "stuck") if anything in that
-     chain didn't resolve as expected.
-
-     Fix: give .modal-body an EXPLICIT max-height and overflow-y that
-     doesn't depend on flex-shrink math at all. This guarantees a
-     scrollable region regardless of how the rest of the flex layout
-     resolves.
+     EDIT PRODUCT MODAL — scroll fix
+     The key bug: .modal-body was a flex child with `flex:1` and
+     `overflow-y:auto`, but its flex parent (.modal-content) never
+     got `min-height:0`. Per the flexbox spec, a flex item's default
+     minimum size is "auto" (i.e. its content size), so the browser
+     refused to shrink .modal-body below the height of the form
+     inside it — the extra content just got clipped by the parent's
+     overflow:hidden instead of becoming scrollable. Adding
+     min-height:0 on the scrolling flex item fixes it on both the
+     mobile sheet layout and the desktop centered layout below.
      ============================================================ */
-  #editProductModal .modal-dialog{
-    display:flex;
-    align-items:center;
-    min-height:calc(100% - 3.5rem);
-  }
-  #editProductModal .modal-content{
-    max-height:calc(100vh - 3.5rem);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
-  #editProductModal .modal-header,
-  #editProductModal .modal-footer{
-    flex:0 0 auto;
-  }
-  #editProductModal .modal-body{
-    flex:1 1 auto;
-    overflow-y:auto !important;
-    overflow-x:hidden;
-    max-height:calc(100vh - 3.5rem - 130px); /* viewport minus header+footer allowance */
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior:contain;
-  }
-
   @media (max-width:575.98px){
 
     #editProductModal{
@@ -336,13 +331,13 @@
     #editProductModal .modal-content{
         width:100%;
         height:88vh;
-        max-height:88vh;
         border-radius:20px 20px 0 0;
         border:none;
         box-shadow:0 -8px 30px rgba(11,60,93,.18);
         display:flex;
         flex-direction:column;
         overflow:hidden;
+        min-height:0;
     }
 
     #editProductModal .modal-content::before{
@@ -363,8 +358,8 @@
 
     #editProductModal .modal-body{
         flex:1 1 auto;
-        max-height:calc(88vh - 120px); /* explicit boundary — don't rely on flex-shrink math */
-        overflow-y:scroll !important;
+        min-height:0;
+        overflow-y:auto;
         overflow-x:hidden;
         -webkit-overflow-scrolling:touch;
         touch-action:pan-y;
@@ -389,7 +384,27 @@
   }
 
   @media(min-width:576px){
+    #editProductModal .modal-content{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    #editProductModal .modal-body{
+      overflow-y:auto;
+      flex:1 1 auto;
+      min-height:0;
+    }
+    #editProductModal .modal-header,
+    #editProductModal .modal-footer{
+      flex:0 0 auto;
+    }
     #editProductModal .modal-dialog{
+      display:flex;
+      align-items:center;
+      min-height:calc(100% - 3.5rem);
+      max-height:calc(100vh - 3.5rem);
+    }
+    #editProductModal .modal-content{
       max-height:calc(100vh - 3.5rem);
     }
   }
@@ -520,6 +535,7 @@
     <div class="nav-section-label">Storefront</div>
     <a class="nav-link" data-panel="products"><span class="nav-icon">🛒</span> Products</a>
     <a class="nav-link" data-panel="gallery"><span class="nav-icon">🖼</span> Gallery</a>
+    <a class="nav-link" data-panel="clients"><span class="nav-icon">🤝</span> Clients</a>
     <a class="nav-link" data-panel="reviews"><span class="nav-icon">⭐</span> Reviews</a>
 
     <div class="nav-section-label">Business</div>
@@ -576,6 +592,7 @@
         <div class="nav-section-label">Storefront</div>
         <a class="nav-link" data-panel="products"><span class="nav-icon">🛒</span> Products</a>
         <a class="nav-link" data-panel="gallery"><span class="nav-icon">🖼</span> Gallery</a>
+        <a class="nav-link" data-panel="clients"><span class="nav-icon">🤝</span> Clients</a>
         <a class="nav-link" data-panel="reviews"><span class="nav-icon">⭐</span> Reviews</a>
 
         <div class="nav-section-label">Business</div>
@@ -612,6 +629,12 @@
           </div>
           <div class="col-6 col-md-3">
             <div class="stat-card">
+              <div class="stat-icon">🤝</div>
+              <div><strong>{{ stat_clients }}</strong><small>Clients</small></div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
               <div class="stat-icon">⭐</div>
               <div><strong>{{ stat_pending }}</strong><small>Pending Reviews</small></div>
             </div>
@@ -628,7 +651,7 @@
           <div class="col-lg-8">
             <div class="card-section h-100">
               <div class="section-head"><span class="head-icon">📋</span><h5>Quick Notes</h5></div>
-              <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — products, gallery, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp. Use <strong>Preview Site</strong> in the sidebar to see the live storefront update in real time, right here in the dashboard.</p>
+              <p class="text-muted mb-0">This admin panel is backed by a real SQLite database via Django. Every change here — products, gallery, clients, review moderation — is written to the database immediately and is visible to every visitor and every admin, on any device. Orders and review submissions from the storefront are also saved here automatically and notify you on WhatsApp. Use <strong>Preview Site</strong> in the sidebar to see the live storefront update in real time, right here in the dashboard.</p>
             </div>
           </div>
           <div class="col-lg-4">
@@ -654,7 +677,7 @@
             </div>
             <span class="url-pill"><span class="dot"></span><span class="url-text">{{ request.scheme }}://{{ request.get_host }}{% url 'index' %}</span></span>
           </div>
-          <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Products, Gallery or Reviews, then hit Refresh to see them update below.</p>
+          <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Products, Gallery, Clients or Reviews, then hit Refresh to see them update below.</p>
           <div class="preview-frame-wrap" id="previewFrameWrap">
             <div class="preview-loading" id="previewLoading"><span class="spinner-dot"></span>Loading live site…</div>
             <iframe id="previewFrame" src="{% url 'index' %}" title="AquaCraft Pools — live storefront preview"></iframe>
@@ -793,6 +816,47 @@
             </div>
             {% empty %}
             <p class="text-muted">No gallery images yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="panel" id="panel-clients">
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">🤝</span><h5>Add Client</h5></div>
+          <p class="text-muted">These logos appear in the "Trusted By" section on the storefront.</p>
+          <form method="post" action="{% url 'client_add' %}" enctype="multipart/form-data" class="ajax-form">
+            {% csrf_token %}
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4"><label class="form-label fw-bold">Name</label><input class="form-control" name="name" placeholder="e.g. Lake Gardens Resorts"></div>
+              <div class="col-md-4"><label class="form-label fw-bold">Logo URL</label><input class="form-control" name="image_url" placeholder="https://..."></div>
+              <div class="col-md-3"><label class="form-label fw-bold">…or upload</label><input type="file" class="form-control" name="image_file" accept="image/*"></div>
+              <div class="col-md-1 d-flex gap-2">
+                <button class="btn btn-primary w-100" type="submit">Add</button>
+              </div>
+            </div>
+            <div class="form-actions mt-3">
+              <button class="btn btn-outline-secondary" type="reset">Cancel</button>
+            </div>
+          </form>
+        </div>
+        <div class="card-section">
+          <div class="section-head"><span class="head-icon">🏷</span><h5>Clients</h5></div>
+          <div class="row g-3">
+            {% for c in clients %}
+            <div class="col-6 col-md-3">
+              <div class="client-item">
+                <div class="client-thumb-wrap"><img class="client-thumb" src="{{ c.image }}" alt="{{ c.name }}"></div>
+                <div class="client-name">{{ c.name }}</div>
+                <form method="post" action="{% url 'client_delete' c.id %}" class="ajax-form" data-confirm="Delete this client?">
+                  {% csrf_token %}
+                  <button class="del-btn" type="submit">✕</button>
+                </form>
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No clients added yet.</p>
             {% endfor %}
           </div>
         </div>

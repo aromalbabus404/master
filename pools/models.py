@@ -222,6 +222,44 @@ class GalleryImage(models.Model):
         return f"Gallery Image #{self.pk}"
 
 
+class Client(models.Model):
+    """A company / resort / hotel logo shown in the "Trusted By" section
+    on the storefront. Fully manageable from the admin dashboard — add a
+    name plus a logo (URL or upload), or delete one — and it updates
+    everywhere immediately, just like Gallery images do."""
+
+    name = models.CharField(max_length=200)
+
+    image_url = models.URLField(blank=True, null=True)
+
+    image_file = CloudinaryField(
+        "image",
+        blank=True,
+        null=True,
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image_file:
+            self.image_url = self.image_file.build_url()
+            super().save(update_fields=["image_url"])
+
+    @property
+    def image(self):
+        if self.image_file:
+            return self.image_file.build_url()
+        return self.image_url or ""
+
+    def __str__(self):
+        return self.name
+
+
 STATUS_CHOICES = [
     ("pending", "Pending"),
     ("approved", "Approved"),

@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from .forms import ProductForm, HeroForm, SiteSettingsForm
 from .models import (
     Product, GalleryImage, Review, ReviewMedia, Order, OrderItem,
-    HeroSection, SiteSettings, CATEGORY_CHOICES,
+    HeroSection, SiteSettings, CATEGORY_CHOICES, Client,
 )
 
 
@@ -25,6 +25,7 @@ def index(request):
         "settings": SiteSettings.load(),
         "products": Product.objects.all(),
         "gallery": GalleryImage.objects.all(),
+        "clients": Client.objects.all(),
         "reviews": Review.objects.filter(status="approved"),
         "categories": CATEGORY_CHOICES,
     }
@@ -112,6 +113,7 @@ def dashboard(request):
     context = {
         "products": Product.objects.all(),
         "gallery": GalleryImage.objects.all(),
+        "clients": Client.objects.all(),
         "reviews": Review.objects.all(),
         "orders": Order.objects.prefetch_related("items").all(),
         "hero": HeroSection.load(),
@@ -122,6 +124,7 @@ def dashboard(request):
         "categories": CATEGORY_CHOICES,
         "stat_products": Product.objects.count(),
         "stat_gallery": GalleryImage.objects.count(),
+        "stat_clients": Client.objects.count(),
         "stat_pending": Review.objects.filter(status="pending").count(),
         "stat_orders": Order.objects.count(),
     }
@@ -302,6 +305,63 @@ def gallery_add(request):
 def gallery_delete(request, pk):
     get_object_or_404(GalleryImage, pk=pk).delete()
     messages.success(request, "Gallery image deleted.")
+    return redirect("dashboard")
+
+
+@login_required
+@require_POST
+def client_add(request):
+    """Add a client/company logo shown in the storefront 'Trusted By'
+    section. Mirrors gallery_add — accepts a name plus either a logo
+    URL or an uploaded file."""
+    name = request.POST.get("name", "").strip()
+    url = request.POST.get("image_url", "").strip()
+    file = request.FILES.get("image_file")
+
+    if not name:
+        messages.error(request, "Please add a client/company name.")
+        return redirect("dashboard")
+
+    if not url and not file:
+        messages.error(request, "Add a logo URL or upload a file.")
+        return redirect("dashboard")
+
+    if file:
+        ext = os.path.splitext(file.name)[1].lower()
+        if ext not in ALLOWED_IMAGE_EXTENSIONS:
+            messages.error(request, "Unsupported file type. Please upload a JPG, PNG, WEBP, or GIF image.")
+            return redirect("dashboard")
+
+        if file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024:
+            messages.error(request, f"Image is too large. Max size is {MAX_IMAGE_SIZE_MB}MB.")
+            return redirect("dashboard")
+
+        if not file.content_type or not file.content_type.startswith("image/"):
+            messages.error(request, "The uploaded file does not appear to be a valid image.")
+            return redirect("dashboard")
+
+    client = Client(name=name)
+
+    if file:
+        client.image_file = file
+    elif url:
+        client.image_url = url
+
+    try:
+        client.save()
+    except Exception:
+        messages.error(request, "Something went wrong while saving the client. Please try again.")
+        return redirect("dashboard")
+
+    messages.success(request, "Client added.")
+    return redirect("dashboard")
+
+
+@login_required
+@require_POST
+def client_delete(request, pk):
+    get_object_or_404(Client, pk=pk).delete()
+    messages.success(request, "Client deleted.")
     return redirect("dashboard")
 
 

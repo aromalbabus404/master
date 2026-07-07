@@ -669,14 +669,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <p>Resorts, hotels, institutions and homes across Kerala rely on us for pools that perform and last.</p>
     </div>
     <div class="client-grid">
-        <div class="client-card"><img src="{% static 'images/clients/chaithanya-eye.jpg' %}" alt="Chaithanya Eye Hospital & Research Institute"></div>
-        <div class="client-card"><img src="{% static 'images/clients/lake-gardens.jpg' %}" alt="Lake Gardens Resorts"></div>
-        <div class="client-card"><img src="{% static 'images/clients/labour-india.jpg' %}" alt="Labour India Public School & Junior College"></div>
-        <div class="client-card"><img src="{% static 'images/clients/seclude.jpg' %}" alt="Seclude Hotels Home Style"></div>
-        <div class="client-card"><img src="{% static 'images/clients/greenwoods.jpg' %}" alt="Greenwoods"></div>
-        <div class="client-card"><img src="{% static 'images/clients/haze-kites.jpg' %}" alt="Haze & Kites Resort"></div>
-        <div class="client-card"><img src="{% static 'images/clients/mystic-mayapott.jpg' %}" alt="Mystic Mayapott"></div>
-        <div class="client-card"><img src="{% static 'images/clients/cocotuft.jpg' %}" alt="Cocotuft"></div>
+        {% for c in clients %}
+        <div class="client-card"><img src="{{ c.image }}" alt="{{ c.name }}"></div>
+        {% empty %}
+        <p style="grid-column:1/-1;color:var(--muted);text-align:center;padding:20px 0;">Client logos coming soon.</p>
+        {% endfor %}
     </div>
 </div>
 </section>

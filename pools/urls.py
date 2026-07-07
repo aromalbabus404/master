@@ -11,6 +11,9 @@ urlpatterns = [
     # Legacy standalone product edit endpoint (kept for backward compatibility,
     # renamed so it no longer collides with the dashboard's "product_edit" name)
     path("product/<int:pk>/edit/", views.product_edit, name="product_edit_legacy"),
+    
+    path("client/add/", views.client_add, name="client_add"),
+    path("client/<int:pk>/delete/", views.client_delete, name="client_delete"),
 
     # Admin dashboard
     path("dashboard/", views.dashboard, name="dashboard"),
