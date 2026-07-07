@@ -808,7 +808,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <div class="modal">
     <button class="modal-close" id="reviewModalClose" type="button">✕</button>
     <h3>Add your review</h3>
-    <p class="sub">Share your experience — add photos or a short video of your pool. Reviews are checked by our team before going live.</p>
+    <p class="sub">Share your experience — add photos or a short video of your pool.</p>
     <div class="field"><label>Your name</label><input type="text" id="rvName" placeholder="e.g. Anu Thomas"></div>
     <div class="rating-pick" id="ratingPick">
         <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
@@ -833,6 +833,49 @@ const WHATSAPP_NUMBER = "{{ settings.admin_whatsapp|default:'917356462150' }}";
 const CSRF_TOKEN = document.querySelector('input[name=csrfmiddlewaretoken]').value;
 const ORDER_URL = "{% url 'submit_order' %}";
 const REVIEW_URL = "{% url 'submit_review' %}";
+
+/* ================================================================
+   Shared fetch helper — used by both the order and review submit
+   handlers below. Instead of swallowing every failure into a
+   generic "Network error" message (which is what a bare try/catch
+   around res.json() does when the server returns a non-JSON error
+   page — e.g. a 403 CSRF rejection or a 500 exception page), this
+   reads the raw response text first, tries to parse it as JSON,
+   and if that fails builds a readable message out of the HTTP
+   status and a short snippet of whatever HTML/text came back.
+   That way real problems (CSRF misconfiguration, server errors,
+   validation errors) show up as an understandable message instead
+   of just "Network error — please try again" every time.
+   ================================================================ */
+async function postForServer(url, options){
+  let res;
+  try{
+    res = await fetch(url, options);
+  }catch(networkErr){
+    // fetch() itself only throws for genuine network failures
+    // (offline, DNS failure, CORS block, etc.)
+    throw new Error("Could not reach the server. Check your internet connection and try again.");
+  }
+
+  const text = await res.text();
+  let data = null;
+  try{
+    data = JSON.parse(text);
+  }catch(parseErr){
+    // Server responded but not with JSON — most commonly a CSRF
+    // 403 page or an unhandled 500 exception page.
+    const snippet = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 220);
+    let hint = '';
+    if(res.status === 403) hint = ' (this usually means a CSRF/session problem — check CSRF_TRUSTED_ORIGINS in settings.py if the site runs on HTTPS or behind a proxy)';
+    throw new Error(`Server returned HTTP ${res.status}${hint}${snippet ? ': ' + snippet : ''}`);
+  }
+
+  if(!res.ok || data.ok === false){
+    throw new Error(data.error || `Request failed (HTTP ${res.status})`);
+  }
+
+  return data;
+}
 
 /* ============ HEADER SCROLL BEHAVIOR: background swap + hide-on-scroll-down / show-on-scroll-up ============ */
 const header = document.getElementById('siteHeader');
@@ -1185,13 +1228,11 @@ document.getElementById('sendOrder').addEventListener('click', async ()=>{
   sendBtn.disabled = true; sendBtn.textContent = "Saving order...";
 
   try{
-    const res = await fetch(ORDER_URL, {
+    const data = await postForServer(ORDER_URL, {
       method: "POST",
       headers: {"Content-Type":"application/json", "X-CSRFToken": CSRF_TOKEN},
       body: JSON.stringify({ name, mobile, state, pincode, address, total, items })
     });
-    const data = await res.json();
-    if(!data.ok){ showToast(data.error || "Could not save order"); sendBtn.disabled=false; sendBtn.textContent="Send Order on WhatsApp"; return; }
 
     let msg = `Hi! I'd like to ${isBuyNow ? 'buy' : 'place an order'} from Master Pools (Order #${data.order_id}):%0A%0A`;
     items.forEach(c=>{
@@ -1203,9 +1244,10 @@ document.getElementById('sendOrder').addEventListener('click', async ()=>{
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
     closeModal(); closeCart();
     if(!isBuyNow){ cart = []; renderCart(); }
-    showToast(isBuyNow ? "Order saved & sent on WhatsApp!" : "Order saved & sent on WhatsApp!");
+    showToast("Order saved & sent on WhatsApp!");
   }catch(err){
-    showToast("Network error — please try again");
+    console.error("Order submit failed:", err);
+    showToast(err.message || "Could not save your order — please try again");
   }
   sendBtn.disabled = false; sendBtn.textContent = "Send Order on WhatsApp";
 });
@@ -1259,20 +1301,19 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
   reviewFiles.forEach(f => fd.append('media', f));
 
   try{
-    const res = await fetch(REVIEW_URL, { method:"POST", headers:{"X-CSRFToken": CSRF_TOKEN}, body: fd });
-    const data = await res.json();
-    if(!data.ok){ showToast(data.error || "Could not submit review"); btn.disabled=false; btn.textContent="Submit Review"; return; }
+    await postForServer(REVIEW_URL, { method:"POST", headers:{"X-CSRFToken": CSRF_TOKEN}, body: fd });
 
     document.getElementById('rvName').value='';
     document.getElementById('rvText').value='';
     rvPreview.innerHTML=''; reviewFiles=[]; pickedRating=5; paintStars();
     closeReviewModal();
-    showToast("Thanks! Your review is pending approval.");
+    showToast("Thanks! Your review is now live.");
 
-    const waMsg = `New review submitted on Master Pools site:%0A%0AName: ${name}%0ARating: ${pickedRating}/5%0AReview: ${text}%0A%0APlease check the admin dashboard to approve or reject.`;
+    const waMsg = `New review submitted on Master Pools site:%0A%0AName: ${name}%0ARating: ${pickedRating}/5%0AReview: ${text}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`, '_blank');
   }catch(err){
-    showToast("Network error — please try again");
+    console.error("Review submit failed:", err);
+    showToast(err.message || "Could not submit your review — please try again");
   }
   btn.disabled = false; btn.textContent = "Submit Review";
 });
