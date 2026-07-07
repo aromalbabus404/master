@@ -281,17 +281,43 @@
   .modal.fade .modal-dialog{transition:transform .25s ease, opacity .25s ease;}
 
   /* ============================================================
-     EDIT PRODUCT MODAL — scroll fix
-     The key bug: .modal-body was a flex child with `flex:1` and
-     `overflow-y:auto`, but its flex parent (.modal-content) never
-     got `min-height:0`. Per the flexbox spec, a flex item's default
-     minimum size is "auto" (i.e. its content size), so the browser
-     refused to shrink .modal-body below the height of the form
-     inside it — the extra content just got clipped by the parent's
-     overflow:hidden instead of becoming scrollable. Adding
-     min-height:0 on the scrolling flex item fixes it on both the
-     mobile sheet layout and the desktop centered layout below.
+     EDIT PRODUCT MODAL — scroll fix (v2)
+     Previous fix relied purely on flex-grow + min-height:0 to let
+     .modal-body shrink and become scrollable. That chain depends on
+     .modal-content having a hard max-height AND every ancestor
+     resolving percentage/vh heights correctly — fragile, and broke
+     silently (no scrollbar, modal just "stuck") if anything in that
+     chain didn't resolve as expected.
+
+     Fix: give .modal-body an EXPLICIT max-height and overflow-y that
+     doesn't depend on flex-shrink math at all. This guarantees a
+     scrollable region regardless of how the rest of the flex layout
+     resolves.
      ============================================================ */
+  #editProductModal .modal-dialog{
+    display:flex;
+    align-items:center;
+    min-height:calc(100% - 3.5rem);
+  }
+  #editProductModal .modal-content{
+    max-height:calc(100vh - 3.5rem);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  #editProductModal .modal-header,
+  #editProductModal .modal-footer{
+    flex:0 0 auto;
+  }
+  #editProductModal .modal-body{
+    flex:1 1 auto;
+    overflow-y:auto !important;
+    overflow-x:hidden;
+    max-height:calc(100vh - 3.5rem - 130px); /* viewport minus header+footer allowance */
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+  }
+
   @media (max-width:575.98px){
 
     #editProductModal{
@@ -310,13 +336,13 @@
     #editProductModal .modal-content{
         width:100%;
         height:88vh;
+        max-height:88vh;
         border-radius:20px 20px 0 0;
         border:none;
         box-shadow:0 -8px 30px rgba(11,60,93,.18);
         display:flex;
         flex-direction:column;
         overflow:hidden;
-        min-height:0;
     }
 
     #editProductModal .modal-content::before{
@@ -337,8 +363,8 @@
 
     #editProductModal .modal-body{
         flex:1 1 auto;
-        min-height:0;
-        overflow-y:auto;
+        max-height:calc(88vh - 120px); /* explicit boundary — don't rely on flex-shrink math */
+        overflow-y:scroll !important;
         overflow-x:hidden;
         -webkit-overflow-scrolling:touch;
         touch-action:pan-y;
@@ -363,27 +389,7 @@
   }
 
   @media(min-width:576px){
-    #editProductModal .modal-content{
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
-    #editProductModal .modal-body{
-      overflow-y:auto;
-      flex:1 1 auto;
-      min-height:0;
-    }
-    #editProductModal .modal-header,
-    #editProductModal .modal-footer{
-      flex:0 0 auto;
-    }
     #editProductModal .modal-dialog{
-      display:flex;
-      align-items:center;
-      min-height:calc(100% - 3.5rem);
-      max-height:calc(100vh - 3.5rem);
-    }
-    #editProductModal .modal-content{
       max-height:calc(100vh - 3.5rem);
     }
   }
