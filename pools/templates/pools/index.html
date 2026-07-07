@@ -419,7 +419,14 @@ select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--li
 .file-label{flex:1;border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;cursor:pointer;font-size:.85rem;color:var(--muted);font-weight:600;}
 .file-label:hover{border-color:var(--seafoam-deep);color:var(--seafoam-deep);}
 .preview-strip{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
-.preview-strip img,.preview-strip video{width:60px;height:60px;border-radius:8px;object-fit:cover;}
+.preview-item{position:relative;width:60px;height:60px;flex:0 0 60px;}
+.preview-item img,.preview-item video{width:60px;height:60px;border-radius:8px;object-fit:cover;display:block;}
+.preview-remove{
+  position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;
+  background:var(--ink);color:#fff;border:2px solid var(--white);font-size:.68rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-weight:800;
+}
+.preview-remove:hover{background:#B84A3E;}
 .rating-pick{display:flex;gap:6px;font-size:1.6rem;color:var(--line);cursor:pointer;margin-bottom:18px;}
 .rating-pick span.active{color:var(--brass);}
 
@@ -1420,18 +1427,52 @@ function paintStars(){ [...ratingPick.children].forEach(s=>{ s.classList.toggle(
 paintStars();
 ratingPick.addEventListener('click', e=>{ if(e.target.dataset.v){ pickedRating = parseInt(e.target.dataset.v); paintStars(); } });
 
+/* reviewFiles now holds {file, url} objects instead of raw File objects,
+   so each preview thumbnail can keep its own object URL and be removed
+   individually via the (x) button without disturbing the others. */
 let reviewFiles = [];
 const rvPreview = document.getElementById('rvPreview');
-function addPreview(file){
-  reviewFiles.push(file);
-  const url = URL.createObjectURL(file);
-  rvPreview.insertAdjacentHTML('beforeend', file.type.startsWith('video') ? `<video src="${url}" muted></video>` : `<img src="${url}">`);
+
+function renderPreviews(){
+  rvPreview.innerHTML = '';
+  reviewFiles.forEach((item, idx)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'preview-item';
+    wrap.innerHTML = (item.file.type.startsWith('video')
+        ? `<video src="${item.url}" muted></video>`
+        : `<img src="${item.url}">`)
+      + `<button type="button" class="preview-remove" data-i="${idx}" aria-label="Remove image">✕</button>`;
+    rvPreview.appendChild(wrap);
+  });
 }
-document.getElementById('rvImg').addEventListener('change', e=>{ [...e.target.files].forEach(addPreview); });
+
+function addPreview(file){
+  const url = URL.createObjectURL(file);
+  reviewFiles.push({file, url});
+  renderPreviews();
+}
+
+// (x) button on each thumbnail — removes just that one image/video before submitting
+rvPreview.addEventListener('click', e=>{
+  const btn = e.target.closest('.preview-remove');
+  if(!btn) return;
+  const idx = parseInt(btn.dataset.i, 10);
+  if(Number.isNaN(idx) || !reviewFiles[idx]) return;
+  URL.revokeObjectURL(reviewFiles[idx].url);
+  reviewFiles.splice(idx, 1);
+  renderPreviews();
+});
+
+document.getElementById('rvImg').addEventListener('change', e=>{
+  [...e.target.files].forEach(addPreview);
+  e.target.value = ''; // reset so picking the same file again later still fires 'change'
+});
 
 /* Builds one testimonial-card (matches the server-rendered markup above)
    and drops it in at the front of the carousel — no page reload, no WhatsApp
-   redirect, the review just stays there right after submitting. */
+   redirect, the review just stays there right after submitting. Now also
+   renders the first uploaded photo/video, which previously was silently
+   dropped (the tile was always created with the "no-image" class). */
 function escapeHtml(str){
   const d = document.createElement('div');
   d.textContent = str;
@@ -1439,7 +1480,7 @@ function escapeHtml(str){
 }
 const AVATAR_COLORS = ['#4FA8BE','#E07A5F','#3D9970','#B08968','#6C5CE7','#D6764F'];
 
-function addReviewTileToDOM({name, text, rating}){
+function addReviewTileToDOM({name, text, rating, media}){
   const track = document.getElementById('reviewsTrack');
   if(!track) return;
 
@@ -1452,9 +1493,18 @@ function addReviewTileToDOM({name, text, rating}){
   const empty = '☆'.repeat(5 - rating);
   const title = rating >= 5 ? 'Excellent Work!' : (rating === 4 ? 'Great Experience!' : 'Good Service');
 
+  const hasMedia = !!(media && media.length);
+  const mediaHtml = hasMedia ? `
+    <div class="testimonial-img">
+        ${media[0].isVideo
+          ? `<video src="${media[0].url}" muted playsinline></video>`
+          : `<img src="${media[0].url}" alt="${escapeHtml(name)}">`}
+    </div>` : '';
+
   const card = document.createElement('div');
-  card.className = 'testimonial-card no-image';
+  card.className = 'testimonial-card' + (hasMedia ? '' : ' no-image');
   card.innerHTML = `
+    ${mediaHtml}
     <div class="testimonial-body">
         <h3 class="testimonial-title">${title}</h3>
         <p class="testimonial-quote">"${escapeHtml(text)}"</p>
@@ -1492,18 +1542,29 @@ document.getElementById('submitReview').addEventListener('click', async ()=>{
   fd.append('name', name);
   fd.append('text', text);
   fd.append('rating', pickedRating);
-  reviewFiles.forEach(f => fd.append('media', f));
+  reviewFiles.forEach(item => fd.append('media', item.file));
+
+  // Snapshot the media (blob URLs + type) for the on-page tile BEFORE we
+  // clear reviewFiles below — this is what actually shows the image now.
+  const mediaForTile = reviewFiles.map(item => ({
+    url: item.url,
+    isVideo: item.file.type.startsWith('video')
+  }));
 
   try{
     await postForServer(REVIEW_URL, { method:"POST", headers:{"X-CSRFToken": CSRF_TOKEN}, body: fd });
 
     // Review is saved on the server — now just drop it into the carousel
     // right away so it stays visible on the page (no WhatsApp redirect).
-    addReviewTileToDOM({ name, text, rating: pickedRating });
+    addReviewTileToDOM({ name, text, rating: pickedRating, media: mediaForTile });
 
     document.getElementById('rvName').value='';
     document.getElementById('rvText').value='';
-    rvPreview.innerHTML=''; reviewFiles=[]; pickedRating=5; paintStars();
+    rvPreview.innerHTML='';
+    // NOTE: we intentionally do NOT revoke these object URLs here — they are
+    // now in use by the tile we just inserted into the carousel above.
+    reviewFiles=[];
+    pickedRating=5; paintStars();
     closeReviewModal();
     showToast("Thanks! Your review is now live.");
   }catch(err){
