@@ -269,49 +269,36 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .services-wa:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(37,211,102,.36);color:#fff;}
 .services-wa svg{width:20px;height:20px;flex-shrink:0;}
 
-/* ============ SHOP (product card style now matches shop.html: colors + Buy Now) ============ */
+/* ============ SHOP (index preview cards — view-only: image, category, name, price, description; whole card links to full shop) ============ */
 .shop-tabs{display:flex;gap:10px;margin-bottom:40px;flex-wrap:wrap;}
 .tab-btn{padding:11px 22px;border-radius:999px;border:1.5px solid var(--line);background:var(--white);font-weight:700;font-size:.84rem;cursor:pointer;color:var(--muted);font-family:'Manrope',sans-serif;}
 .tab-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
 .product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
-.product-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.3s;}
-.product-card:hover{transform:translateY(-6px);}
-.product-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--stone);cursor:pointer;}
+.product-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(18,50,64,.09);display:flex;flex-direction:column;transition:.3s ease;cursor:pointer;}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(18,50,64,.18);}
+
+.product-img{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--stone);}
 .product-img img{width:100%;height:100%;object-fit:cover;transition:.5s;}
 .product-card:hover .product-img img{transform:scale(1.06);}
-.badge{position:absolute;top:14px;left:14px;background:var(--brass);color:var(--white);font-size:.68rem;font-weight:800;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;}
-.product-body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:11px;flex:1;}
-.product-body h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.08rem;}
-.product-title-link{cursor:pointer;}
-.product-title-link:hover{color:var(--seafoam-deep);}
-.product-body .price{color:var(--seafoam-deep);font-weight:800;font-size:1.14rem;font-family:'Manrope',sans-serif;}
-.price del{color:var(--muted);font-weight:500;font-size:.85rem;margin-right:6px;}
-.opt-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;}
-.opt-row label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;margin-right:4px;letter-spacing:.3px;}
-select.opt-select{padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);font-size:.85rem;background:var(--white);font-family:'Manrope',sans-serif;}
-.qty-box{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;}
-.qty-box button{width:32px;height:34px;border:none;background:var(--stone);cursor:pointer;font-weight:800;color:var(--ink);}
-.qty-box span{width:30px;text-align:center;font-weight:700;font-size:.9rem;}
 
-/* Color swatches — optional row, only rendered when a product has colors */
-.color-row{align-items:flex-start;}
-.color-row label{padding-top:4px;}
-.color-swatches{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
-.color-swatch{width:24px;height:24px;border-radius:50%;flex:0 0 24px;border:2px solid var(--white);outline:1.5px solid var(--line);cursor:pointer;transition:.2s ease;position:relative;}
-.color-swatch:hover{transform:scale(1.12);}
-.color-swatch.selected{outline-color:var(--brass);box-shadow:0 0 0 2px var(--brass-light);}
-.color-name{font-size:.74rem;color:var(--muted);font-weight:700;margin-left:2px;}
+.badge{position:absolute;top:14px;left:14px;background:var(--ink);color:var(--white);font-size:.68rem;font-weight:800;padding:6px 13px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;z-index:2;}
 
-/* Add to Cart + Buy Now sit side by side */
-.btn-row{display:flex;gap:10px;margin-top:10px;}
-.btn-row .add-cart-btn{margin-top:0;flex:1;}
-.add-cart-btn{background:var(--deep);color:var(--white);border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;}
-.add-cart-btn:hover{background:var(--deep2);}
-.add-cart-btn.added{background:var(--brass);color:var(--white);}
-.buy-now-btn{flex:1;border:none;padding:13px;border-radius:9px;font-weight:700;cursor:pointer;transition:.25s;font-family:'Manrope',sans-serif;font-size:.85rem;background:var(--brass);color:var(--white);}
-.buy-now-btn:hover{background:var(--brass-light);}
-.buy-now-btn:disabled{opacity:.65;cursor:not-allowed;}
+.product-body{padding:20px 20px 22px;display:flex;flex-direction:column;gap:5px;flex:1;}
+.cat-label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.product-body h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.08rem;margin:2px 0 1px;}
+.product-desc{color:var(--muted);font-size:.85rem;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.price{display:flex;align-items:baseline;gap:9px;margin-top:auto;}
+.price .price-value{color:var(--seafoam-deep);font-weight:800;font-size:1.15rem;font-family:'Manrope',sans-serif;}
+.price del{color:var(--muted);font-weight:500;font-size:.86rem;}
+
 .shop-more-wrap{display:flex;justify-content:center;margin-top:44px;}
+
+@media(max-width:600px){
+  .product-body{padding:14px 14px 16px;}
+  .product-body h3{font-size:.95rem;}
+  .price .price-value{font-size:1rem;}
+}
 
 /* ============ CART DRAWER ============ */
 .cart-drawer{position:fixed;top:0;right:-440px;width:420px;max-width:92vw;height:100%;background:var(--white);z-index:300;box-shadow:-14px 0 44px rgba(0,0,0,.22);transition:right .35s ease;display:flex;flex-direction:column;}
@@ -505,15 +492,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .logo-img{height:50px;
     width:auto;;}
     .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
-    .product-body{padding:14px 14px 16px;gap:8px;}
-    .product-body h3{font-size:.92rem;}
-    .product-body .price{font-size:.98rem;}
-    .opt-row label{font-size:.64rem;}
-    select.opt-select{padding:6px 8px;font-size:.76rem;}
-    .color-swatch{width:20px;height:20px;flex-basis:20px;}
-    .color-name{font-size:.66rem;}
-    .btn-row{flex-direction:column;gap:6px;}
-    .add-cart-btn,.buy-now-btn{padding:10px;font-size:.82rem;}
     .hero-text h1{font-size:2.15rem;}
     .section{padding:10px 0;}
     .field-row{flex-direction:column;}
@@ -711,7 +689,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <div class="section-head reveal">
     <div class="eyebrow">Pool Shop</div>
     <h2>Pools & accessories</h2>
-    <p>A quick look at our pool designs and accessories — pick a size and color, choose quantity, add to cart or buy right away. Click any product, or tap "Shop All" below, to see our full catalog.</p>
+    <p>A quick look at our pool designs and accessories. Tap any product to see full details, sizes, colors and pricing on the shop page.</p>
     </div>
     <div class="shop-tabs" id="shopTabs">
     <button class="tab-btn active" data-cat="all">All</button>
@@ -722,51 +700,27 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
     <div class="product-grid" id="productGrid">
     {% for p in products|slice:":4" %}
-        <div class="product-card reveal" data-cat="{{ p.category }}" data-id="{{ p.id }}" data-name="{{ p.name }}" data-price="{{ p.price }}" data-img="{{ p.image }}">
+        <a href="{% url 'shop' %}" class="product-card reveal" data-cat="{{ p.category }}">
 
-        <a href="{% url 'shop' %}" class="product-img">
-            {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
-            <img src="{{ p.image }}" alt="{{ p.name }}">
-        </a>
-
-        <div class="product-body">
-            <a href="{% url 'shop' %}"><h3 class="product-title-link">{{ p.name }}</h3></a>
-
-            <div class="price" id="price-{{ p.id }}">
-                {% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}<span class="price-value">₹{{ p.price|floatformat:0 }}</span>
+            <div class="product-img">
+                {% if p.discount_percent %}
+                    <span class="badge">{{ p.discount_percent }}% off</span>
+                {% elif p.badge %}
+                    <span class="badge">{{ p.badge }}</span>
+                {% endif %}
+                <img src="{{ p.image }}" alt="{{ p.name }}">
             </div>
 
-            {% if p.color_list %}
-            <div class="opt-row color-row">
-                <label>Color</label>
-                <div class="color-swatches">
-                    {% for c in p.color_list %}
-                    <span class="color-swatch{% if forloop.first %} selected{% endif %}"
-                          style="background-color:{{ c|lower }};"
-                          data-color="{{ c }}"
-                          title="{{ c }}"></span>
-                    {% endfor %}
-                    <span class="color-name">{{ p.color_list.0 }}</span>
+            <div class="product-body">
+                <span class="cat-label">{{ p.get_category_display }}</span>
+                <h3>{{ p.name }}</h3>
+                {% if p.description %}<p class="product-desc">{{ p.description|truncatewords:14 }}</p>{% endif %}
+                <div class="price">
+                    <span class="price-value">₹{{ p.price|floatformat:0 }}</span>
+                    {% if p.mrp %}<del>₹{{ p.mrp|floatformat:0 }}</del>{% endif %}
                 </div>
             </div>
-            {% endif %}
-
-            <div class="opt-row"><label>Size</label><select class="opt-select size-select">
-                {% if p.sorted_sizes %}
-                    {% for s, pr in p.sorted_sizes %}<option value="{{ s }}" data-price="{{ pr|floatformat:0 }}">{{ s }}</option>{% endfor %}
-                {% else %}
-                    {% for s in p.size_list %}<option value="{{ s }}" data-price="{{ p.price }}">{{ s }}</option>{% endfor %}
-                {% endif %}
-            </select></div>
-
-            <div class="opt-row"><label>Qty</label><div class="qty-box"><button class="qty-minus" type="button">−</button><span class="qty-val">1</span><button class="qty-plus" type="button">+</button></div></div>
-
-            <div class="btn-row">
-                <button class="add-cart-btn" type="button">Add to Cart</button>
-                <button class="buy-now-btn" type="button">Buy Now</button>
-            </div>
-        </div>
-        </div>
+        </a>
     {% empty %}
         <p style="grid-column:1/-1;color:var(--muted);text-align:center;padding:40px 0;">No products yet.</p>
     {% endfor %}
@@ -1323,7 +1277,7 @@ function observeReveals(scope){
 }
 observeReveals();
 
-/* ============ SHOP TABS (client-side filter over server-rendered cards) ============ */
+/* ============ SHOP TABS (client-side filter over server-rendered preview cards) ============ */
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
 document.getElementById('shopTabs').addEventListener('click', e=>{
@@ -1336,85 +1290,13 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
   });
 });
 
-/* ============ PRODUCT QTY / SIZE→PRICE / COLOR / ADD TO CART / BUY NOW (matches shop.html card behaviour) ============ */
-let pendingBuyNow = null; // set when a per-product "Buy Now" is clicked; null means the modal is for cart checkout
+/* NOTE: the index page shows view-only product preview cards now (image,
+   category, name, price, description) — each card is a plain <a> to the
+   full shop page, so there is no add-to-cart / qty / size / color wiring
+   needed here anymore. That logic still lives on the shop page itself. */
 
-document.querySelectorAll('#productGrid .product-card').forEach(card=>{
-  const qtyVal = card.querySelector('.qty-val');
-  const sizeSelect = card.querySelector('.size-select');
-  const priceValueEl = card.querySelector('.price-value');
-  let qty = 1;
-
-  function updatePriceDisplay(){
-    const opt = sizeSelect.options[sizeSelect.selectedIndex];
-    if(opt && priceValueEl){
-      priceValueEl.textContent = fmt(opt.dataset.price);
-    }
-  }
-  if(sizeSelect){
-    sizeSelect.addEventListener('change', updatePriceDisplay);
-    updatePriceDisplay();
-  }
-
-  card.querySelector('.qty-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty-1); qtyVal.textContent = qty; });
-  card.querySelector('.qty-plus').addEventListener('click', ()=>{ qty = Math.min(20, qty+1); qtyVal.textContent = qty; });
-
-  // Colors — optional. If present, first swatch is pre-selected; clicking another swatch swaps the selection.
-  const colorSwatches = card.querySelectorAll('.color-swatch');
-  const colorNameEl = card.querySelector('.color-name');
-  let selectedColor = colorSwatches.length ? colorSwatches[0].dataset.color : '';
-
-  colorSwatches.forEach(sw=>{
-    sw.addEventListener('click', ()=>{
-      colorSwatches.forEach(s=>s.classList.remove('selected'));
-      sw.classList.add('selected');
-      selectedColor = sw.dataset.color;
-      if(colorNameEl) colorNameEl.textContent = selectedColor;
-    });
-  });
-
-  function currentSelection(){
-    const opt = sizeSelect ? sizeSelect.options[sizeSelect.selectedIndex] : null;
-    const size = opt ? opt.value : '';
-    const price = opt ? parseInt(opt.dataset.price) : parseInt(card.dataset.price);
-    return { size, price };
-  }
-
-  const addBtn = card.querySelector('.add-cart-btn');
-  addBtn.addEventListener('click', ()=>{
-    const { size, price } = currentSelection();
-
-    addToCart({
-      id: card.dataset.id, name: card.dataset.name,
-      img: card.dataset.img, price: price
-    }, size, qty, selectedColor);
-
-    addBtn.textContent = "Added ✓"; addBtn.classList.add('added');
-    setTimeout(()=>{ addBtn.textContent="Add to Cart"; addBtn.classList.remove('added'); }, 1300);
-    showToast(`${card.dataset.name} added to cart`);
-  });
-
-  const buyNowBtn = card.querySelector('.buy-now-btn');
-  if(buyNowBtn){
-    buyNowBtn.addEventListener('click', ()=>{
-      const { size, price } = currentSelection();
-      pendingBuyNow = {
-        id: card.dataset.id, name: card.dataset.name, img: card.dataset.img,
-        price: price, size: size, color: selectedColor, qty: qty
-      };
-      openModal(true);
-    });
-  }
-});
-
-/* ============ CART (in-memory for this visit) ============ */
+/* ============ CART (kept for the drawer icon / checkout flow used elsewhere) ============ */
 let cart = [];
-function addToCart(product, size, qty, color){
-  const existing = cart.find(c=>c.id===product.id && c.size===size && c.color===(color||''));
-  if(existing){ existing.qty += qty; }
-  else{ cart.push({id:product.id,name:product.name,img:product.img,price:product.price,size,color:color||'',qty}); }
-  renderCart();
-}
 function itemLabel(c){
   const extras = [];
   if(c.size) extras.push('Size: '+c.size);
@@ -1449,6 +1331,7 @@ document.getElementById('cartClose').addEventListener('click', closeCart);
 overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); closeReviewModal(); });
 
 /* ============ CHECKOUT / BUY NOW -> saves to real DB via fetch, then opens WhatsApp ============ */
+let pendingBuyNow = null;
 const checkoutModal = document.getElementById('checkoutModal');
 function openModal(fromBuyNow){
   if(!fromBuyNow && cart.length===0){ showToast("Your cart is empty"); return; }
@@ -1566,9 +1449,7 @@ document.getElementById('rvImg').addEventListener('change', e=>{
 
 /* Builds one testimonial-card (matches the server-rendered markup above)
    and drops it in at the front of the carousel — no page reload, no WhatsApp
-   redirect, the review just stays there right after submitting. Now also
-   renders the first uploaded photo/video, which previously was silently
-   dropped (the tile was always created with the "no-image" class). */
+   redirect, the review just stays there right after submitting. */
 function escapeHtml(str){
   const d = document.createElement('div');
   d.textContent = str;

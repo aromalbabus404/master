@@ -186,6 +186,9 @@ class Product(models.Model):
     @property
     def colors_json(self):
         return json.dumps(self.color_list)
+    
+    
+    
 
     def __str__(self):
         return self.name
