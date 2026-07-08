@@ -16,7 +16,7 @@
     --radius:18px; --shadow:0 22px 54px rgba(18,50,64,.16);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
 body{font-family:'Manrope',sans-serif;background:var(--sand);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 img{max-width:100%;display:block;}
 a{color:inherit;text-decoration:none;}
@@ -474,6 +474,22 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .trust-stars span{color:var(--muted);font-size:.82rem;letter-spacing:normal;font-family:'Manrope',sans-serif;font-weight:600;}
 .btn-write-review{background:#1DAA4C;color:#fff;border:none;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.86rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:.25s ease;white-space:nowrap;}
 .btn-write-review:hover{background:#169140;transform:translateY(-2px);}
+
+/* "Write a Review" strip — logo, star rating, helper text, CTA button, stacked and centered.
+   Sits above the testimonial carousel now, so it's kept compact by default and shrunk
+   further on mobile so it doesn't crowd out the cards below it. */
+.review-company{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.review-logo{height:38px;width:auto;object-fit:contain;margin-bottom:2px;}
+.review-stars{color:var(--brass);font-size:1.25rem;letter-spacing:3px;line-height:1;}
+.review-text{color:var(--muted);font-size:.86rem;margin-bottom:4px;}
+
+@media(max-width:600px){
+  .testimonials-top{margin-bottom:22px;}
+  .review-logo{height:28px;}
+  .review-stars{font-size:.95rem;letter-spacing:2px;}
+  .review-text{font-size:.74rem;margin-bottom:2px;}
+  .btn-write-review{padding:9px 18px;font-size:.78rem;}
+}
 
 .testimonial-carousel{position:relative;}
 .testimonial-mask{overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-ms-overflow-style:none;padding:18px 0 26px;}
@@ -959,6 +975,24 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     </div>
 
 
+    <div class="testimonials-top reveal">
+
+        <div class="review-company">
+            <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools Logo" class="review-logo">
+
+            <div class="review-stars">
+                ★★★★★
+            </div>
+
+            <p class="review-text">Based on real customer reviews</p>
+
+            <button class="btn-write-review" id="openReviewModal" type="button">
+                Write a Review
+            </button>
+        </div>
+
+    </div>
+
     <div class="testimonial-carousel reveal">
         <div class="testimonial-mask" id="reviewsMask">
             <div class="testimonial-track" id="reviewsTrack">
@@ -1011,24 +1045,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     </button>
 </div>
     </div>
-</div>
-
-<div class="testimonials-top reveal">
-
-    <div class="review-company">
-        <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools Logo" class="review-logo">
-
-        <div class="review-stars">
-            ★★★★★
-        </div>
-
-        <p class="review-text">Based on real customer reviews</p>
-
-        <button class="btn-write-review" id="openReviewModal" type="button">
-            Write a Review
-        </button>
-    </div>
-
 </div>
 </section>
 
@@ -1434,8 +1450,8 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
     if(card) scrollToCard(card);
   });
 
-  if(prevBtn) prevBtn.addEventListener('click', ()=> goToOffset(-1));
-  if(nextBtn) nextBtn.addEventListener('click', ()=> goToOffset(1));
+  if(prevBtn) prevBtn.addEventListener('click', ()=> { stopReviewAuto(); goToOffset(-1); });
+  if(nextBtn) nextBtn.addEventListener('click', ()=> { stopReviewAuto(); goToOffset(1); });
 
   window.addEventListener('resize', ()=>{ setMaskPadding(); updateActiveCard(); });
 
@@ -1444,6 +1460,32 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   updateActiveCard();
   setTimeout(()=>{ setMaskPadding(); updateActiveCard(); }, 250);
   window.addEventListener('load', ()=>{ setMaskPadding(); updateActiveCard(); });
+
+  /* ---- Auto-move: cycles to the next testimonial on a timer, loops back
+     to the first after the last, and pauses while the user is hovering,
+     touching, or manually navigating the carousel. ---- */
+  let reviewAutoTimer;
+  function autoAdvance(){
+    const cards = getCards();
+    if(cards.length <= 1) return;
+    const activeIdx = cards.findIndex(c => c.classList.contains('active'));
+    const nextIdx = (activeIdx === -1 ? 0 : activeIdx + 1) % cards.length;
+    scrollToCard(cards[nextIdx]);
+  }
+  function startReviewAuto(){
+    stopReviewAuto();
+    if(getCards().length <= 1) return; // nothing to cycle through
+    reviewAutoTimer = setInterval(autoAdvance, 2800);
+  }
+  function stopReviewAuto(){ clearInterval(reviewAutoTimer); }
+
+  mask.addEventListener('mouseenter', stopReviewAuto);
+  mask.addEventListener('mouseleave', startReviewAuto);
+  mask.addEventListener('touchstart', stopReviewAuto, {passive:true});
+  mask.addEventListener('touchend', ()=>{ setTimeout(startReviewAuto, 2000); }, {passive:true});
+  track.addEventListener('click', stopReviewAuto);
+
+  startReviewAuto();
 
   // expose for the "review submitted" handler further down, which adds a
   // new card to the DOM and needs the carousel to re-measure itself
