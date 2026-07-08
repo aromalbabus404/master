@@ -16,13 +16,12 @@
     --radius:18px; --shadow:0 22px 54px rgba(18,50,64,.16);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;overflow-x:hidden;}
-body{font-family:'Manrope',sans-serif;background:var(--sand);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;width:100%;}
+html{scroll-behavior:smooth;}
+body{font-family:'Manrope',sans-serif;background:var(--sand);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 img{max-width:100%;display:block;}
-video,iframe,canvas,svg{max-width:100%;}
 a{color:inherit;text-decoration:none;}
 ul{list-style:none;}
-.wrap{width:100%;max-width:1240px;margin:0 auto;padding:0 28px;}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px;}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-spacing:-.5px;}
 .eyebrow{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--seafoam-deep);font-size:.95rem;display:flex;align-items:center;gap:10px;margin-bottom:12px;letter-spacing:.2px;}
 .eyebrow::before{content:"";width:30px;height:1.5px;background:var(--brass);display:inline-block;}
@@ -194,7 +193,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .about-badge-card{
   position:absolute;bottom:-26px;right:-22px;background:var(--white);border-radius:16px;
   box-shadow:0 18px 40px rgba(18,50,64,.2);padding:20px 24px;display:flex;align-items:center;gap:14px;
-  border:1px solid var(--line);max-width:calc(100% - 24px);
+  border:1px solid var(--line);
 }
 .about-badge-card .num{font-family:'Fraunces',serif;font-weight:700;font-size:1.9rem;color:var(--seafoam-deep);line-height:1;}
 .about-badge-card .lbl{font-size:.74rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;max-width:110px;line-height:1.25;}
@@ -210,7 +209,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 }
 @media(max-width:600px){
   .about-points{grid-template-columns:1fr;gap:14px;}
-  .about-badge-card{padding:14px 18px;bottom:-18px;gap:10px;right:8px;}
+  .about-badge-card{padding:14px 18px;bottom:-18px;gap:10px;}
   .about-badge-card .num{font-size:1.5rem;}
   .about-badge-card .lbl{font-size:.66rem;max-width:96px;}
 }
@@ -257,74 +256,45 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   .carousel-arrow{display:none;}
 }
 
-/* ============ SERVICES — dark "Our Palette of Expertise" card-grid style ============ */
-/* .bg-reveal: sits on the page's normal background normally, and switches
-   to the dark ink background whenever it's in view — scrolling DOWN into
-   it turns the color on, scrolling back UP past it turns it back off.
-   Uses its own "bg-on" class (toggled continuously, not a one-time
-   reveal) so it works both directions, independent of the .reveal
-   fade-in-once animation also applied to this element. */
-.bg-reveal{
-  background:var(--sand);
-  transition:background-color .6s cubic-bezier(.25,.8,.35,1);
-  border-radius:32px;
-}
-.bg-reveal.bg-on{background:var(--ink);}
+/* ============ SERVICES — light 3-column card grid (Wastix style) ============ */
+.services-light-head{text-align:center;max-width:640px;margin:0 auto 50px;}
+.services-light-head .eyebrow{justify-content:center;}
+.services-light-head h2{font-size:clamp(1.9rem,3.6vw,2.7rem);}
 
-.services-dark{padding:64px 34px;}
-.services-dark-head{text-align:center;max-width:600px;margin:0 auto 46px;}
-.services-dark-head .eyebrow{justify-content:center;color:var(--seafoam);}
-.services-dark-head .eyebrow::before{background:var(--seafoam);}
-.services-dark-head h2{color:var(--white);font-size:clamp(1.9rem,3.4vw,2.6rem);}
-
-.services-tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:900px;margin:0 auto;}
-.service-tile{
-  background:var(--white);border-radius:20px;padding:34px 30px;cursor:pointer;
-  transition:transform .3s ease, box-shadow .3s ease, background-color .45s ease;
-  position:relative;overflow:hidden;
+.services-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+.service-card{
+  background:var(--white);border-radius:20px;padding:38px 30px 32px;text-align:center;
+  box-shadow:0 12px 30px rgba(18,50,64,.08);
+  transition:transform .3s ease, box-shadow .3s ease;
 }
-.service-tile:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(0,0,0,.28);background:var(--stone);}
-.service-tile .ic-circle{
-  width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--white);
-  display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:24px;
-  transition:background-color .45s ease, transform .3s ease;
+.service-card:hover{transform:translateY(-6px);box-shadow:0 24px 46px rgba(18,50,64,.16);}
+.service-card .ic-box{
+  width:72px;height:72px;margin:0 auto 22px;border-radius:16px;background:var(--stone);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--seafoam-deep);
+  transition:background-color .3s ease, transform .3s ease, color .3s ease;
 }
-.service-tile:hover .ic-circle{background:var(--seafoam-deep);transform:scale(1.08) rotate(-4deg);}
-.service-tile h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.22rem;margin-bottom:12px;color:var(--ink);transition:color .45s ease;}
-.service-tile p{color:var(--muted);font-size:.92rem;line-height:1.65;transition:color .45s ease;}
-
-.service-tile.active{background:transparent;border:1.5px solid rgba(255,255,255,.22);}
-.service-tile.active:hover{background:rgba(255,255,255,.06);}
-.service-tile.active .ic-circle{background:rgba(255,255,255,.14);}
-.service-tile.active:hover .ic-circle{background:rgba(255,255,255,.22);}
-.service-tile.active h3{color:var(--white);}
-.service-tile.active p{color:rgba(255,255,255,.85);}
-
-/* click feedback — a colored ripple pulses outward from the tile the moment
-   it's clicked, on top of the background-color transition above */
-.service-tile::after{
-  content:"";position:absolute;inset:0;border-radius:20px;
-  box-shadow:0 0 0 0 rgba(79,168,190,.55);pointer-events:none;
+.service-card:hover .ic-box{background:var(--seafoam);transform:scale(1.05);color:var(--deep);}
+.service-card h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem;margin-bottom:10px;color:var(--ink);}
+.service-card p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:22px;}
+.service-card .arrow-btn{
+  width:44px;height:44px;border-radius:50%;background:var(--stone);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:1.1rem;
+  transition:background-color .3s ease, color .3s ease, transform .3s ease;
 }
-.service-tile.pulse::after{animation:tilePulse .65s ease-out;}
-@keyframes tilePulse{
-  0%{box-shadow:0 0 0 0 rgba(79,168,190,.55);}
-  70%{box-shadow:0 0 0 26px rgba(79,168,190,0);}
-  100%{box-shadow:0 0 0 0 rgba(79,168,190,0);}
-}
+.service-card:hover .arrow-btn{background:var(--brass);color:var(--white);transform:translateX(3px);}
 
 .services-wa{display:inline-flex;align-items:center;gap:10px;margin:38px auto 0;background:#25D366;color:#fff;padding:14px 26px;border-radius:999px;font-weight:700;font-size:.92rem;box-shadow:0 12px 28px rgba(37,211,102,.28);transition:.25s ease;}
 .services-wa:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(37,211,102,.36);color:#fff;}
 .services-wa svg{width:20px;height:20px;flex-shrink:0;}
 .services-wa-wrap{display:flex;justify-content:center;}
 
-@media(max-width:768px){
-  .services-dark{padding:48px 22px;}
+@media(max-width:900px){
+  .services-cards-grid{grid-template-columns:repeat(2,1fr);}
 }
 @media(max-width:600px){
-  .services-tiles{grid-template-columns:1fr;}
-  .service-tile{padding:28px 24px;}
-  .bg-reveal{border-radius:22px;}
+  .services-cards-grid{grid-template-columns:1fr;gap:18px;}
+  .service-card{padding:30px 22px 26px;}
 }
 
 /* ============ SHOP (index preview cards — view-only: image, category, name, price, description; whole card links to full shop) ============ */
@@ -509,7 +479,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 }
 .testimonial-card.active{opacity:1;transform:scale(1);box-shadow:0 30px 60px rgba(18,50,64,.20);z-index:5;}
 .testimonial-img{width:100%;aspect-ratio:16/11;overflow:hidden;background:var(--stone);}
-.testimonial-img img,.testimonial-img video{width:100%;height:100%;object-fit:cover;display:block;}
+.testimonial-img img{width:100%;height:100%;object-fit:cover;}
 .testimonial-body{padding:26px 24px 28px;text-align:center;}
 .testimonial-card.no-image .testimonial-body{padding-top:36px;}
 .testimonial-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;margin-bottom:10px;color:var(--ink);}
@@ -573,7 +543,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 .float-wa{position:fixed;bottom:26px;right:26px;width:60px;height:60px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.7rem;box-shadow:0 12px 28px rgba(0,0,0,.28);z-index:250;}
 .float-wa svg{width:32px;height:32px;flex-shrink:0;}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:15px 28px;border-radius:999px;font-weight:700;font-size:.88rem;z-index:500;opacity:0;pointer-events:none;transition:.3s;max-width:calc(100vw - 32px);text-align:center;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:15px 28px;border-radius:999px;font-weight:700;font-size:.88rem;z-index:500;opacity:0;pointer-events:none;transition:.3s;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 @media(max-width:980px){
@@ -728,7 +698,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
   <div class="eyebrow">About Us</div>
     <div class="about-wrap">
         <div class="about-media reveal reveal-left">
-          
+         
             <div class="about-media-frame">
                 <img src="{% static 'images/finish_pool.jpeg' %}" alt="Master Pools workshop">
             </div>
@@ -739,7 +709,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         </div>
 
         <div class="about-copy reveal reveal-right">
-            
+           
             <h2 style="margin-bottom:18px;">Building Exceptional Pools Across Kerala</h2>
             <p>{{ about.intro|default:"Master Pools has spent over a decade designing, building and maintaining swimming pools for homes, villas and resorts across Kerala. We handle every stage in-house — from the first sketch to the final water treatment — so you deal with one team, start to finish." }}</p>
             <p>{{ about.mission|default:"Our goal is simple: pools that look beautiful, work reliably, and hold up season after season. That means honest advice, quality materials, and craftsmanship we stand behind long after handover." }}</p>
@@ -769,43 +739,88 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 <section class="section" id="services">
 <div class="wrap">
-    <div class="bg-reveal reveal">
-        <div class="services-dark">
-            <div class="services-dark-head">
-                <div class="eyebrow">Our Services</div>
-                <h2>Our Pool of Expertise</h2>
-            </div>
+    <div class="services-light-head reveal">
+        <div class="eyebrow">Our Services</div>
+        <h2>A wide range of pool<br>&amp; maintenance services</h2>
+    </div>
 
-            <div class="services-tiles">
-                <div class="service-tile active">
-                    <div class="ic-circle">🏗</div>
-                    <h3>Custom Pool Construction</h3>
-                    <p>From design to digging to the final finish, we build pools tailored to your space, budget and style — homes, villas and resorts alike.</p>
-                </div>
-                <div class="service-tile">
-                    <div class="ic-circle">🔧</div>
-                    <h3>Maintenance</h3>
-                    <p>Regular cleaning, equipment checks and water balancing so your pool stays safe, clear and ready to use all year round.</p>
-                </div>
-                <div class="service-tile">
-                    <div class="ic-circle">💧</div>
-                    <h3>Accessories & Chemicals</h3>
-                    <p>Pumps, filters, lighting and genuine water-treatment chemicals — everything you need to keep your pool running right.</p>
-                </div>
-                <div class="service-tile">
-                    <div class="ic-circle">🛠</div>
-                    <h3>Guidelines</h3>
-                    <p>Not sure where to start? Our team offers honest guidance on design, upkeep and safety so you can make the right call for your pool.</p>
-                </div>
+    <div class="services-cards-grid">
+        <div class="service-card reveal">
+            <div class="ic-box">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18M5 21V9l7-6 7 6v12M9 21v-6h6v6"/>
+                </svg>
             </div>
-
-            <div class="services-wa-wrap">
-                <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20pool%20construction%2C%20maintenance%20and%20accessory%20services." class="services-wa" target="_blank">
-                    <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.42.71 4.673 1.933 6.568L4 29l7.617-1.897A11.93 11.93 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.7c-2.11 0-4.08-.62-5.735-1.687l-.411-.257-4.522 1.127 1.208-4.406-.27-.428A9.66 9.66 0 0 1 6.3 15c0-5.35 4.352-9.7 9.701-9.7 5.35 0 9.699 4.35 9.699 9.7 0 5.35-4.35 9.7-9.699 9.7zm5.316-7.268c-.29-.145-1.717-.848-1.983-.945-.266-.097-.46-.145-.653.145-.194.29-.75.945-.92 1.14-.169.194-.338.218-.628.073-.29-.145-1.223-.451-2.33-1.437-.861-.768-1.443-1.716-1.612-2.006-.169-.29-.018-.447.127-.591.13-.13.29-.339.435-.508.145-.169.194-.29.29-.484.097-.194.048-.363-.024-.508-.073-.145-.653-1.575-.896-2.156-.236-.567-.475-.49-.653-.499l-.556-.01c-.194 0-.508.073-.774.363-.266.29-1.014.99-1.014 2.42 0 1.428 1.038 2.808 1.183 3.002.145.194 2.043 3.12 4.951 4.376.692.299 1.232.477 1.653.61.694.221 1.326.19 1.826.115.557-.083 1.717-.702 1.96-1.38.242-.678.242-1.259.169-1.38-.073-.121-.266-.194-.556-.339z"/></svg>
-                    Chat with us on WhatsApp
-                </a>
-            </div>
+            <h3>Custom Pool Construction</h3>
+            <p>Design-to-finish builds tailored to your space, budget and style — homes, villas and resorts alike.</p>
+            <div class="arrow-btn">→</div>
         </div>
+
+        <div class="service-card reveal">
+            <div class="ic-box">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12c1.5 2 3 2 4.5 0s3-2 4.5 0 3 2 4.5 0 3-2 4.5 0"/>
+                    <path d="M2 18c1.5 2 3 2 4.5 0s3-2 4.5 0 3 2 4.5 0 3-2 4.5 0"/>
+                    <path d="M4 12V6a2 2 0 0 1 2-2h5l7 7"/>
+                </svg>
+            </div>
+            <h3>Pool Renovation</h3>
+            <p>Resurfacing, tiling and structural upgrades that bring tired pools back to life.</p>
+            <div class="arrow-btn">→</div>
+        </div>
+
+        <div class="service-card reveal">
+            <div class="ic-box">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+            </div>
+            <h3>Maintenance &amp; Cleaning</h3>
+            <p>Regular cleaning, equipment checks and water balancing so your pool stays safe and clear year round.</p>
+            <div class="arrow-btn">→</div>
+        </div>
+
+        <div class="service-card reveal">
+            <div class="ic-box">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>
+                </svg>
+            </div>
+            <h3>Accessories &amp; Chemicals</h3>
+            <p>Pumps, filters, lighting and genuine water-treatment chemicals for a pool that runs right.</p>
+            <div class="arrow-btn">→</div>
+        </div>
+
+        <div class="service-card reveal">
+            <div class="ic-box">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 2v6l-4 6a4 4 0 0 0 4 6h6a4 4 0 0 0 4-6l-4-6V2"/>
+                    <path d="M9 2h6M8 16h8"/>
+                </svg>
+            </div>
+            <h3>Water Treatment</h3>
+            <p>Balanced chemistry and filtration checks that keep your water healthy and crystal clear.</p>
+            <div class="arrow-btn">→</div>
+        </div>
+
+        <div class="service-card reveal">
+            <div class="ic-box">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+            </div>
+            <h3>Design Consultation</h3>
+            <p>Not sure where to start? Honest guidance on design, upkeep and safety for your project.</p>
+            <div class="arrow-btn">→</div>
+        </div>
+    </div>
+
+    <div class="services-wa-wrap" style="margin-top:38px;">
+        <a href="https://wa.me/{{ settings.admin_whatsapp|default:'917356462150' }}?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20pool%20construction%2C%20maintenance%20and%20accessory%20services." class="services-wa" target="_blank">
+            <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.42.71 4.673 1.933 6.568L4 29l7.617-1.897A11.93 11.93 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.7c-2.11 0-4.08-.62-5.735-1.687l-.411-.257-4.522 1.127 1.208-4.406-.27-.428A9.66 9.66 0 0 1 6.3 15c0-5.35 4.352-9.7 9.701-9.7 5.35 0 9.699 4.35 9.699 9.7 0 5.35-4.35 9.7-9.699 9.7zm5.316-7.268c-.29-.145-1.717-.848-1.983-.945-.266-.097-.46-.145-.653.145-.194.29-.75.945-.92 1.14-.169.194-.338.218-.628.073-.29-.145-1.223-.451-2.33-1.437-.861-.768-1.443-1.716-1.612-2.006-.169-.29-.018-.447.127-.591.13-.13.29-.339.435-.508.145-.169.194-.29.29-.484.097-.194.048-.363-.024-.508-.073-.145-.653-1.575-.896-2.156-.236-.567-.475-.49-.653-.499l-.556-.01c-.194 0-.508.073-.774.363-.266.29-1.014.99-1.014 2.42 0 1.428 1.038 2.808 1.183 3.002.145.194 2.043 3.12 4.951 4.376.692.299 1.232.477 1.653.61.694.221 1.326.19 1.826.115.557-.083 1.717-.702 1.96-1.38.242-.678.242-1.259.169-1.38-.073-.121-.266-.194-.556-.339z"/></svg>
+            Chat with us on WhatsApp
+        </a>
     </div>
 </div>
 </section>
@@ -973,7 +988,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                     </div>
                 </div>
 
-                
+               
             {% empty %}
                 <p class="no-reviews">Be the first to leave a review!</p>
             {% endfor %}
@@ -1455,39 +1470,6 @@ function observeReveals(scope){
 }
 observeReveals();
 
-/* ============ BG-REVEAL — background color toggles on as you scroll DOWN into
-   the section, and toggles off again as you scroll UP past it (two-way,
-   unlike the one-time .reveal fade above). ============ */
-const bgObserver = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    entry.target.classList.toggle('bg-on', entry.isIntersecting);
-  });
-}, {threshold:0.25});
-
-document.querySelectorAll('.bg-reveal').forEach(el=> bgObserver.observe(el));
-
-/* ============ SERVICE TILES — click swaps which tile is "active" (accent
-   color), with a colored ripple pulse animating outward on click. Hover
-   color shift is handled purely in CSS above. ============ */
-(function(){
-  const tiles = document.querySelectorAll('.service-tile');
-  if(!tiles.length) return;
-  tiles.forEach(tile=>{
-    tile.addEventListener('click', ()=>{
-      tiles.forEach(t=> t.classList.remove('active'));
-      tile.classList.add('active');
-
-      // restart the pulse animation even if it's already mid-run
-      tile.classList.remove('pulse');
-      void tile.offsetWidth; // force reflow so the animation re-triggers
-      tile.classList.add('pulse');
-    });
-    tile.addEventListener('animationend', (e)=>{
-      if(e.target === tile) tile.classList.remove('pulse');
-    });
-  });
-})();
-
 /* ============ SHOP TABS (client-side filter over server-rendered preview cards) ============ */
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
@@ -1500,299 +1482,7 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
     card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
   });
 });
-
-/* NOTE: the index page shows view-only product preview cards now (image,
-   category, name, price, description) — each card is a plain <a> to the
-   full shop page, so there is no add-to-cart / qty / size / color wiring
-   needed here anymore. That logic still lives on the shop page itself. */
-
-/* ============ CART (kept for the drawer icon / checkout flow used elsewhere) ============ */
-let cart = [];
-function itemLabel(c){
-  const extras = [];
-  if(c.size) extras.push('Size: '+c.size);
-  if(c.color) extras.push('Color: '+c.color);
-  extras.push('Qty: '+c.qty);
-  return extras.join(' · ');
-}
-function renderCart(){
-  const itemsEl = document.getElementById('cartItems');
-  const countEl = document.getElementById('cartCount');
-  const totalEl = document.getElementById('cartTotal');
-  countEl.textContent = cart.reduce((s,c)=>s+c.qty,0);
-  itemsEl.innerHTML = cart.length===0 ? `<div class="empty-cart">Your cart is empty.<br>Add some pool gear to get started 🌊</div>` :
-    cart.map((c,i)=>`
-      <div class="cart-item">
-        <img src="${c.img}" alt="${c.name}">
-        <div class="ci-info"><h4>${c.name}</h4><small>${itemLabel(c)}</small><br><strong>${fmt(c.price*c.qty)}</strong></div>
-        <button class="ci-remove" data-i="${i}" type="button">Remove</button>
-      </div>
-    `).join('');
-  totalEl.textContent = fmt(cart.reduce((s,c)=>s+c.price*c.qty,0));
-  itemsEl.querySelectorAll('.ci-remove').forEach(btn=>btn.addEventListener('click', ()=>{ cart.splice(parseInt(btn.dataset.i),1); renderCart(); }));
-}
-renderCart();
-
-const cartDrawer = document.getElementById('cartDrawer');
-const overlay = document.getElementById('overlay');
-function openCart(){ cartDrawer.classList.add('open'); overlay.classList.add('show'); }
-function closeCart(){ cartDrawer.classList.remove('open'); overlay.classList.remove('show'); }
-document.getElementById('cartBtn').addEventListener('click', openCart);
-document.getElementById('cartClose').addEventListener('click', closeCart);
-overlay.addEventListener('click', ()=>{ closeCart(); closeModal(); closeReviewModal(); });
-
-/* ============ CHECKOUT / BUY NOW -> saves to real DB via fetch, then opens WhatsApp ============ */
-let pendingBuyNow = null;
-const checkoutModal = document.getElementById('checkoutModal');
-function openModal(fromBuyNow){
-  if(!fromBuyNow && cart.length===0){ showToast("Your cart is empty"); return; }
-  checkoutModal.classList.add('show'); overlay.classList.add('show');
-}
-function closeModal(){ checkoutModal.classList.remove('show'); overlay.classList.remove('show'); pendingBuyNow = null; }
-document.getElementById('checkoutBtn').addEventListener('click', ()=> openModal(false));
-document.getElementById('modalClose').addEventListener('click', closeModal);
-
-document.getElementById('sendOrder').addEventListener('click', async ()=>{
-  const name = document.getElementById('chkName').value.trim();
-  const mobile = document.getElementById('chkMobile').value.trim();
-  const state = document.getElementById('chkState').value.trim();
-  const pincode = document.getElementById('chkPincode').value.trim();
-  const address = document.getElementById('chkAddress').value.trim();
-  if(!name || !mobile || !state || !pincode || !address){ showToast("Please fill all details"); return; }
-  if(!/^\d{10}$/.test(mobile)){ showToast("Enter a valid 10-digit mobile number"); return; }
-
-  const isBuyNow = !!pendingBuyNow;
-  const items = isBuyNow ? [pendingBuyNow] : cart;
-  const total = items.reduce((s,c)=>s+c.price*c.qty,0);
-
-  const sendBtn = document.getElementById('sendOrder');
-  sendBtn.disabled = true; sendBtn.textContent = "Saving order...";
-
-  try{
-    const data = await postForServer(ORDER_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json", "X-CSRFToken": CSRF_TOKEN},
-      body: JSON.stringify({ name, mobile, state, pincode, address, total, items })
-    });
-
-    let msg = `Hi! I'd like to ${isBuyNow ? 'buy' : 'place an order'} from Master Pools (Order #${data.order_id}):%0A%0A`;
-    items.forEach(c=>{
-      const extras = [c.size, c.color].filter(Boolean).join(', ');
-      msg += `• ${c.name}${extras ? ` (${extras})` : ''} x${c.qty} - ${fmt(c.price*c.qty)}%0A`;
-    });
-    msg += `%0ATotal: ${fmt(total)}%0A%0AName: ${name}%0AMobile: ${mobile}%0AState: ${state}%0APincode: ${pincode}%0AAddress: ${address}`;
-
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
-    closeModal(); closeCart();
-    if(!isBuyNow){ cart = []; renderCart(); }
-    showToast("Order saved & sent on WhatsApp!");
-  }catch(err){
-    console.error("Order submit failed:", err);
-    showToast(err.message || "Could not save your order — please try again");
-  }
-  sendBtn.disabled = false; sendBtn.textContent = "Send Order on WhatsApp";
-});
-
-/* ============ CONTACT FORM ============ */
-document.getElementById('cSend').addEventListener('click', ()=>{
-  const name = document.getElementById('cName').value.trim();
-  const phone = document.getElementById('cPhone').value.trim();
-  const message = document.getElementById('cMsg').value.trim();
-  if(!name || !phone || !message){ showToast("Please fill all fields"); return; }
-  const msg = `Hi! My name is ${name} (${phone}).%0A%0A${message}`;
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
-});
-
-/* ============ WRITE A REVIEW -> opens a popup modal instead of an inline form ============ */
-const reviewModal = document.getElementById('reviewModal');
-function openReviewModal(){ reviewModal.classList.add('show'); overlay.classList.add('show'); }
-function closeReviewModal(){ reviewModal.classList.remove('show'); overlay.classList.remove('show'); }
-document.getElementById('openReviewModal').addEventListener('click', openReviewModal);
-document.getElementById('reviewModalClose').addEventListener('click', closeReviewModal);
-
-/* ============ REVIEWS -> saves to real DB via fetch (multipart, with media), then also opens WhatsApp ============ */
-let pickedRating = 5;
-const ratingPick = document.getElementById('ratingPick');
-function paintStars(){ [...ratingPick.children].forEach(s=>{ s.classList.toggle('active', parseInt(s.dataset.v) <= pickedRating); }); }
-paintStars();
-ratingPick.addEventListener('click', e=>{ if(e.target.dataset.v){ pickedRating = parseInt(e.target.dataset.v); paintStars(); } });
-
-/* reviewFiles now holds {file, url} objects instead of raw File objects,
-   so each preview thumbnail can keep its own object URL and be removed
-   individually via the (x) button without disturbing the others. */
-let reviewFiles = [];
-const rvPreview = document.getElementById('rvPreview');
-
-function renderPreviews(){
-  rvPreview.innerHTML = '';
-  reviewFiles.forEach((item, idx)=>{
-    const wrap = document.createElement('div');
-    wrap.className = 'preview-item';
-    wrap.innerHTML = (item.file.type.startsWith('video')
-        ? `<video src="${item.url}" muted></video>`
-        : `<img src="${item.url}">`)
-      + `<button type="button" class="preview-remove" data-i="${idx}" aria-label="Remove image">✕</button>`;
-    rvPreview.appendChild(wrap);
-  });
-}
-
-function addPreview(file){
-  const url = URL.createObjectURL(file);
-  reviewFiles.push({file, url});
-  renderPreviews();
-}
-
-// (x) button on each thumbnail — removes just that one image/video before submitting
-rvPreview.addEventListener('click', e=>{
-  const btn = e.target.closest('.preview-remove');
-  if(!btn) return;
-  const idx = parseInt(btn.dataset.i, 10);
-  if(Number.isNaN(idx) || !reviewFiles[idx]) return;
-  URL.revokeObjectURL(reviewFiles[idx].url);
-  reviewFiles.splice(idx, 1);
-  renderPreviews();
-});
-
-document.getElementById('rvImg').addEventListener('change', e=>{
-  [...e.target.files].forEach(addPreview);
-  e.target.value = ''; // reset so picking the same file again later still fires 'change'
-});
-
-/* Builds one testimonial-card (matches the server-rendered markup above)
-   and drops it in at the front of the carousel — no page reload, no WhatsApp
-   redirect, the review just stays there right after submitting. */
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
-const AVATAR_COLORS = ['#4FA8BE','#E07A5F','#3D9970','#B08968','#6C5CE7','#D6764F'];
-
-function addReviewTileToDOM({name, text, rating, media}){
-  const track = document.getElementById('reviewsTrack');
-  if(!track) return;
-
-  const noRev = track.querySelector('.no-reviews');
-  if(noRev) noRev.remove();
-
-  const initial = escapeHtml((name.charAt(0) || '?').toUpperCase());
-  const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
-  const full = '★'.repeat(rating);
-  const empty = '☆'.repeat(5 - rating);
-  const title = rating >= 5 ? 'Excellent Work!' : (rating === 4 ? 'Great Experience!' : 'Good Service');
-
-  const hasMedia = !!(media && media.length);
-  const mediaHtml = hasMedia ? `
-    <div class="testimonial-img">
-        ${media[0].isVideo
-          ? `<video src="${media[0].url}" muted playsinline></video>`
-          : `<img src="${media[0].url}" alt="${escapeHtml(name)}">`}
-    </div>` : '';
-
-  const card = document.createElement('div');
-  card.className = 'testimonial-card' + (hasMedia ? '' : ' no-image');
-  card.innerHTML = `
-    ${mediaHtml}
-    <div class="testimonial-body">
-        <h3 class="testimonial-title">${title}</h3>
-        <p class="testimonial-quote">"${escapeHtml(text)}"</p>
-        <div class="testimonial-person">
-            <div class="testimonial-avatar" style="background:${color};">${initial}</div>
-            <div class="testimonial-id">
-                <h4>${escapeHtml(name)}</h4>
-                <div class="t-stars">${full}${empty}</div>
-            </div>
-        </div>
-    </div>
-  `;
-  track.insertBefore(card, track.firstChild);
-
-  // re-measure the carousel now that a new card exists, then center on it
-  if(window.__refreshTestimonialCarousel) window.__refreshTestimonialCarousel();
-  const mask = document.getElementById('reviewsMask');
-  if(mask){
-    const maskRect = mask.getBoundingClientRect();
-    const cardRect = card.getBoundingClientRect();
-    const delta = (cardRect.left + cardRect.width/2) - (maskRect.left + maskRect.width/2);
-    mask.scrollTo({left: mask.scrollLeft + delta, behavior:'smooth'});
-  }
-}
-
-document.getElementById('submitReview').addEventListener('click', async ()=>{
-  const name = document.getElementById('rvName').value.trim();
-  const text = document.getElementById('rvText').value.trim();
-  if(!name || !text){ showToast("Please add your name and review"); return; }
-
-  const btn = document.getElementById('submitReview');
-  btn.disabled = true; btn.textContent = "Submitting...";
-
-  const fd = new FormData();
-  fd.append('name', name);
-  fd.append('text', text);
-  fd.append('rating', pickedRating);
-  reviewFiles.forEach(item => fd.append('media', item.file));
-
-  // Snapshot the media (blob URLs + type) for the on-page tile BEFORE we
-  // clear reviewFiles below — this is what actually shows the image now.
-  const mediaForTile = reviewFiles.map(item => ({
-    url: item.url,
-    isVideo: item.file.type.startsWith('video')
-  }));
-
-  try{
-    await postForServer(REVIEW_URL, { method:"POST", headers:{"X-CSRFToken": CSRF_TOKEN}, body: fd });
-
-    // Review is saved on the server — now just drop it into the carousel
-    // right away so it stays visible on the page (no WhatsApp redirect).
-    addReviewTileToDOM({ name, text, rating: pickedRating, media: mediaForTile });
-
-    document.getElementById('rvName').value='';
-    document.getElementById('rvText').value='';
-    rvPreview.innerHTML='';
-    // NOTE: we intentionally do NOT revoke these object URLs here — they are
-    // now in use by the tile we just inserted into the carousel above.
-    reviewFiles=[];
-    pickedRating=5; paintStars();
-    closeReviewModal();
-    showToast("Thanks! Your review is now live.");
-  }catch(err){
-    console.error("Review submit failed:", err);
-    showToast(err.message || "Could not submit your review — please try again");
-  }
-  btn.disabled = false; btn.textContent = "Submit Review";
-});
-
-/* ============ GALLERY — show first 6, reveal the rest on "Show More" ============
-   FIX: previously this only set display:block and relied on the
-   IntersectionObserver to add the .in-view class that actually makes the
-   image visible (opacity/transform). On many mobile browsers an
-   IntersectionObserver does NOT reliably re-fire just because an element's
-   display changed from none -> block without an accompanying scroll/resize
-   event, so the extra photos stayed at opacity:0 (invisible) even though
-   the button worked and removed itself. We now add .in-view directly and
-   in the same tick, so the photos are guaranteed to appear immediately,
-   regardless of any IntersectionObserver timing quirks.                 */
-const galleryMoreBtn = document.getElementById('galleryMoreBtn');
-if(galleryMoreBtn){
-  galleryMoreBtn.addEventListener('click', ()=>{
-    const extras = document.querySelectorAll('.gallery-extra');
-    extras.forEach(img=>{
-      img.style.display = 'block';
-      img.classList.add('reveal-bound', 'in-view'); // force-show immediately
-      revealObserver.unobserve(img); // stop watching, it's already visible now
-    });
-    galleryMoreBtn.remove();
-  });
-}
-
-/* ============ TOAST ============ */
-let toastTimer;
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
-}
 </script>
+
 </body>
 </html>
