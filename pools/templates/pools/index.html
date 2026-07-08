@@ -385,6 +385,52 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   .client-card img{max-height:46px;}
 }
 
+/* ============ CLIENT VIDEOS — "What Our Clients Say" reel-style video grid ============ */
+.client-videos-section{background:var(--sand);}
+.video-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+.video-card{
+  position:relative;
+  width:100%;
+  aspect-ratio:9/16;
+  border-radius:18px;
+  overflow:hidden;
+  background:var(--ink);
+  box-shadow:0 16px 34px rgba(18,50,64,.16);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.video-card:hover{transform:translateY(-5px);box-shadow:0 26px 48px rgba(18,50,64,.24);}
+.video-card video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  background:var(--ink);
+}
+.video-card .video-badge{
+  position:absolute;top:12px;left:12px;z-index:2;
+  background:rgba(18,50,64,.55);backdrop-filter:blur(3px);
+  color:var(--white);font-size:.66rem;font-weight:800;
+  padding:5px 11px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;
+  display:flex;align-items:center;gap:6px;pointer-events:none;
+}
+.video-card .video-badge svg{width:11px;height:11px;flex-shrink:0;}
+
+@media(max-width:980px){
+  .video-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
+}
+@media(max-width:600px){
+  .video-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  .video-card{border-radius:14px;}
+  .video-card .video-badge{font-size:.58rem;padding:4px 9px;top:9px;left:9px;}
+}
+
 /* ============ REVIEWS — center-focus testimonial carousel (screenshot style) ============ */
 .testimonials-top{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-bottom:34px;text-align:center;}
 .trust-stars{color:var(--brass);font-size:1.05rem;letter-spacing:2px;display:flex;align-items:center;gap:10px;}
@@ -767,6 +813,47 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 </section>
 
+<!-- ============ CLIENT VIDEOS — 4 static reel-style videos, "What Our Clients Say" ============ -->
+<section class="section client-videos-section" id="client-videos">
+<div class="wrap">
+    <div class="section-head reveal">
+    <div class="eyebrow">In Their Own Words</div>
+    <h2>What Our Clients Say</h2>
+    <p>Short clips straight from the pools we've built — see the finish and hear it from the people who use them every day.</p>
+    </div>
+    <div class="video-grid">
+        <div class="video-card reveal">
+            <span class="video-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Client Video
+            </span>
+            <video src="{% static 'images/pool client.mp4' %}" controls muted playsinline preload="metadata"></video>
+        </div>
+        <div class="video-card reveal">
+            <span class="video-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Client Video
+            </span>
+            <video src="{% static 'images/poolclent2.mp4' %}" controls muted playsinline preload="metadata"></video>
+        </div>
+        <div class="video-card reveal">
+            <span class="video-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Client Video
+            </span>
+            <video src="{% static 'videos/client3.mp4' %}" controls muted playsinline preload="metadata"></video>
+        </div>
+        <div class="video-card reveal">
+            <span class="video-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Client Video
+            </span>
+            <video src="{% static 'videos/client4.mp4' %}" controls muted playsinline preload="metadata"></video>
+        </div>
+    </div>
+</div>
+</section>
+
 <section class="section" id="reviews" style="background:var(--white);">
 <div class="wrap">
     <div class="section-head reveal" style="text-align:center;max-width:100%;margin-left:auto;margin-right:auto;">
@@ -1097,6 +1184,17 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   }
   window.addEventListener('touchstart', firstGestureRetry, {passive:true});
   window.addEventListener('scroll', firstGestureRetry, {passive:true});
+})();
+
+/* ============ CLIENT VIDEOS — pause any other playing video when one starts (mobile-friendly, one at a time) ============ */
+(function(){
+  const videos = document.querySelectorAll('.video-card video');
+  if(!videos.length) return;
+  videos.forEach(v=>{
+    v.addEventListener('play', ()=>{
+      videos.forEach(other=>{ if(other !== v) other.pause(); });
+    });
+  });
 })();
 
 /* ============ PROMO BANNER CAROUSEL — one full-width card per view, dot pagination, swipe + arrows, autoplay ============ */
