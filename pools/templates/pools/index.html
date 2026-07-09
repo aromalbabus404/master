@@ -35,39 +35,52 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-sp
 .section{padding:30px 0;}
 .section-head{max-width:640px;margin-bottom:52px;}
 .section-head p{color:var(--muted);font-size:1.06rem;}
-header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;transition:transform .35s ease, background .3s ease, padding .3s ease, box-shadow .3s ease, border-color .3s ease;background:linear-gradient(180deg, rgba(28,26,23,.55) 0%, rgba(28,26,23,.15) 70%, transparent 100%);border-bottom:1px solid transparent;}
-header.scrolled{
-  background:linear-gradient(120deg, #1C1A17 0%, #3A2F1C 130%);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  box-shadow:0 12px 34px rgba(28,26,23,.32);
-  border-bottom:1px solid rgba(201,162,39,.3);
-  padding:14px 32px;
+/* ============ HEADER — floating rounded "pill" nav ============ */
+header{
+  position:fixed;top:18px;left:50%;
+  transform:translateX(-50%);
+  z-index:200;
+  width:calc(100% - 40px);max-width:1180px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:9px 12px 9px 26px;
+  background:var(--white);
+  border-radius:999px;
+  border:1px solid var(--line);
+  box-shadow:0 16px 38px rgba(28,26,23,.14);
+  transition:box-shadow .3s ease, top .3s ease, transform .3s ease, padding .3s ease;
 }
-header.header-hidden{transform:translateY(0);}
-.logo{font-family:'Fraunces',serif;font-weight:600;color:var(--white);font-size:1.4rem;display:flex;align-items:center;gap:2px;font-style:italic;}
-.logo span{color:var(--seafoam);font-style:normal;}
-.logo-img{height:46px;width:auto;display:block;background:transparent;}
-nav ul{display:flex;gap:34px;}
-nav a{color:var(--white);font-weight:600;font-size:.86rem;opacity:.85;letter-spacing:.3px;text-transform:uppercase;}
-nav a:hover{opacity:1;color:var(--seafoam);}
-.header-actions{display:flex;align-items:center;gap:14px;}
-.icon-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:var(--white);cursor:pointer;position:relative;border:1px solid rgba(255,255,255,.22);}
+header.scrolled{
+  box-shadow:0 20px 46px rgba(28,26,23,.2);
+  top:14px;
+}
+header.header-hidden{transform:translateX(-50%) translateY(0);}
+.logo{font-family:'Fraunces',serif;font-weight:600;color:var(--ink);font-size:1.4rem;display:flex;align-items:center;gap:2px;font-style:italic;flex-shrink:0;}
+.logo span{color:var(--seafoam-deep);font-style:normal;}
+.logo-img{height:36px;width:auto;display:block;background:transparent;}
+nav ul{display:flex;gap:26px;}
+nav a{color:var(--ink);font-weight:700;font-size:.78rem;opacity:.72;letter-spacing:.3px;text-transform:uppercase;}
+nav a:hover{opacity:1;color:var(--seafoam-deep);}
+.header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.icon-btn{width:42px;height:42px;border-radius:50%;background:var(--stone);display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;position:relative;border:1px solid var(--line);}
 .icon-btn:hover{background:var(--brass);color:var(--white);border-color:var(--brass);}
-.cart-count{position:absolute;top:-6px;right:-6px;background:var(--seafoam);color:var(--ink);font-size:.65rem;font-weight:800;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-.menu-toggle{display:none;background:none;border:none;color:var(--white);font-size:1.6rem;cursor:pointer;}
+.cart-count{position:absolute;top:-6px;right:-6px;background:var(--seafoam-deep);color:var(--white);font-size:.65rem;font-weight:800;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.nav-cta{background:var(--brass);color:var(--white);padding:11px 22px;border-radius:999px;font-weight:700;font-size:.8rem;white-space:nowrap;letter-spacing:.2px;transition:.25s ease;}
+.nav-cta:hover{background:var(--brass-light);transform:translateY(-1px);}
+.menu-toggle{display:none;background:none;border:none;color:var(--ink);font-size:1.5rem;cursor:pointer;}
 .mobile-nav{display:none;position:fixed;top:0;right:-100%;width:78%;max-width:320px;height:100%;background:linear-gradient(160deg, #1C1A17 0%, #4A3B22 100%);z-index:260;padding:90px 28px 28px;transition:right .3s ease;}
 .mobile-nav.open{right:0;}
 .mobile-nav a{display:block;color:var(--white);font-weight:700;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);font-family:'Fraunces',serif;font-size:1.05rem;}
 .mobile-nav-close{position:absolute;top:24px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:var(--white);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .mobile-nav-close:hover{background:var(--brass);color:var(--white);border-color:var(--brass);}
 
-/* ============ HERO — full-bleed background video, text overlaid on top (alleppeytourism.in style) ============ */
+/* ============ HERO — full-bleed background video, heading top-left,
+   continuous marquee product strip floating over the bottom edge ============ */
 .hero{
   position:relative;z-index:0;overflow:hidden;background:var(--ink);
   border-radius:0 0 40px 40px;
-  padding:150px 0 64px;
-  display:flex;align-items:center;justify-content:center;
+  padding:150px 0 34px;
+  display:flex;flex-direction:column;
+  min-height:640px;
 }
 .hero-bg-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.45);background:var(--ink);z-index:0;}
 .hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.45);background:var(--ink);z-index:0;}
@@ -75,122 +88,68 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(180deg, rgba(28,26,23,.4) 0%, rgba(28,26,23,.18) 40%, rgba(28,26,23,.6) 100%);
 }
-.hero > .wrap{position:relative;z-index:2;width:100%;}
+.hero > .wrap{position:relative;z-index:2;width:100%;flex:1;display:flex;flex-direction:column;}
 
-/* single centered column — heading, subtext, CTA pills, icon-stat row (alleppeytourism.in model) */
-.hero-grid{display:flex;justify-content:center;}
+.hero-top{display:flex;justify-content:flex-start;align-items:flex-start;gap:24px;flex-wrap:wrap;}
 
-.hero-text{max-width:720px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;width:100%;text-align:center;margin:0 auto;}
-.hero-text .eyebrow{color:var(--brass-light);justify-content:center;}
+.hero-text{max-width:560px;min-width:0;opacity:0;animation:heroFadeUp .8s ease forwards;text-align:left;}
+.hero-text .eyebrow{color:var(--brass-light);}
 .hero-text .eyebrow::before{background:var(--seafoam);}
-.hero-text h1{font-size:clamp(2.1rem,5vw,3.4rem);color:var(--white);margin-bottom:18px;font-weight:700;}
+.hero-text h1{font-size:clamp(2.1rem,5vw,3.2rem);color:var(--white);margin-bottom:18px;font-weight:700;}
 .hero-text h1 em{color:var(--seafoam);font-style:normal;}
-.hero-text p{color:rgba(255,255,255,.85);font-size:1.05rem;max-width:600px;margin:0 auto 30px;font-weight:400;}
-.hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+.hero-text p{color:rgba(255,255,255,.85);font-size:1.02rem;max-width:480px;margin:0 0 28px;font-weight:400;}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-start;}
 .hero-cta .btn{background:var(--white);color:var(--ink);}
 .hero-cta .btn:hover{background:var(--brass-light);color:var(--white);}
 .hero-cta .btn svg{width:17px;height:17px;flex-shrink:0;}
 
-.hero-stats{display:flex;gap:44px;flex-wrap:wrap;justify-content:center;margin-top:40px;}
-.hero-stats .stat-item{display:flex;align-items:center;gap:10px;color:var(--white);}
-.hero-stats .stat-ic{width:26px;height:26px;flex-shrink:0;color:var(--seafoam);}
-.hero-stats .stat-copy{text-align:left;}
-.hero-stats strong{display:block;font-family:'Manrope',sans-serif;font-size:1.02rem;font-weight:800;color:var(--white);line-height:1.2;}
-.hero-stats small{color:rgba(255,255,255,.65);font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;}
-
-/* ============ PROMO BANNER CAROUSEL (GOAT-SALE style) — full-width gradient cards, one per view, dot pagination ============ */
-.promo-carousel{position:relative;width:100%;opacity:0;animation:heroFadeUp .9s ease forwards .2s;}
-
-.promo-mask{
-  position:relative;width:100%;overflow-x:auto;overflow-y:hidden;
-  scroll-snap-type:x mandatory;
-  scrollbar-width:none;-ms-overflow-style:none;
-  border-radius:22px;
+/* ---- continuous marquee product strip, sits toward the bottom of the hero ----
+   Runs left-to-right (well, scrolls right-to-left) forever, no drag/snap, never
+   pauses or restarts — a single seamless CSS animation loop over a doubled list. */
+.hero-products-row{
+  margin-top:auto;padding-top:38px;
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+  mask-image:linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+  opacity:0;animation:heroFadeUp .9s ease forwards .2s;
 }
-.promo-mask::-webkit-scrollbar{display:none;}
-
-.promo-track{display:flex;width:100%;}
-
-.promo-card{
-  position:relative;flex:0 0 100%;width:100%;scroll-snap-align:start;
-  display:flex;align-items:center;justify-content:space-between;gap:18px;
-  min-height:230px;padding:30px 26px;overflow:hidden;
-  border-radius:22px;box-shadow:0 20px 46px rgba(28,26,23,.22);
+.hero-products-track{
+  display:flex;gap:16px;width:max-content;
+  animation:heroMarquee 28s linear infinite;
+  will-change:transform;
 }
-.promo-card.promo-a{background:linear-gradient(135deg,#B8935A 0%,var(--deep) 45%,#2A2214 100%);}
-.promo-card.promo-b{background:linear-gradient(135deg,#9C7A3C 0%,var(--brass) 45%,#5C4A26 100%);}
-.promo-card.promo-c{background:linear-gradient(135deg,#DFC066 0%,#8B6F3F 55%,#1C1A17 100%);}
+.hero-product-card{
+  background:var(--white);border-radius:18px;padding:12px 16px 12px 12px;
+  display:flex;align-items:center;gap:12px;flex:0 0 auto;width:250px;
+  box-shadow:0 16px 34px rgba(0,0,0,.2);transition:transform .25s ease, box-shadow .25s ease;
+}
+.hero-product-card:hover{transform:translateY(-4px);box-shadow:0 22px 44px rgba(0,0,0,.26);}
+.hero-product-thumb{width:58px;height:58px;border-radius:12px;overflow:hidden;background:var(--stone);flex-shrink:0;}
+.hero-product-thumb img{width:100%;height:100%;object-fit:cover;}
+.hero-product-info{flex:1;min-width:0;}
+.hero-product-info h4{font-family:'Fraunces',serif;font-size:.92rem;font-weight:600;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hero-product-info p{font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hero-product-arrow{
+  width:34px;height:34px;border-radius:50%;background:var(--stone);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.25s ease;
+}
+.hero-product-card:hover .hero-product-arrow{background:var(--brass);color:var(--white);transform:rotate(45deg);}
 
-.promo-card::before{
-  content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;
-  background:radial-gradient(circle,rgba(255,255,255,.16) 0%,transparent 70%);
-  pointer-events:none;
+@keyframes heroMarquee{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
 }
-.promo-card::after{
-  content:"%";position:absolute;bottom:-26px;right:14%;font-family:'Fraunces',serif;font-weight:700;
-  font-size:7rem;color:rgba(255,255,255,.06);pointer-events:none;line-height:1;
-}
-
-.promo-content{position:relative;z-index:2;max-width:58%;color:var(--white);}
-.promo-badge{
-  display:inline-block;background:var(--white);color:var(--ink);font-weight:800;font-size:.68rem;
-  text-transform:uppercase;letter-spacing:.4px;padding:5px 12px;border-radius:999px;margin-bottom:12px;
-}
-.promo-title{font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:10px;line-height:1.15;}
-.promo-offer{
-  display:inline-flex;align-items:baseline;gap:8px;background:rgba(255,255,255,.94);color:var(--ink);
-  border-radius:12px;padding:10px 16px;margin-bottom:14px;
-}
-.promo-offer-big{font-family:'Fraunces',serif;font-weight:700;font-size:1.5rem;color:var(--ink);}
-.promo-offer-sub{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;max-width:90px;line-height:1.2;}
-.promo-cta{
-  display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid rgba(255,255,255,.7);
-  color:var(--white);font-weight:700;font-size:.82rem;padding:9px 18px;border-radius:999px;
-}
-
-.promo-image{position:relative;z-index:2;flex:0 0 auto;width:36%;max-width:180px;}
-.promo-image img{width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 24px rgba(0,0,0,.35));}
-
-.promo-dots{display:flex;justify-content:center;gap:7px;margin-top:16px;}
-.promo-dot{width:7px;height:7px;border-radius:50%;background:rgba(28,26,23,.2);cursor:pointer;transition:.25s ease;border:none;padding:0;}
-.promo-dot.active{background:var(--brass);width:20px;border-radius:5px;}
-
-.carousel-arrow{
-  position:absolute;top:50%;transform:translateY(-50%);
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(255,255,255,.9);
-  border:1px solid var(--line);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--ink);cursor:pointer;z-index:5;transition:.25s ease;
-}
-.carousel-arrow:hover{background:var(--brass);color:var(--white);}
-.carousel-arrow:active{transform:translateY(-50%) scale(.94);}
-.carousel-arrow.prev{left:-6px;}
-.carousel-arrow.next{right:-6px;}
-.carousel-arrow svg{width:18px;height:18px;flex-shrink:0;}
-
-.btn-pill{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--white);color:var(--ink);
-  font-weight:700;font-size:14.5px;padding:14px 26px;border-radius:100px;border:none;cursor:pointer;width:100%;
-  margin-top:18px;transition:transform .25s ease, box-shadow .25s ease;font-family:'Manrope',sans-serif;
-}
-.btn-pill:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.18);color:var(--ink);}
-.btn-pill svg{transition:transform .3s ease;}
-.btn-pill:hover svg{transform:translate(3px,-3px);}
 
 @keyframes heroFadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 
 @media(prefers-reduced-motion:reduce){
-  .hero-text,.promo-carousel{animation:none!important;opacity:1!important;transform:none!important;}
+  .hero-text{animation:none!important;opacity:1!important;transform:none!important;}
+  .hero-products-track{animation:none!important;}
   header{transition:none!important;}
   .reveal,.reveal-stagger > *{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
 }
 
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
-
-/* ---- carousel strip, sits right below the hero as its own dark section ---- */
-.carousel-strip{padding-bottom:0;}
-.carousel-strip .promo-carousel{opacity:1;animation:none;}
 
 /* ============ ABOUT ============ */
 .about-wrap{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;}
@@ -239,30 +198,19 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .reveal-zoom.in-view{transform:scale(1);filter:blur(0);}
 
 @media(max-width:980px){
-  .hero{padding:130px 0 48px;border-radius:0 0 28px 28px;}
-  .hero-stats{gap:28px;}
+  .hero{padding:118px 0 28px;border-radius:0 0 28px 28px;min-height:auto;}
+  .hero-top{gap:18px;}
 }
 @media(max-width:600px){
   .hero{
-    padding:112px 0 40px;
+    padding:104px 0 24px;
     border-radius:0 0 20px 20px;
   }
   .hero-text{max-width:100%;}
   .hero-text p{max-width:100%;}
-  .hero-stats{gap:18px 22px;}
-  .hero-stats .stat-copy{text-align:left;}
-  .carousel-strip{padding:18px 0 30px;}
+  .hero-top{flex-direction:column;}
+  .hero-product-card{width:210px;}
   .wrap{padding:0 16px;}
-  .promo-card{min-height:190px;padding:20px 16px;border-radius:18px;gap:10px;}
-  .promo-content{max-width:60%;}
-  .promo-title{font-size:1.05rem;margin-bottom:8px;}
-  .promo-badge{font-size:.6rem;padding:4px 10px;margin-bottom:8px;}
-  .promo-offer{padding:8px 12px;gap:6px;margin-bottom:10px;}
-  .promo-offer-big{font-size:1.15rem;}
-  .promo-offer-sub{font-size:.62rem;max-width:74px;}
-  .promo-cta{font-size:.72rem;padding:7px 14px;}
-  .promo-image{width:34%;max-width:110px;}
-  .carousel-arrow{display:none;}
 }
 
 /* ============ SERVICES — light 3-column card grid (Wastix style) ============ */
@@ -582,10 +530,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 @media(max-width:980px){
     header{
-        background:linear-gradient(120deg, #1C1A17 0%, #3A2F1C 130%);
-    }
-    header.scrolled{
-        padding:14px 32px;
+        width:calc(100% - 24px);
+        padding:8px 8px 8px 18px;
     }
     nav{display:none;}
     .menu-toggle{display:block;}
@@ -593,17 +539,15 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .product-grid{grid-template-columns:repeat(2,1fr);}
     .contact-wrap{grid-template-columns:1fr;}
     .footer-grid{grid-template-columns:1fr 1fr;}
-    .hero-text{padding-left:0;}
 }
 @media(max-width:600px){
-    .logo-img{height:50px;
-    width:auto;;}
+    header{top:12px;padding:7px 7px 7px 16px;}
+    .logo-img{height:30px;width:auto;}
+    .nav-cta{padding:9px 16px;font-size:.72rem;}
     .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
-    .hero-text h1{font-size:2.15rem;}
     .section{padding:10px 0;}
     .field-row{flex-direction:column;}
     .gallery-grid{column-count:1;}
-   
 }
 @media(max-width:768px){
     .gallery-grid{column-count:2;}
@@ -629,6 +573,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </nav>
 <div class="header-actions">
     <a class="icon-btn" href="tel:+919876543210" title="Call us">☎</a>
+    <a class="nav-cta" href="#contact">Contact Us</a>
     <button class="menu-toggle" id="menuToggle">☰</button>
 </div>
 </header>
@@ -660,8 +605,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <div class="hero-overlay" aria-hidden="true"></div>
 
     <div class="wrap">
-        <div class="hero-grid">
-            <!-- hero text: centered, alleppeytourism.in style -->
+        <div class="hero-top">
+            <!-- hero text: left-aligned heading, subtext, single CTA -->
             <div class="hero-text">
                 <div class="eyebrow">{{ hero.eyebrow }}</div>
                 <h1>{{ hero.heading|safe }}</h1>
@@ -677,52 +622,40 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                         WhatsApp Us
                     </a>
                 </div>
+            </div>
+        </div>
 
-                <div class="hero-stats">
-                    {% for s in hero.stats %}
-                    <div class="stat-item">
-                        <svg class="stat-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                        <div class="stat-copy"><strong>{{ s.v }}</strong><small>{{ s.l }}</small></div>
+        <!-- product strip, continuous marquee floating near the bottom edge of the hero.
+             Product list is looped twice back-to-back so the CSS animation can scroll
+             seamlessly from one copy straight into the next with no visible restart. -->
+        <div class="hero-products-row">
+            <div class="hero-products-track">
+                {% for p in products|slice:":6" %}
+                <a href="{% url 'shop' %}" class="hero-product-card">
+                    <div class="hero-product-thumb"><img src="{{ p.image }}" alt="{{ p.name }}"></div>
+                    <div class="hero-product-info">
+                        <h4>{{ p.name }}</h4>
+                        <p>{{ p.description|default:p.get_category_display|truncatewords:6 }}</p>
                     </div>
-                    {% endfor %}
-                </div>
+                    <div class="hero-product-arrow">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+                    </div>
+                </a>
+                {% endfor %}
+                {% for p in products|slice:":6" %}
+                <a href="{% url 'shop' %}" class="hero-product-card" aria-hidden="true" tabindex="-1">
+                    <div class="hero-product-thumb"><img src="{{ p.image }}" alt="{{ p.name }}"></div>
+                    <div class="hero-product-info">
+                        <h4>{{ p.name }}</h4>
+                        <p>{{ p.description|default:p.get_category_display|truncatewords:6 }}</p>
+                    </div>
+                    <div class="hero-product-arrow">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
         </div>
-    </div>
-</section>
-
-<!-- promo banner carousel: full-width gradient "sale card" per slide, dot pagination, fits mobile viewport -->
-<section class="carousel-strip">
-    <div class="wrap">
-        <div class="promo-carousel" id="promoCarousel">
-            <button class="carousel-arrow prev" id="carPrev" type="button" aria-label="Previous offer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-
-            <div class="promo-mask" id="carMask">
-                <div class="promo-track" id="track">
-                    {% for p in products %}
-                    <a href="{% url 'shop' %}" class="promo-card promo-{% cycle 'a' 'b' 'c' %}">
-                        <div class="promo-content">
-                            <span class="promo-badge">{{ p.badge|default:"Pool Sale" }}</span>
-                            <h3 class="promo-title">{{ p.name }}</h3>
-                            <div class="promo-offer">
-                                <span class="promo-offer-big">₹{{ p.price|floatformat:0 }}</span>
-                                <span class="promo-offer-sub">Starting Price</span>
-                            </div>
-                            <span class="promo-cta">Shop Now →</span>
-                        </div>
-                        <div class="promo-image"><img src="{{ p.image }}" alt="{{ p.name }}"></div>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <button class="carousel-arrow next" id="carNext" type="button" aria-label="Next offer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6 6-6"/></svg>
-            </button>
-        </div>
-        <div class="promo-dots" id="promoDots"></div>
     </div>
 </section>
 <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none"><path d="M0,40 C320,90 1120,0 1440,40 L1440,70 L0,70 Z" fill="#FAF7F1"></path></svg>
@@ -918,7 +851,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 </section>
 
-<!-- ============ CLIENT VIDEOS — 4 static reel-style videos, "What Our Clients Say" ============ -->
 <section class="section client-videos-section" id="client-videos">
 <div class="wrap">
     <div class="section-head reveal">
@@ -966,23 +898,13 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <h2>What Our <em style="color:var(--seafoam-deep);font-style:italic;">Customers</em> Are Saying</h2>
     </div>
 
-
     <div class="testimonials-top reveal">
-
         <div class="review-company">
             <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools Logo" class="review-logo">
-
-            <div class="review-stars">
-                ★★★★★
-            </div>
-
+            <div class="review-stars">★★★★★</div>
             <p class="review-text">Based on real customer reviews</p>
-
-            <button class="btn-write-review" id="openReviewModal" type="button">
-                Write a Review
-            </button>
+            <button class="btn-write-review" id="openReviewModal" type="button">Write a Review</button>
         </div>
-
     </div>
 
     <div class="testimonial-carousel reveal">
@@ -1015,8 +937,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                         </div>
                     </div>
                 </div>
-
-               
             {% empty %}
                 <p class="no-reviews">Be the first to leave a review!</p>
             {% endfor %}
@@ -1029,7 +949,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
             <path d="M15 18L9 12L15 6"/>
         </svg>
     </button>
-
     <button id="reviewNext" type="button" aria-label="Next review">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 6L15 12L9 18"/>
@@ -1114,7 +1033,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </div>
 </div>
 
-<!-- Write a Review modal — opened from the "Write a Review" button in the Reviews section -->
 <div class="modal-bg" id="reviewModal">
 <div class="modal">
     <button class="modal-close" id="reviewModalClose" type="button">✕</button>
@@ -1144,26 +1062,11 @@ const CSRF_TOKEN = document.querySelector('input[name=csrfmiddlewaretoken]').val
 const ORDER_URL = "{% url 'submit_order' %}";
 const REVIEW_URL = "{% url 'submit_review' %}";
 
-/* ================================================================
-   Shared fetch helper — used by both the order and review submit
-   handlers below. Instead of swallowing every failure into a
-   generic "Network error" message (which is what a bare try/catch
-   around res.json() does when the server returns a non-JSON error
-   page — e.g. a 403 CSRF rejection or a 500 exception page), this
-   reads the raw response text first, tries to parse it as JSON,
-   and if that fails builds a readable message out of the HTTP
-   status and a short snippet of whatever HTML/text came back.
-   That way real problems (CSRF misconfiguration, server errors,
-   validation errors) show up as an understandable message instead
-   of just "Network error — please try again" every time.
-   ================================================================ */
 async function postForServer(url, options){
   let res;
   try{
     res = await fetch(url, options);
   }catch(networkErr){
-    // fetch() itself only throws for genuine network failures
-    // (offline, DNS failure, CORS block, etc.)
     throw new Error("Could not reach the server. Check your internet connection and try again.");
   }
 
@@ -1172,8 +1075,6 @@ async function postForServer(url, options){
   try{
     data = JSON.parse(text);
   }catch(parseErr){
-    // Server responded but not with JSON — most commonly a CSRF
-    // 403 page or an unhandled 500 exception page.
     const snippet = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 220);
     let hint = '';
     if(res.status === 403) hint = ' (this usually means a CSRF/session problem — check CSRF_TRUSTED_ORIGINS in settings.py if the site runs on HTTPS or behind a proxy)';
@@ -1187,7 +1088,6 @@ async function postForServer(url, options){
   return data;
 }
 
-/* ============ HEADER SCROLL BEHAVIOR: background swap + hide-on-scroll-down / show-on-scroll-up ============ */
 const header = document.getElementById('siteHeader');
 const mobileNav = document.getElementById('mobileNav');
 let lastScrollY = window.scrollY;
@@ -1195,20 +1095,14 @@ let ticking = false;
 
 function handleHeaderScroll(){
   const currentY = window.scrollY;
-
   header.classList.toggle('scrolled', currentY > 40);
-
-  // Don't hide the header while the mobile menu is open, or right at the very top.
   if(mobileNav.classList.contains('open') || currentY < 80){
     header.classList.remove('header-hidden');
   } else if(currentY > lastScrollY){
-    // scrolling down -> hide
     header.classList.add('header-hidden');
   } else if(currentY < lastScrollY){
-    // scrolling up -> reveal
     header.classList.remove('header-hidden');
   }
-
   lastScrollY = currentY;
   ticking = false;
 }
@@ -1220,15 +1114,13 @@ window.addEventListener('scroll', ()=>{
   }
 }, {passive:true});
 
-/* ============ MOBILE NAV TOGGLE ============ */
 document.getElementById('menuToggle').addEventListener('click', ()=>{
   mobileNav.classList.toggle('open');
-  header.classList.remove('header-hidden'); // keep header visible while menu is open
+  header.classList.remove('header-hidden');
 });
 document.getElementById('mobileNavClose').addEventListener('click', ()=>mobileNav.classList.remove('open'));
 mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobileNav.classList.remove('open')));
 
-/* ============ HERO VIDEO — iOS/Safari autoplay + resume fix ============ */
 (function(){
   const video = document.getElementById('heroVideo');
   const poster = document.getElementById('heroPoster');
@@ -1259,11 +1151,7 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   function attemptPlay(){
     const playPromise = video.play();
     if(playPromise !== undefined){
-      playPromise
-        .then(hidePosterFallback)
-        .catch(()=>{
-          showPosterFallback();
-        });
+      playPromise.then(hidePosterFallback).catch(()=>{ showPosterFallback(); });
     }
   }
 
@@ -1291,7 +1179,6 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   window.addEventListener('scroll', firstGestureRetry, {passive:true});
 })();
 
-/* ============ CLIENT VIDEOS — pause any other playing video when one starts (mobile-friendly, one at a time) ============ */
 (function(){
   const videos = document.querySelectorAll('.video-card video');
   if(!videos.length) return;
@@ -1302,80 +1189,6 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   });
 })();
 
-/* ============ PROMO BANNER CAROUSEL — one full-width card per view, dot pagination, swipe + arrows, autoplay ============ */
-(function(){
-  const mask = document.getElementById('carMask');
-  const track = document.getElementById('track');
-  const prevBtn = document.getElementById('carPrev');
-  const nextBtn = document.getElementById('carNext');
-  const dotsWrap = document.getElementById('promoDots');
-  if(!mask || !track) return;
-
-  const cards = [...track.querySelectorAll('.promo-card')];
-  if(cards.length === 0) return;
-
-  // build dots dynamically to match number of slides
-  cards.forEach((_, i)=>{
-    const dot = document.createElement('button');
-    dot.type = 'button';
-    dot.className = 'promo-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', 'Go to slide ' + (i+1));
-    dot.addEventListener('click', ()=> goToSlide(i));
-    dotsWrap.appendChild(dot);
-  });
-  const dots = [...dotsWrap.querySelectorAll('.promo-dot')];
-
-  function cardWidth(){
-    return cards[0].getBoundingClientRect().width;
-  }
-
-  function currentIndex(){
-    return Math.round(mask.scrollLeft / cardWidth());
-  }
-
-  function goToSlide(i){
-    const idx = Math.max(0, Math.min(cards.length - 1, i));
-    mask.scrollTo({left: idx * cardWidth(), behavior:'auto'});
-  }
-
-  function updateDots(){
-    const idx = currentIndex();
-    dots.forEach((d, i)=> d.classList.toggle('active', i === idx));
-  }
-
-  let rafPending = false;
-  mask.addEventListener('scroll', ()=>{
-    if(!rafPending){
-      rafPending = true;
-      requestAnimationFrame(()=>{ updateDots(); rafPending = false; });
-    }
-  }, {passive:true});
-
-  if(prevBtn) prevBtn.addEventListener('click', ()=> goToSlide(currentIndex() - 1));
-  if(nextBtn) nextBtn.addEventListener('click', ()=> goToSlide(currentIndex() + 1));
-
-  window.addEventListener('resize', updateDots);
-
-  // gentle autoplay — loops back to the start, pauses on hover/touch
-  let autoTimer;
-  function startAuto(){
-    stopAuto();
-    autoTimer = setInterval(()=>{
-      const next = currentIndex() + 1 >= cards.length ? 0 : currentIndex() + 1;
-      goToSlide(next);
-    }, 1500);
-  }
-  function stopAuto(){ clearInterval(autoTimer); }
-
-  mask.addEventListener('mouseenter', stopAuto);
-  mask.addEventListener('mouseleave', startAuto);
-  mask.addEventListener('touchstart', stopAuto, {passive:true});
-
-  updateDots();
-  startAuto();
-})();
-
-/* ============ TESTIMONIAL CAROUSEL — center-focus, larger active card, works on desktop + mobile ============ */
 (function(){
   const mask = document.getElementById('reviewsMask');
   const track = document.getElementById('reviewsTrack');
@@ -1385,8 +1198,6 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
 
   function getCards(){ return [...track.querySelectorAll('.testimonial-card')]; }
 
-  // Pad the mask so the first/last card can still be scrolled to dead-center,
-  // and recompute on resize since card width changes across breakpoints.
   function setMaskPadding(){
     const cards = getCards();
     if(cards.length === 0) return;
@@ -1436,7 +1247,6 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
     }
   }, {passive:true});
 
-  // clicking a side card brings it to center
   track.addEventListener('click', (e)=>{
     const card = e.target.closest('.testimonial-card');
     if(card) scrollToCard(card);
@@ -1447,15 +1257,11 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
 
   window.addEventListener('resize', ()=>{ setMaskPadding(); updateActiveCard(); });
 
-  // run once layout has settled (images/fonts can shift widths right after load)
   setMaskPadding();
   updateActiveCard();
   setTimeout(()=>{ setMaskPadding(); updateActiveCard(); }, 250);
   window.addEventListener('load', ()=>{ setMaskPadding(); updateActiveCard(); });
 
-  /* ---- Auto-move: cycles to the next testimonial on a timer, loops back
-     to the first after the last, and pauses while the user is hovering,
-     touching, or manually navigating the carousel. ---- */
   let reviewAutoTimer;
   function autoAdvance(){
     const cards = getCards();
@@ -1466,7 +1272,7 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
   }
   function startReviewAuto(){
     stopReviewAuto();
-    if(getCards().length <= 1) return; // nothing to cycle through
+    if(getCards().length <= 1) return;
     reviewAutoTimer = setInterval(autoAdvance, 2800);
   }
   function stopReviewAuto(){ clearInterval(reviewAutoTimer); }
@@ -1479,12 +1285,9 @@ mobileNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>mobil
 
   startReviewAuto();
 
-  // expose for the "review submitted" handler further down, which adds a
-  // new card to the DOM and needs the carousel to re-measure itself
   window.__refreshTestimonialCarousel = function(){ setMaskPadding(); updateActiveCard(); };
 })();
 
-/* ============ SCROLL REVEAL ANIMATIONS — fades/slides sections & cards in as they enter the viewport ============ */
 const revealObserver = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
@@ -1506,7 +1309,6 @@ function observeReveals(scope){
 }
 observeReveals();
 
-/* ============ SHOP TABS (client-side filter over server-rendered preview cards) ============ */
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
 document.getElementById('shopTabs').addEventListener('click', e=>{
@@ -1519,29 +1321,19 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
   });
 });
 
-/* ============ GALLERY "SHOW MORE" — reveals the hidden .gallery-extra images ============
-   This button existed in the HTML/CSS but had no click handler at all, so
-   clicking it did nothing. It now un-hides the extra photos, fades them in,
-   re-measures the masonry columns, and hides the button once everything
-   is shown (since there's nothing left to reveal). */
 (function(){
   const galleryBtn = document.getElementById('galleryMoreBtn');
   if(!galleryBtn) return;
-
   galleryBtn.addEventListener('click', ()=>{
     const hiddenImgs = document.querySelectorAll('.gallery-grid .gallery-extra');
     hiddenImgs.forEach(img=>{
       img.style.display = 'block';
-      img.classList.add('in-view'); // show immediately instead of waiting on the scroll observer
+      img.classList.add('in-view');
     });
     galleryBtn.style.display = 'none';
   });
 })();
 
-/* ============ WRITE A REVIEW — open/close, star picker, image previews and
-   submission. The "Write a Review" button previously had NO click handler
-   bound anywhere in the file, so clicking it did nothing at all — that's
-   the "stuck" bug. This wires up the whole modal end-to-end. ============ */
 (function(){
   const openBtn = document.getElementById('openReviewModal');
   const modal = document.getElementById('reviewModal');
@@ -1575,11 +1367,9 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
     selectedFiles.forEach((file, idx)=>{
       const item = document.createElement('div');
       item.className = 'preview-item';
-
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
       img.alt = file.name;
-
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'preview-remove';
@@ -1588,7 +1378,6 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
         selectedFiles.splice(idx, 1);
         renderPreviews();
       });
-
       item.appendChild(img);
       item.appendChild(remove);
       previewStrip.appendChild(item);
@@ -1607,7 +1396,6 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
 
   openBtn.addEventListener('click', openModal);
   if(closeBtn) closeBtn.addEventListener('click', ()=>{ closeModal(); resetForm(); });
-  // clicking the dark backdrop (outside the white card) also closes it
   modal.addEventListener('click', (e)=>{ if(e.target === modal){ closeModal(); resetForm(); } });
 
   if(ratingPick){
