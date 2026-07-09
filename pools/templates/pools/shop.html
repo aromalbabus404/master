@@ -51,43 +51,38 @@ nav a:hover,nav a.active{opacity:1;color:var(--seafoam);}
 .mobile-nav-close{position:absolute;top:24px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:var(--white);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .mobile-nav-close:hover{background:var(--brass);color:var(--white);border-color:var(--brass);}
 
-/* ============ PAGE BANNER ============ */
-.page-banner{padding:170px 0 60px;background:linear-gradient(180deg, var(--deep) 0%, var(--brass) 100%);}
-.page-banner .eyebrow{color:rgba(255,255,255,.9);}
-.page-banner .eyebrow::before{background:var(--seafoam);}
-.page-banner h1{color:var(--white);font-size:clamp(2rem,4vw,3rem);font-weight:500;}
-.page-banner p{color:rgba(255,255,255,.85);margin-top:14px;max-width:560px;}
+/* ============ PAGE BANNER (new style: dark, angled, with badge + stats) ============ */
+.page-banner{position:relative;padding:180px 0 96px;background:
+    radial-gradient(circle at 82% -10%, rgba(95,217,218,.28) 0%, transparent 55%),
+    linear-gradient(155deg, var(--ink) 0%, var(--deep2) 78%);
+    overflow:hidden;}
+.page-banner::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:64px;background:var(--sand);
+    clip-path:polygon(0 100%,100% 100%,100% 35%,80% 70%,60% 20%,40% 65%,20% 15%,0 55%);
+}
+.page-banner .wrap{position:relative;z-index:2;}
+.banner-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(95,217,218,.4);color:var(--seafoam);font-size:.76rem;font-weight:800;padding:9px 18px;border-radius:999px;margin-bottom:20px;text-transform:uppercase;letter-spacing:.6px;}
+.page-banner h1{color:var(--white);font-size:clamp(2.1rem,4.4vw,3.25rem);font-weight:500;max-width:640px;}
+.page-banner p{color:rgba(255,255,255,.72);margin-top:16px;max-width:520px;font-size:1.02rem;}
+.banner-stats{display:flex;gap:36px;margin-top:36px;flex-wrap:wrap;}
+.banner-stats div{border-left:2px solid var(--seafoam);padding-left:14px;}
+.banner-stats strong{display:block;color:var(--white);font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;}
+.banner-stats span{color:rgba(255,255,255,.55);font-size:.76rem;text-transform:uppercase;letter-spacing:.4px;}
 
 /* ============ SEARCH + CATEGORY ============ */
 .section{padding:64px 0 104px;}
-.search-box{display:flex;justify-content:center;margin-bottom:22px;}
-.search-box form{display:flex;width:100%;max-width:680px;box-shadow:var(--shadow);border-radius:999px;overflow:hidden;}
+.search-box{display:flex;justify-content:center;margin-bottom:24px;}
+.search-box form{display:flex;width:100%;max-width:560px;box-shadow:var(--shadow);border-radius:999px;overflow:hidden;}
 .search-box input{flex:1;padding:16px 22px;border:1.5px solid var(--line);border-right:none;font-size:.95rem;font-family:'Manrope',sans-serif;background:var(--white);min-width:0;}
 .search-box input:focus{outline:none;}
-.search-box .category-select{
-    border:1.5px solid var(--line);
-    border-left:none;
-    border-right:none;
-    background:var(--white);
-    color:var(--ink);
-    font-family:'Manrope',sans-serif;
-    font-size:.88rem;
-    font-weight:600;
-    padding:0 16px;
-    cursor:pointer;
-    flex:0 0 auto;
-    max-width:180px;
-    appearance:none;
-    -webkit-appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C7382' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;
-    background-position:right 12px center;
-    background-size:14px;
-    padding-right:32px;
-}
-.search-box .category-select:focus{outline:none;}
 .search-box button{padding:16px 28px;border:none;background:var(--brass);color:var(--white);cursor:pointer;font-weight:700;font-family:'Manrope',sans-serif;flex:0 0 auto;}
 .search-box button:hover{background:var(--brass-light);}
+
+/* Category picker — pill/tab style, plain links (server-rendered, no JS needed) */
+.category-tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;}
+.cat-tab{padding:10px 22px;border-radius:999px;background:var(--white);border:1.5px solid var(--line);color:var(--muted);font-weight:700;font-size:.85rem;transition:.2s ease;box-shadow:0 4px 14px rgba(22,48,61,.05);}
+.cat-tab:hover{border-color:var(--brass);color:var(--deep);transform:translateY(-1px);}
+.cat-tab.active{background:var(--deep);border-color:var(--deep);color:var(--white);box-shadow:0 8px 18px rgba(74,133,160,.3);}
 
 .active-filter{display:flex;justify-content:center;margin-bottom:28px;}
 .active-filter span{
@@ -209,12 +204,15 @@ footer{background:var(--ink);color:rgba(255,255,255,.75);padding:68px 0 28px;}
 }
 @media(max-width:640px){
     .logo-img{height:36px;}
-    .page-banner{padding:130px 0 40px;}
+    .page-banner{padding:130px 0 56px;}
+    .banner-stats{gap:22px;margin-top:26px;}
+    .banner-stats strong{font-size:1.1rem;}
     .section{padding:36px 0 60px;}
     .search-box form{flex-wrap:wrap;border-radius:16px;}
     .search-box input{border-right:1.5px solid var(--line);border-radius:16px 16px 0 0;flex:1 1 100%;}
-    .search-box .category-select{border-left:1.5px solid var(--line);border-radius:0;flex:1 1 60%;max-width:none;}
-    .search-box button{flex:1 1 40%;border-radius:0 0 16px 16px;}
+    .search-box button{flex:1 1 100%;border-radius:0 0 16px 16px;}
+    .category-tabs{gap:8px;margin-bottom:22px;}
+    .cat-tab{padding:8px 15px;font-size:.76rem;}
     .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
     .product-card{border-radius:12px;}
     .badge{top:8px;left:8px;font-size:9px;padding:4px 8px;}
@@ -265,11 +263,17 @@ footer{background:var(--ink);color:rgba(255,255,255,.75);padding:68px 0 28px;}
   <a href="/#contact">Contact</a>
 </div>
 
+<!-- ============ HERO / PAGE BANNER — new style ============ -->
 <section class="page-banner">
     <div class="wrap">
-        <div class="eyebrow">Pool Shop</div>
-        <h1>Pool designs & accessories</h1>
+        <span class="banner-badge">🌊 Pool Shop</span>
+        <h1>Everything your pool needs, delivered to your door.</h1>
         <p>Pick a size, choose quantity, add to cart — checkout sends your order straight to us on WhatsApp.</p>
+        <div class="banner-stats">
+            <div><strong>150+</strong><span>Products</span></div>
+            <div><strong>24 hr</strong><span>Order Response</span></div>
+            <div><strong>Kerala</strong><span>Wide Delivery</span></div>
+        </div>
     </div>
 </section>
 
@@ -279,20 +283,34 @@ footer{background:var(--ink);color:rgba(255,255,255,.75);padding:68px 0 28px;}
 <div class="search-box">
 <form method="GET">
 <input type="text" name="q" placeholder="Search Products..." value="{{ query }}">
-<select name="category" class="category-select" onchange="this.form.submit()">
-    <option value="" {% if not selected_category %}selected{% endif %}>All Categories</option>
-    <option value="Pumps & Filters" {% if selected_category == "Pumps & Filters" %}selected{% endif %}>Pumps & Filters</option>
-    <option value="Lightings" {% if selected_category == "Lightings" %}selected{% endif %}>Lightings</option>
-    <option value="Covers & Ladders" {% if selected_category == "Covers & Ladders" %}selected{% endif %}>Covers & Ladders</option>
-    <option value="Cleaning" {% if selected_category == "Cleaning" %}selected{% endif %}>Cleaning</option>
-</select>
+<input type="hidden" name="category" value="{{ selected_category }}">
 <button type="submit">Search</button>
 </form>
 </div>
 
+<!-- ============ CATEGORY FILTER — plain server-rendered links, no JS required ============
+     This is the actual fix for the "category resets on refresh" issue: the old
+     <select onchange="this.form.submit()"> depended on JS firing correctly and on the
+     browser round-tripping the "&" in names like "Pumps & Filters" through the option
+     value. Plain links avoid all of that — each tab is a real URL with the category
+     (and current search text) baked in via Django's urlencode filter, so whatever
+     Django view reads request.GET.get('category') will get it reliably. -->
+<div class="category-tabs">
+    <a href="{% url 'shop' %}{% if query %}?q={{ query|urlencode }}{% endif %}"
+       class="cat-tab{% if not selected_category %} active{% endif %}">All Categories</a>
+    <a href="{% url 'shop' %}?category={{ "Pumps & Filters"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+       class="cat-tab{% if selected_category == "Pumps & Filters" %} active{% endif %}">Pumps & Filters</a>
+    <a href="{% url 'shop' %}?category={{ "Lightings"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+       class="cat-tab{% if selected_category == "Lightings" %} active{% endif %}">Lightings</a>
+    <a href="{% url 'shop' %}?category={{ "Covers & Ladders"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+       class="cat-tab{% if selected_category == "Covers & Ladders" %} active{% endif %}">Covers & Ladders</a>
+    <a href="{% url 'shop' %}?category={{ "Cleaning"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+       class="cat-tab{% if selected_category == "Cleaning" %} active{% endif %}">Cleaning</a>
+</div>
+
 {% if selected_category %}
 <div class="active-filter">
-    <span>Category: {{ selected_category }} <a href="{% url 'shop' %}{% if query %}?q={{ query }}{% endif %}">✕</a></span>
+    <span>Category: {{ selected_category }} <a href="{% url 'shop' %}{% if query %}?q={{ query|urlencode }}{% endif %}">✕</a></span>
 </div>
 {% endif %}
 

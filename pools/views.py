@@ -380,8 +380,12 @@ def review_delete(request, pk):
 
 def shop(request):
     query = request.GET.get("q", "")
+    selected_category = request.GET.get("category", "")
 
     products = Product.objects.all()
+
+    if selected_category:
+        products = products.filter(category=selected_category)
 
     if query:
         products = products.filter(
@@ -394,9 +398,9 @@ def shop(request):
     return render(request, "pools/shop.html", {
         "products": products,
         "query": query,
+        "selected_category": selected_category,
         "settings": SiteSettings.load(),
     })
-
 
 @login_required
 @require_POST

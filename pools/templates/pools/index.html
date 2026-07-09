@@ -10,10 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-    --ink:#123240; --deep:#1E7A8C; --deep2:#175F6E; --stone:#EAF4F6; --sand:#F5FAFB;
-    --brass:#4FA8BE; --brass-light:#7FC6D8; --seafoam:#BFE6EC; --seafoam-deep:#2C8C9E;
-    --white:#FFFFFF; --muted:#5D7480; --line:#D6E9EC;
-    --radius:18px; --shadow:0 22px 54px rgba(18,50,64,.16);
+    --ink:#1C1A17; --deep:#9C7A3C; --deep2:#7A5F2E; --stone:#F2EDE3; --sand:#FAF7F1;
+    --brass:#C9A227; --brass-light:#DFC066; --seafoam:#E8DCC0; --seafoam-deep:#9C7A3C;
+    --white:#FFFFFF; --muted:#6E655A; --line:#E6DFCF;
+    --radius:18px; --shadow:0 22px 54px rgba(28,26,23,.18);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;overflow-x:hidden;}
@@ -35,8 +35,15 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-sp
 .section{padding:30px 0;}
 .section-head{max-width:640px;margin-bottom:52px;}
 .section-head p{color:var(--muted);font-size:1.06rem;}
-header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;transition:transform .35s ease, background .3s ease, padding .3s ease, box-shadow .3s ease;background:linear-gradient(to bottom, rgba(18,50,64,.5), transparent);}
-header.scrolled{background:var(--ink);box-shadow:var(--shadow);padding:14px 32px;}
+header{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:22px 32px;transition:transform .35s ease, background .3s ease, padding .3s ease, box-shadow .3s ease, border-color .3s ease;background:linear-gradient(180deg, rgba(28,26,23,.55) 0%, rgba(28,26,23,.15) 70%, transparent 100%);border-bottom:1px solid transparent;}
+header.scrolled{
+  background:linear-gradient(120deg, #1C1A17 0%, #3A2F1C 130%);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 12px 34px rgba(28,26,23,.32);
+  border-bottom:1px solid rgba(201,162,39,.3);
+  padding:14px 32px;
+}
 header.header-hidden{transform:translateY(0);}
 .logo{font-family:'Fraunces',serif;font-weight:600;color:var(--white);font-size:1.4rem;display:flex;align-items:center;gap:2px;font-style:italic;}
 .logo span{color:var(--seafoam);font-style:normal;}
@@ -49,7 +56,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .icon-btn:hover{background:var(--brass);color:var(--white);border-color:var(--brass);}
 .cart-count{position:absolute;top:-6px;right:-6px;background:var(--seafoam);color:var(--ink);font-size:.65rem;font-weight:800;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .menu-toggle{display:none;background:none;border:none;color:var(--white);font-size:1.6rem;cursor:pointer;}
-.mobile-nav{display:none;position:fixed;top:0;right:-100%;width:78%;max-width:320px;height:100%;background:var(--ink);z-index:260;padding:90px 28px 28px;transition:right .3s ease;}
+.mobile-nav{display:none;position:fixed;top:0;right:-100%;width:78%;max-width:320px;height:100%;background:linear-gradient(160deg, #1C1A17 0%, #4A3B22 100%);z-index:260;padding:90px 28px 28px;transition:right .3s ease;}
 .mobile-nav.open{right:0;}
 .mobile-nav a{display:block;color:var(--white);font-weight:700;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.1);font-family:'Fraunces',serif;font-size:1.05rem;}
 .mobile-nav-close{position:absolute;top:24px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:var(--white);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -66,7 +73,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.05) brightness(.45);background:var(--ink);z-index:0;}
 .hero-overlay{
   position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(180deg, rgba(18,50,64,.35) 0%, rgba(18,50,64,.15) 40%, rgba(18,50,64,.55) 100%);
+  background:linear-gradient(180deg, rgba(28,26,23,.4) 0%, rgba(28,26,23,.18) 40%, rgba(28,26,23,.6) 100%);
 }
 .hero > .wrap{position:relative;z-index:2;width:100%;}
 
@@ -108,11 +115,11 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   position:relative;flex:0 0 100%;width:100%;scroll-snap-align:start;
   display:flex;align-items:center;justify-content:space-between;gap:18px;
   min-height:230px;padding:30px 26px;overflow:hidden;
-  border-radius:22px;box-shadow:0 20px 46px rgba(18,50,64,.22);
+  border-radius:22px;box-shadow:0 20px 46px rgba(28,26,23,.22);
 }
-.promo-card.promo-a{background:linear-gradient(135deg,#3AA0B0 0%,var(--deep) 45%,#0E3A45 100%);}
-.promo-card.promo-b{background:linear-gradient(135deg,#2C8C9E 0%,var(--brass) 45%,#175F6E 100%);}
-.promo-card.promo-c{background:linear-gradient(135deg,#6FD0DE 0%,#1F7A8C 55%,#123240 100%);}
+.promo-card.promo-a{background:linear-gradient(135deg,#B8935A 0%,var(--deep) 45%,#2A2214 100%);}
+.promo-card.promo-b{background:linear-gradient(135deg,#9C7A3C 0%,var(--brass) 45%,#5C4A26 100%);}
+.promo-card.promo-c{background:linear-gradient(135deg,#DFC066 0%,#8B6F3F 55%,#1C1A17 100%);}
 
 .promo-card::before{
   content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;
@@ -145,7 +152,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .promo-image img{width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 16px 24px rgba(0,0,0,.35));}
 
 .promo-dots{display:flex;justify-content:center;gap:7px;margin-top:16px;}
-.promo-dot{width:7px;height:7px;border-radius:50%;background:rgba(18,50,64,.2);cursor:pointer;transition:.25s ease;border:none;padding:0;}
+.promo-dot{width:7px;height:7px;border-radius:50%;background:rgba(28,26,23,.2);cursor:pointer;transition:.25s ease;border:none;padding:0;}
 .promo-dot.active{background:var(--brass);width:20px;border-radius:5px;}
 
 .carousel-arrow{
@@ -176,7 +183,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 @media(prefers-reduced-motion:reduce){
   .hero-text,.promo-carousel{animation:none!important;opacity:1!important;transform:none!important;}
   header{transition:none!important;}
-  .reveal,.reveal-stagger > *{opacity:1!important;transform:none!important;transition:none!important;}
+  .reveal,.reveal-stagger > *{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
 }
 
 .wave{display:block;width:100%;height:74px;margin-top:-3px;}
@@ -192,7 +199,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .about-media-frame img{width:100%;height:100%;object-fit:cover;}
 .about-badge-card{
   position:absolute;bottom:-26px;right:-22px;background:var(--white);border-radius:16px;
-  box-shadow:0 18px 40px rgba(18,50,64,.2);padding:20px 24px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 18px 40px rgba(28,26,23,.2);padding:20px 24px;display:flex;align-items:center;gap:14px;
   border:1px solid var(--line);
 }
 .about-badge-card .num{font-family:'Fraunces',serif;font-weight:700;font-size:1.9rem;color:var(--seafoam-deep);line-height:1;}
@@ -214,20 +221,22 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   .about-badge-card .lbl{font-size:.66rem;max-width:96px;}
 }
 
-/* ============ SCROLL REVEAL ANIMATIONS ============ */
+/* ============ SCROLL REVEAL ANIMATIONS — fade + rise + soften-in-from-blur, feels a
+   touch more premium than a plain fade; staggered per-item by JS below ============ */
 .reveal{
   opacity:0;
-  transform:translateY(32px);
-  transition:opacity .75s cubic-bezier(.25,.8,.35,1), transform .75s cubic-bezier(.25,.8,.35,1);
-  will-change:opacity, transform;
+  transform:translateY(38px) scale(.97);
+  filter:blur(3px);
+  transition:opacity .85s cubic-bezier(.16,.8,.3,1), transform .85s cubic-bezier(.16,.8,.3,1), filter .85s ease;
+  will-change:opacity, transform, filter;
 }
-.reveal.in-view{opacity:1;transform:translateY(0);}
-.reveal-left{transform:translateX(-36px);}
-.reveal-left.in-view{transform:translateX(0);}
-.reveal-right{transform:translateX(36px);}
-.reveal-right.in-view{transform:translateX(0);}
-.reveal-zoom{transform:scale(.92);}
-.reveal-zoom.in-view{transform:scale(1);}
+.reveal.in-view{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}
+.reveal-left{transform:translateX(-40px);filter:blur(3px);}
+.reveal-left.in-view{transform:translateX(0);filter:blur(0);}
+.reveal-right{transform:translateX(40px);filter:blur(3px);}
+.reveal-right.in-view{transform:translateX(0);filter:blur(0);}
+.reveal-zoom{transform:scale(.92);filter:blur(3px);}
+.reveal-zoom.in-view{transform:scale(1);filter:blur(0);}
 
 @media(max-width:980px){
   .hero{padding:130px 0 48px;border-radius:0 0 28px 28px;}
@@ -264,10 +273,10 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .services-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
 .service-card{
   background:var(--white);border-radius:20px;padding:38px 30px 32px;text-align:center;
-  box-shadow:0 12px 30px rgba(18,50,64,.08);
+  box-shadow:0 12px 30px rgba(28,26,23,.08);
   transition:transform .3s ease, box-shadow .3s ease;
 }
-.service-card:hover{transform:translateY(-6px);box-shadow:0 24px 46px rgba(18,50,64,.16);}
+.service-card:hover{transform:translateY(-6px);box-shadow:0 24px 46px rgba(28,26,23,.16);}
 .service-card .ic-box{
   width:72px;height:72px;margin:0 auto 22px;border-radius:16px;background:var(--stone);
   display:flex;align-items:center;justify-content:center;
@@ -312,8 +321,8 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .tab-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
 
 .product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
-.product-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(18,50,64,.09);display:flex;flex-direction:column;transition:.3s ease;cursor:pointer;}
-.product-card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(18,50,64,.18);}
+.product-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(28,26,23,.09);display:flex;flex-direction:column;transition:.3s ease;cursor:pointer;}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(28,26,23,.18);}
 
 .product-img{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--stone);}
 .product-img img{width:100%;height:100%;object-fit:cover;transition:.5s;}
@@ -353,11 +362,11 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 .empty-cart{color:var(--muted);text-align:center;padding:64px 10px;font-size:.92rem;}
 .cart-footer{padding:22px 26px;border-top:1px solid #EEE;}
 .cart-total{display:flex;justify-content:space-between;font-weight:800;font-size:1.15rem;margin-bottom:18px;font-family:'Fraunces',serif;}
-.overlay{position:fixed;inset:0;background:rgba(18,50,64,.55);z-index:290;opacity:0;pointer-events:none;transition:.3s;}
+.overlay{position:fixed;inset:0;background:rgba(28,26,23,.55);z-index:290;opacity:0;pointer-events:none;transition:.3s;}
 .overlay.show{opacity:1;pointer-events:auto;}
 
 /* ============ MODAL ============ */
-.modal-bg{position:fixed;inset:0;background:rgba(18,50,64,.6);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg{position:fixed;inset:0;background:rgba(28,26,23,.6);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-bg.show{display:flex;}
 .modal{background:var(--white);border-radius:20px;max-width:480px;width:100%;padding:34px;max-height:90vh;overflow-y:auto;}
 .modal h3{font-family:'Fraunces',serif;font-weight:600;margin-bottom:6px;}
@@ -436,10 +445,10 @@ nav a:hover{opacity:1;color:var(--seafoam);}
   border-radius:18px;
   overflow:hidden;
   background:var(--ink);
-  box-shadow:0 16px 34px rgba(18,50,64,.16);
+  box-shadow:0 16px 34px rgba(28,26,23,.16);
   transition:transform .3s ease, box-shadow .3s ease;
 }
-.video-card:hover{transform:translateY(-5px);box-shadow:0 26px 48px rgba(18,50,64,.24);}
+.video-card:hover{transform:translateY(-5px);box-shadow:0 26px 48px rgba(28,26,23,.24);}
 .video-card video{
   width:100%;
   height:100%;
@@ -449,7 +458,7 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 }
 .video-card .video-badge{
   position:absolute;top:12px;left:12px;z-index:2;
-  background:rgba(18,50,64,.55);backdrop-filter:blur(3px);
+  background:rgba(28,26,23,.55);backdrop-filter:blur(3px);
   color:var(--white);font-size:.66rem;font-weight:800;
   padding:5px 11px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;
   display:flex;align-items:center;gap:6px;pointer-events:none;
@@ -498,11 +507,11 @@ nav a:hover{opacity:1;color:var(--seafoam);}
 
 .testimonial-card{
   flex:0 0 auto;width:320px;scroll-snap-align:center;background:var(--white);
-  border-radius:22px;box-shadow:0 14px 30px rgba(18,50,64,.10);overflow:hidden;
+  border-radius:22px;box-shadow:0 14px 30px rgba(28,26,23,.10);overflow:hidden;
   opacity:.5;transform:scale(.84);transition:transform .4s cubic-bezier(.25,.8,.35,1),opacity .4s ease,box-shadow .4s ease;
   cursor:pointer;
 }
-.testimonial-card.active{opacity:1;transform:scale(1);box-shadow:0 30px 60px rgba(18,50,64,.20);z-index:5;}
+.testimonial-card.active{opacity:1;transform:scale(1);box-shadow:0 30px 60px rgba(28,26,23,.20);z-index:5;}
 .testimonial-img{width:100%;aspect-ratio:16/11;overflow:hidden;background:var(--stone);}
 .testimonial-img img{width:100%;height:100%;object-fit:cover;}
 .testimonial-body{padding:26px 24px 28px;text-align:center;}
@@ -573,7 +582,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
 @media(max-width:980px){
     header{
-        background:var(--ink);
+        background:linear-gradient(120deg, #1C1A17 0%, #3A2F1C 130%);
     }
     header.scrolled{
         padding:14px 32px;
@@ -594,7 +603,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .section{padding:10px 0;}
     .field-row{flex-direction:column;}
     .gallery-grid{column-count:1;}
-    
+   
 }
 @media(max-width:768px){
     .gallery-grid{column-count:2;}
@@ -716,7 +725,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <div class="promo-dots" id="promoDots"></div>
     </div>
 </section>
-<svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none"><path d="M0,40 C320,90 1120,0 1440,40 L1440,70 L0,70 Z" fill="#F5FAFB"></path></svg>
+<svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none"><path d="M0,40 C320,90 1120,0 1440,40 L1440,70 L0,70 Z" fill="#FAF7F1"></path></svg>
 
 <section class="section" id="about">
 <div class="wrap">
@@ -780,7 +789,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
             <p>Design-to-finish builds tailored to your space, budget and style — homes, villas and resorts alike.</p>
         </div>
 
-        
+       
 
         <div class="service-card reveal">
             <div class="ic-box">
@@ -997,7 +1006,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
                             {% if r.avatar_url %}
                                 <img class="testimonial-avatar" src="{{ r.avatar_url }}" alt="{{ r.name }}">
                             {% else %}
-                                <div class="testimonial-avatar" style="background:{% cycle '#4FA8BE' '#E07A5F' '#3D9970' '#B08968' '#6C5CE7' '#D6764F' %};">{{ r.name|slice:":1"|upper }}</div>
+                                <div class="testimonial-avatar" style="background:{% cycle '#9C7A3C' '#E07A5F' '#3D9970' '#B08968' '#6C5CE7' '#D6764F' %};">{{ r.name|slice:":1"|upper }}</div>
                             {% endif %}
                             <div class="testimonial-id">
                                 <h4>{{ r.name }}</h4>
@@ -1527,6 +1536,135 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
     });
     galleryBtn.style.display = 'none';
   });
+})();
+
+/* ============ WRITE A REVIEW — open/close, star picker, image previews and
+   submission. The "Write a Review" button previously had NO click handler
+   bound anywhere in the file, so clicking it did nothing at all — that's
+   the "stuck" bug. This wires up the whole modal end-to-end. ============ */
+(function(){
+  const openBtn = document.getElementById('openReviewModal');
+  const modal = document.getElementById('reviewModal');
+  const closeBtn = document.getElementById('reviewModalClose');
+  const ratingPick = document.getElementById('ratingPick');
+  const nameInput = document.getElementById('rvName');
+  const textInput = document.getElementById('rvText');
+  const imgInput = document.getElementById('rvImg');
+  const previewStrip = document.getElementById('rvPreview');
+  const submitBtn = document.getElementById('submitReview');
+  const toast = document.getElementById('toast');
+  if(!openBtn || !modal) return;
+
+  let selectedRating = 0;
+  let selectedFiles = [];
+
+  function showToast(msg){
+    if(!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> toast.classList.remove('show'), 3200);
+  }
+
+  function openModal(){ modal.classList.add('show'); }
+  function closeModal(){ modal.classList.remove('show'); }
+
+  function renderPreviews(){
+    if(!previewStrip) return;
+    previewStrip.innerHTML = '';
+    selectedFiles.forEach((file, idx)=>{
+      const item = document.createElement('div');
+      item.className = 'preview-item';
+
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.alt = file.name;
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'preview-remove';
+      remove.textContent = '✕';
+      remove.addEventListener('click', ()=>{
+        selectedFiles.splice(idx, 1);
+        renderPreviews();
+      });
+
+      item.appendChild(img);
+      item.appendChild(remove);
+      previewStrip.appendChild(item);
+    });
+  }
+
+  function resetForm(){
+    selectedRating = 0;
+    selectedFiles = [];
+    if(nameInput) nameInput.value = '';
+    if(textInput) textInput.value = '';
+    if(imgInput) imgInput.value = '';
+    if(previewStrip) previewStrip.innerHTML = '';
+    if(ratingPick) ratingPick.querySelectorAll('span').forEach(s => s.classList.remove('active'));
+  }
+
+  openBtn.addEventListener('click', openModal);
+  if(closeBtn) closeBtn.addEventListener('click', ()=>{ closeModal(); resetForm(); });
+  // clicking the dark backdrop (outside the white card) also closes it
+  modal.addEventListener('click', (e)=>{ if(e.target === modal){ closeModal(); resetForm(); } });
+
+  if(ratingPick){
+    ratingPick.querySelectorAll('span').forEach(star=>{
+      star.addEventListener('click', ()=>{
+        selectedRating = parseInt(star.dataset.v, 10);
+        ratingPick.querySelectorAll('span').forEach(s=>{
+          s.classList.toggle('active', parseInt(s.dataset.v, 10) <= selectedRating);
+        });
+      });
+    });
+  }
+
+  if(imgInput){
+    imgInput.addEventListener('change', ()=>{
+      selectedFiles = [...(imgInput.files || [])];
+      renderPreviews();
+    });
+  }
+
+  if(submitBtn){
+    submitBtn.addEventListener('click', async ()=>{
+      const name = (nameInput?.value || '').trim();
+      const text = (textInput?.value || '').trim();
+
+      if(!name){ showToast('Please enter your name'); return; }
+      if(!selectedRating){ showToast('Please pick a star rating'); return; }
+      if(!text){ showToast('Please write a short review'); return; }
+
+      submitBtn.disabled = true;
+      const originalLabel = submitBtn.textContent;
+      submitBtn.textContent = 'Submitting…';
+
+      try{
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('rating', selectedRating);
+        formData.append('text', text);
+        selectedFiles.forEach(file => formData.append('images', file));
+
+        await postForServer(REVIEW_URL, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': CSRF_TOKEN },
+          body: formData
+        });
+
+        showToast('Thank you — your review has been submitted!');
+        closeModal();
+        resetForm();
+      }catch(err){
+        showToast(err.message || 'Could not submit your review. Please try again.');
+      }finally{
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      }
+    });
+  }
 })();
 </script>
 
