@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from .forms import ProductForm, HeroForm, SiteSettingsForm
 from .models import (
     Product, GalleryImage, Review, ReviewMedia, Order, OrderItem,
-    HeroSection, SiteSettings, CATEGORY_CHOICES, Client,
+    HeroSection, SiteSettings, CATEGORY_CHOICES, VARIANT_TYPE_CHOICES, Client,
 )
 
 
@@ -124,6 +124,7 @@ def dashboard(request):
         "settings_form": SiteSettingsForm(instance=SiteSettings.load()),
         "product_form": ProductForm(),
         "categories": CATEGORY_CHOICES,
+        "variant_types": VARIANT_TYPE_CHOICES,
         "stat_products": Product.objects.count(),
         "stat_gallery": GalleryImage.objects.count(),
         "stat_clients": Client.objects.count(),
@@ -217,9 +218,31 @@ def _parse_colors(request):
     return colors
 
 
+# Precomputed set of valid keys, e.g. {"inches", "feet", "meter", "sqft", "sizes"}
+_VALID_VARIANT_TYPES = {key for key, _label in VARIANT_TYPE_CHOICES}
+
+# Precomputed set of valid category keys from the model's own choices
+_VALID_CATEGORIES = {key for key, _label in CATEGORY_CHOICES}
+
+
 def _parse_variant_type(request):
+    """Validate the posted variant_type against the model's own
+    VARIANT_TYPE_CHOICES instead of a hardcoded subset, so "feet",
+    "meter", and "sqft" are no longer silently downgraded to "inches"."""
     vtype = request.POST.get("variant_type", "inches").strip().lower()
-    return vtype if vtype in ("inches", "sizes") else "inches"
+    return vtype if vtype in _VALID_VARIANT_TYPES else "inches"
+
+
+def _parse_category(request, default=None):
+    """Validate the posted category against the model's own
+    CATEGORY_CHOICES. Falls back to `default` (or the first valid
+    category) if missing/invalid, instead of saving raw/garbage input."""
+    category = (request.POST.get("category") or "").strip()
+    if category in _VALID_CATEGORIES:
+        return category
+    if default in _VALID_CATEGORIES:
+        return default
+    return next(iter(_VALID_CATEGORIES), "")
 
 
 @login_required
@@ -402,13 +425,14 @@ def shop(request):
         "settings": SiteSettings.load(),
     })
 
+
 @login_required
 @require_POST
 def product_edit(request, pk):
     product = get_object_or_404(Product, pk=pk)
 
-    product.name = request.POST.get("name")
-    product.category = request.POST.get("category")
+    product.name = request.POST.get("name", product.name)
+    product.category = _parse_category(request, default=product.category)
     product.badge = request.POST.get("badge")
     product.mrp = request.POST.get("mrp") or None
     product.image_url = request.POST.get("image_url")

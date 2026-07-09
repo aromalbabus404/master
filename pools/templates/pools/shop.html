@@ -365,6 +365,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
      data-id="{{ product.id }}"
      data-name="{{ product.name|escapejs }}"
      data-price="{{ product.price }}"
+     data-varianttype="{{ product.variant_type|default:'inches' }}"
      data-img="{% if product.image_file %}{{ product.image_file.url }}{% elif product.image_url %}{{ product.image_url }}{% endif %}">
 
     <div class="product-img">
@@ -520,6 +521,18 @@ const WHATSAPP_NUMBER = "917356462150"; // 91 = India country code + 7356462150
 const CART_KEY = "masterpools_cart";
 const CUSTOMER_KEY = "masterpools_customer";
 const SUBMIT_ORDER_URL = "{% url 'submit_order' %}"; // Django endpoint that saves the order to the DB
+
+/* Short unit label shown next to each size, matching the admin dashboard's
+   variant_type field (inches / feet / meter / sqft / sizes). "sizes" is
+   free-text (S/M/L/XL etc.) so it gets no suffix appended. */
+const VARIANT_UNIT_SHORT = {
+    inches: 'in',
+    feet: 'ft',
+    meter: 'm',
+    sqft: 'sq ft',
+    sizes: ''
+};
+function unitLabelFor(type){ return VARIANT_UNIT_SHORT[type] !== undefined ? VARIANT_UNIT_SHORT[type] : ''; }
 
 function fmt(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
 
@@ -725,6 +738,24 @@ detailsForm.addEventListener('submit', async function(e){
     }
 });
 
+/* ---------- label each size dropdown's options with its unit
+   (e.g. "10" -> "10 ft") based on the product's variant_type ---------- */
+function labelSizeOptions(){
+    document.querySelectorAll('#productGrid .product-card').forEach(card=>{
+        const vType = card.dataset.varianttype || 'inches';
+        const unit = unitLabelFor(vType);
+        if(!unit) return; // "sizes" type (S/M/L/XL) needs no suffix
+        card.querySelectorAll('.size-select option').forEach(opt=>{
+            if(!opt.dataset.labeled){
+                opt.dataset.rawValue = opt.value; // keep the raw number for cart/order logic
+                opt.textContent = opt.value + ' ' + unit;
+                opt.dataset.labeled = "1";
+            }
+        });
+    });
+}
+labelSizeOptions();
+
 /* ---------- product card qty / size select / color swatch / add to cart / buy now ---------- */
 document.querySelectorAll('#productGrid .product-card').forEach(card=>{
     const qtyVal = card.querySelector('.qty-val');
@@ -735,6 +766,8 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
     const sizeSelect = card.querySelector('.size-select');
     const priceDisplay = card.querySelector('.price-display');
     const imgEl = card.querySelector('.prod-img-src');
+    const vType = card.dataset.varianttype || 'inches';
+    const unit = unitLabelFor(vType);
 
     function updatePriceDisplay(){
         const opt = sizeSelect.options[sizeSelect.selectedIndex];
@@ -762,15 +795,19 @@ document.querySelectorAll('#productGrid .product-card').forEach(card=>{
 
     function buildProduct(){
         const opt = sizeSelect ? sizeSelect.options[sizeSelect.selectedIndex] : null;
-        const size = opt ? opt.value : '';
+        // Use the raw numeric value (not the "10 ft" display text) as the
+        // unique id/price key, but show the unit-labelled size in the cart
+        // and WhatsApp order message.
+        const rawSize = opt ? (opt.dataset.rawValue || opt.value) : '';
+        const displaySize = opt ? (unit ? (rawSize + ' ' + unit) : rawSize) : '';
         const price = opt ? parseInt(opt.dataset.price) : parseFloat(card.dataset.price);
         const idParts = [card.dataset.id];
-        if(size) idParts.push(size.replace(/\s+/g,''));
+        if(rawSize) idParts.push(String(rawSize).replace(/\s+/g,''));
         if(selectedColor) idParts.push(selectedColor.replace(/\s+/g,''));
         return {
             id: idParts.join('-'),
             name: card.dataset.name,
-            size: size,
+            size: displaySize,
             color: selectedColor,
             price: price,
             image: imgEl ? imgEl.src : card.dataset.img

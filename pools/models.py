@@ -90,16 +90,28 @@ class SiteSettings(models.Model):
 
 
 CATEGORY_CHOICES = [
-    ("pool", "Pool Designs"),
-    ("pump", "Pumps & Filters"),
-    ("light", "Lighting"),
-    ("cover", "Covers & Ladders"),
-    ("clean", "Cleaning"),
+    ("nozzle_inlet", "Nozzles & Inlets"),
+    ("waterblade", "Water Blades"),
+    ("cover_ladder", "Pool Covers & Ladders"),
+    ("lights", "Underwater Pool Lights"),
+    ("chemicals", "Pool Chemicals"),
+    ("pump_filter", "Pumps & Filters"),
+    ("skimmer", "Pool Skimmers"),
+    ("vacuum", "Pool Vacuum"),
+    ("drain", "Main Drains"),
+    ("grating", "Overflow Gratings"),
+    ("fountain", "Pool Fountains"),
+    ("heater", "Pool Heaters"),
+    ("controller", "Pool Controllers"),
+    ("tiles", "Pool Tiles"),
 ]
 
 VARIANT_TYPE_CHOICES = [
-    ("inches", "Inches"),
-    ("sizes", "Sizes"),
+    ("inches", "Inches (in)"),
+    ("feet", "Feet (ft)"),
+    ("meter", "Meter (m)"),
+    ("sqft", "Square Feet (sq ft)"),
+    ("sizes", "Custom Size"),
 ]
 
 

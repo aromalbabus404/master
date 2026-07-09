@@ -451,11 +451,12 @@
   /* ===== variant type toggle ===== */
   .variant-type-toggle{
     display:flex;gap:8px;background:var(--bg);border:1px solid var(--border);
-    border-radius:999px;padding:4px;width:fit-content;
+    border-radius:999px;padding:4px;width:fit-content;flex-wrap:wrap;
   }
   .variant-type-toggle label{
     margin:0;padding:7px 16px;border-radius:999px;font-size:.85rem;font-weight:600;
     color:var(--text-muted);cursor:pointer;transition:background-color .18s ease, color .18s ease;
+    white-space:nowrap;
   }
   .variant-type-toggle input{display:none;}
   .variant-type-toggle input:checked + label{background:var(--navy);color:#fff;}
@@ -703,23 +704,25 @@
 
               <div class="col-md-6"><label class="form-label fw-bold">MRP / strikethrough (optional)</label>{{ product_form.mrp }}</div>
 
-              <!-- Variant Type toggle -->
+              <!-- Variant Type toggle — rendered from VARIANT_TYPE_CHOICES so
+                   every model-defined variant type (inches, feet, meter, sqft,
+                   sizes) is actually selectable here, not just two of them. -->
               <div class="col-md-6">
                 <label class="form-label fw-bold d-block">Variant Type</label>
                 <div class="variant-type-toggle" id="variantTypeAdd">
-                  <input type="radio" name="variant_type" id="vtAddInches" value="inches" checked>
-                  <label for="vtAddInches">Inches</label>
-                  <input type="radio" name="variant_type" id="vtAddSizes" value="sizes">
-                  <label for="vtAddSizes">Sizes</label>
+                  {% for key, label in variant_types %}
+                  <input type="radio" name="variant_type" id="vtAdd{{ key }}" value="{{ key }}" {% if forloop.first %}checked{% endif %}>
+                  <label for="vtAdd{{ key }}">{{ label }}</label>
+                  {% endfor %}
                 </div>
               </div>
 
               <!-- Dynamic Size + Price rows (input type follows Variant Type above) -->
               <div class="col-12">
-                <label class="form-label fw-bold" id="sizeRowsAddLabel">Sizes & Prices (inches → ₹)</label>
+                <label class="form-label fw-bold" id="sizeRowsAddLabel">Sizes & Prices</label>
                 <div id="sizeRowsAdd"></div>
                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSizeRowBtn">+ Add Size</button>
-                <div class="form-text" id="sizeRowsAddHint">e.g. 6 inch → ₹300, 8 inch → ₹500. Customers pick a size on the storefront and the price updates automatically.</div>
+                <div class="form-text" id="sizeRowsAddHint">Customers pick a size on the storefront and the price updates automatically.</div>
               </div>
 
               <!-- Colors (optional, multiple) -->
@@ -968,20 +971,20 @@
           <div class="col-md-6"><label class="form-label fw-bold">Badge</label><input class="form-control" name="badge" id="ed_badge"></div>
           <div class="col-md-6"><label class="form-label fw-bold">MRP</label><input type="number" class="form-control" name="mrp" id="ed_mrp"></div>
 
-          <!-- Variant Type toggle -->
+          <!-- Variant Type toggle — same dynamic set as the Add form above -->
           <div class="col-12">
             <label class="form-label fw-bold d-block">Variant Type</label>
             <div class="variant-type-toggle" id="variantTypeEdit">
-              <input type="radio" name="variant_type" id="vtEditInches" value="inches" checked>
-              <label for="vtEditInches">Inches</label>
-              <input type="radio" name="variant_type" id="vtEditSizes" value="sizes">
-              <label for="vtEditSizes">Sizes</label>
+              {% for key, label in variant_types %}
+              <input type="radio" name="variant_type" id="vtEdit{{ key }}" value="{{ key }}" {% if forloop.first %}checked{% endif %}>
+              <label for="vtEdit{{ key }}">{{ label }}</label>
+              {% endfor %}
             </div>
           </div>
 
           <!-- Dynamic Size + Price rows for editing -->
           <div class="col-12">
-            <label class="form-label fw-bold" id="sizeRowsEditLabel">Sizes & Prices (inches → ₹)</label>
+            <label class="form-label fw-bold" id="sizeRowsEditLabel">Sizes & Prices</label>
             <div id="sizeRowsEdit"></div>
             <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addSizeRowEditBtn">+ Add Size</button>
           </div>
@@ -1011,8 +1014,37 @@
     ↑
 </button>
 
+<!-- Feed the same VARIANT_TYPE_CHOICES the server validates against into
+     JS, so the "Add Size" JS logic never drifts out of sync with the
+     toggle rendered above or with views.py's _parse_variant_type. -->
+{{ variant_types|json_script:"variant-types-data" }}
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+/* ================================================================
+   VARIANT TYPE DATA — read once from the server-rendered JSON
+   blob above. variantTypesData looks like:
+     [["inches","Inches (in)"], ["feet","Feet (ft)"], ...]
+   ================================================================ */
+const variantTypesData = JSON.parse(document.getElementById('variant-types-data').textContent || "[]");
+const VALID_VARIANT_KEYS = variantTypesData.map(vt => vt[0]);
+const DEFAULT_VARIANT_TYPE = VALID_VARIANT_KEYS[0] || 'inches';
+
+/* Short unit label shown next to the size input for each variant type.
+   Falls back to the key itself if a new type is ever added to the model
+   without updating this map. */
+const VARIANT_UNIT_SHORT = {
+  inches: 'in',
+  feet: 'ft',
+  meter: 'm',
+  sqft: 'sq ft',
+  sizes: 'size'
+};
+
+function unitLabelFor(type){
+  return VARIANT_UNIT_SHORT[type] || type;
+}
+
 /* ================================================================
    PANEL SWITCHING (sidebar / topbar / mobile-menu nav-links live
    OUTSIDE .content, so they only need to be bound once)
@@ -1244,8 +1276,11 @@ function bindEditProductButtons(){
       document.getElementById('ed_mrp').value = btn.dataset.mrp;
       document.getElementById('ed_imgurl').value = btn.dataset.imgurl;
 
-      // Set the variant type radio (defaults to "inches" if not set)
-      const vType = btn.dataset.varianttype === 'sizes' ? 'sizes' : 'inches';
+      // Set the variant type radio — validate against the real
+      // VARIANT_TYPE_CHOICES list instead of hardcoding "inches".
+      const vType = VALID_VARIANT_KEYS.includes(btn.dataset.varianttype)
+        ? btn.dataset.varianttype
+        : DEFAULT_VARIANT_TYPE;
       const vtRadio = document.querySelector('#variantTypeEdit input[value="'+vType+'"]');
       if(vtRadio) vtRadio.checked = true;
       updateSizeRowsLabel('edit', vType);
@@ -1280,19 +1315,23 @@ function bindEditProductButtons(){
   });
 }
 
-/* type is "inches" (numeric input, "in" unit) or "sizes" (text input, e.g. S/M/L/XL) */
-function makeSizeRow(container, size = "", price = "", type = "inches") {
+/* type is one of VALID_VARIANT_KEYS — "sizes" gets a free-text input
+   (e.g. S/M/L/XL); every other type (inches, feet, meter, sqft, ...)
+   gets a numeric input with the matching unit label next to it. */
+function makeSizeRow(container, size = "", price = "", type = DEFAULT_VARIANT_TYPE) {
   const row = document.createElement("div");
   row.className = "d-flex gap-2 mb-2 size-price-row";
 
-  const isInches = type !== 'sizes';
-  const sizeInputHTML = isInches
-    ? `<input type="number" step="0.5" class="form-control size-input" name="size[]" placeholder="Size" value="${size}">`
-    : `<input type="text" class="form-control size-input" name="size[]" placeholder="e.g. S, M, L, XL" value="${size}">`;
+  const isSizes = type === 'sizes';
+  const unit = unitLabelFor(type);
+
+  const sizeInputHTML = isSizes
+    ? `<input type="text" class="form-control size-input" name="size[]" placeholder="e.g. S, M, L, XL" value="${size}">`
+    : `<input type="number" step="0.5" class="form-control size-input" name="size[]" placeholder="Size" value="${size}">`;
 
   row.innerHTML = `
     ${sizeInputHTML}
-    <span class="size-unit align-self-center">${isInches ? 'in' : 'size'}</span>
+    <span class="size-unit align-self-center">${unit}</span>
     <input type="number" step="1" class="form-control" name="price[]" placeholder="Price (₹)" value="${price}">
     <button type="button" class="btn btn-outline-danger remove-size-row">✕</button>
   `;
@@ -1300,32 +1339,35 @@ function makeSizeRow(container, size = "", price = "", type = "inches") {
   container.appendChild(row);
 }
 
-/* Switch every existing row's size input between number(inches) <-> text(sizes) */
+/* Switch every existing row's size input to match the newly-selected
+   variant type (text for "sizes", number + unit label for everything else). */
 function updateSizeRowsType(container, type){
-  const isInches = type !== 'sizes';
+  const isSizes = type === 'sizes';
+  const unit = unitLabelFor(type);
   container.querySelectorAll('.size-price-row').forEach(row=>{
     const sizeInput = row.querySelector('.size-input');
-    const unitLabel = row.querySelector('.size-unit');
+    const unitLabelEl = row.querySelector('.size-unit');
     if(!sizeInput) return;
     const currentValue = sizeInput.value;
-    sizeInput.type = isInches ? 'number' : 'text';
-    if(isInches){ sizeInput.step = '0.5'; } else { sizeInput.removeAttribute('step'); }
-    sizeInput.placeholder = isInches ? 'Size' : 'e.g. S, M, L, XL';
+    sizeInput.type = isSizes ? 'text' : 'number';
+    if(isSizes){ sizeInput.removeAttribute('step'); } else { sizeInput.step = '0.5'; }
+    sizeInput.placeholder = isSizes ? 'e.g. S, M, L, XL' : 'Size';
     sizeInput.value = currentValue;
-    if(unitLabel) unitLabel.textContent = isInches ? 'in' : 'size';
+    if(unitLabelEl) unitLabelEl.textContent = unit;
   });
 }
 
 function updateSizeRowsLabel(which, type){
-  const isInches = type !== 'sizes';
+  const isSizes = type === 'sizes';
+  const unit = unitLabelFor(type);
   const label = document.getElementById(which === 'add' ? 'sizeRowsAddLabel' : 'sizeRowsEditLabel');
-  if(label) label.textContent = isInches ? 'Sizes & Prices (inches → ₹)' : 'Sizes & Prices (S/M/L/XL → ₹)';
+  if(label) label.textContent = `Sizes & Prices (${unit} → ₹)`;
   if(which === 'add'){
     const hint = document.getElementById('sizeRowsAddHint');
     if(hint){
-      hint.textContent = isInches
-        ? 'e.g. 6 inch → ₹300, 8 inch → ₹500. Customers pick a size on the storefront and the price updates automatically.'
-        : 'e.g. S → ₹300, M → ₹400, L → ₹500. Customers pick a size on the storefront and the price updates automatically.';
+      hint.textContent = isSizes
+        ? 'e.g. S → ₹300, M → ₹400, L → ₹500. Customers pick a size on the storefront and the price updates automatically.'
+        : `e.g. 6 ${unit} → ₹300, 8 ${unit} → ₹500. Customers pick a size on the storefront and the price updates automatically.`;
     }
   }
 }
@@ -1363,11 +1405,13 @@ function bindSizeRowButtons(){
     addBtn.dataset.bound = "1";
     addBtn.addEventListener('click', ()=>{
       const checked = document.querySelector('#variantTypeAdd input[name="variant_type"]:checked');
-      makeSizeRow(sizeRowsAdd, "", "", checked ? checked.value : 'inches');
+      makeSizeRow(sizeRowsAdd, "", "", checked ? checked.value : DEFAULT_VARIANT_TYPE);
     });
   }
   if(sizeRowsAdd && sizeRowsAdd.children.length === 0){
-    makeSizeRow(sizeRowsAdd, "", "", 'inches');
+    const checked = document.querySelector('#variantTypeAdd input[name="variant_type"]:checked');
+    makeSizeRow(sizeRowsAdd, "", "", checked ? checked.value : DEFAULT_VARIANT_TYPE);
+    updateSizeRowsLabel('add', checked ? checked.value : DEFAULT_VARIANT_TYPE);
   }
 
   const addEditBtn = document.getElementById('addSizeRowEditBtn');
@@ -1375,7 +1419,7 @@ function bindSizeRowButtons(){
     addEditBtn.dataset.bound = "1";
     addEditBtn.addEventListener('click', ()=>{
       const checked = document.querySelector('#variantTypeEdit input[name="variant_type"]:checked');
-      makeSizeRow(document.getElementById('sizeRowsEdit'), "", "", checked ? checked.value : 'inches');
+      makeSizeRow(document.getElementById('sizeRowsEdit'), "", "", checked ? checked.value : DEFAULT_VARIANT_TYPE);
     });
   }
 }
