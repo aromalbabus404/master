@@ -328,8 +328,9 @@ nav a:hover{opacity:1;color:var(--seafoam-deep);}
 .modal-close{float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);}
 
 /* ============ GALLERY ============ */
-.gallery-grid{column-count:4;column-gap:22px;}
-.gallery-grid img{width:100%;border-radius:14px;margin-bottom:22px;box-shadow:var(--shadow);cursor:pointer;transition:transform .35s ease, box-shadow .35s ease;break-inside:avoid;}
+.gallery-grid{display:flex;gap:22px;align-items:flex-start;}
+.gallery-col{display:flex;flex-direction:column;gap:22px;flex:1 1 0;min-width:0;}
+.gallery-grid img{width:100%;display:block;border-radius:14px;box-shadow:var(--shadow);cursor:pointer;transition:transform .35s ease, box-shadow .35s ease;}
 .gallery-grid img:hover{transform:scale(1.02);box-shadow:0 26px 50px rgba(28,26,23,.24);}
 .gallery-more-wrap{display:flex;justify-content:center;margin-top:8px;}
 .gallery-more-wrap .btn svg{width:15px;height:15px;flex-shrink:0;transition:transform .3s ease;}
@@ -549,11 +550,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
     .section{padding:10px 0;}
     .field-row{flex-direction:column;}
-    .gallery-grid{column-count:2;column-gap:12px;}
-    .gallery-grid img{margin-bottom:12px;border-radius:10px;}
+    .gallery-grid{gap:12px;}
+    .gallery-col{gap:12px;}
+    .gallery-grid img{border-radius:10px;}
 }
 @media(max-width:768px){
-    .gallery-grid{column-count:3;}
 }
 </style>
 </head>
@@ -827,7 +828,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <p>A look at pools we've designed, built and fitted out.</p>
     </div>
     <div class="gallery-grid" id="galleryGridEl">
-    {% for g in gallery %}<img src="{{ g.image }}" class="reveal{% if forloop.counter > 6 %} gallery-extra{% endif %}"{% if forloop.counter > 6 %} style="display:none;"{% endif %}>{% endfor %}
+    {% for g in gallery %}<img src="{{ g.image }}" class="reveal{% if forloop.counter > 6 %} gallery-extra{% endif %}" loading="lazy">{% endfor %}
     </div>
     {% if gallery|length > 6 %}
     <div class="gallery-more-wrap">
@@ -1328,33 +1329,86 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
 });
 
 (function(){
+  const grid = document.getElementById('galleryGridEl');
   const galleryBtn = document.getElementById('galleryMoreBtn');
   const galleryLabel = document.getElementById('galleryMoreLabel');
   const gallerySection = document.getElementById('gallery');
-  if(!galleryBtn) return;
+  if(!grid) return;
 
-  galleryBtn.addEventListener('click', ()=>{
-    const extraImgs = document.querySelectorAll('.gallery-grid .gallery-extra');
-    const expanded = galleryBtn.dataset.expanded === 'true';
+  // Keep a stable reference to every photo — we physically move these
+  // elements into column wrappers rather than relying on CSS multi-column
+  // (CSS columns are unreliable on iOS Safari when items toggle from
+  // display:none to visible, which is what caused photos to go missing
+  // there after "Show More" while working fine on Android/Chrome).
+  const allImgs = Array.from(grid.querySelectorAll('img'));
+  if(allImgs.length === 0) return;
 
-    if(!expanded){
-      // Show more: reveal the rest of the photos with the same staggered reveal animation
-      extraImgs.forEach(img=>{
-        img.style.display = 'block';
-        requestAnimationFrame(()=> img.classList.add('in-view'));
-      });
-      galleryBtn.dataset.expanded = 'true';
-      galleryBtn.classList.add('is-expanded');
-      if(galleryLabel) galleryLabel.textContent = 'Show Less Photos';
-    } else {
-      // Show less: hide the extra photos again and return to the top of the gallery
-      extraImgs.forEach(img=>{ img.style.display = 'none'; });
-      galleryBtn.dataset.expanded = 'false';
-      galleryBtn.classList.remove('is-expanded');
-      if(galleryLabel) galleryLabel.textContent = 'Show More Photos';
-      if(gallerySection) gallerySection.scrollIntoView({behavior:'smooth', block:'start'});
+  function colCountForWidth(w){
+    if(w <= 600) return 2;
+    if(w <= 900) return 3;
+    return 4;
+  }
+
+  function buildEmptyColumns(n){
+    grid.innerHTML = '';
+    const cols = [];
+    for(let i = 0; i < n; i++){
+      const col = document.createElement('div');
+      col.className = 'gallery-col';
+      grid.appendChild(col);
+      cols.push(col);
     }
+    return cols;
+  }
+
+  function layoutMasonry(){
+    const expanded = !!galleryBtn && galleryBtn.dataset.expanded === 'true';
+    const imgsToShow = allImgs.filter(img => expanded || !img.classList.contains('gallery-extra'));
+    const n = colCountForWidth(window.innerWidth);
+    const cols = buildEmptyColumns(n);
+
+    imgsToShow.forEach((img, i) => {
+      img.style.display = 'block';
+      cols[i % n].appendChild(img);
+    });
+
+    // Photos not currently shown just get parked (still in memory, not in
+    // the DOM tree) so they're ready to drop back in when expanded again.
+    allImgs.forEach(img => {
+      if(!imgsToShow.includes(img)) img.style.display = 'none';
+    });
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layoutMasonry, 150);
   });
+
+  layoutMasonry();
+
+  if(galleryBtn){
+    galleryBtn.addEventListener('click', () => {
+      const expanded = galleryBtn.dataset.expanded === 'true';
+
+      if(!expanded){
+        galleryBtn.dataset.expanded = 'true';
+        galleryBtn.classList.add('is-expanded');
+        if(galleryLabel) galleryLabel.textContent = 'Show Less Photos';
+        layoutMasonry();
+        // Re-trigger the fade-in for the newly revealed photos
+        requestAnimationFrame(() => {
+          allImgs.forEach(img => { if(img.classList.contains('gallery-extra')) img.classList.add('in-view'); });
+        });
+      } else {
+        galleryBtn.dataset.expanded = 'false';
+        galleryBtn.classList.remove('is-expanded');
+        if(galleryLabel) galleryLabel.textContent = 'Show More Photos';
+        layoutMasonry();
+        if(gallerySection) gallerySection.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  }
 })();
 
 (function(){
