@@ -1646,7 +1646,7 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
         formData.append('name', name);
         formData.append('rating', selectedRating);
         formData.append('text', text);
-        selectedFiles.forEach(file => formData.append('images', file));
+        selectedFiles.forEach(file => formData.append('media', file));
 
         await postForServer(REVIEW_URL, {
           method: 'POST',
@@ -1657,6 +1657,7 @@ document.getElementById('shopTabs').addEventListener('click', e=>{
         showToast('Thank you — your review has been submitted!');
         closeModal();
         resetForm();
+        setTimeout(()=>{ window.location.reload(); }, 1200);
       }catch(err){
         showToast(err.message || 'Could not submit your review. Please try again.');
       }finally{
