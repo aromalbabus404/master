@@ -10,10 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-    --ink:#1C1A17; --deep:#9C7A3C; --deep2:#7A5F2E; --stone:#F2EDE3; --sand:#FAF7F1;
-    --brass:#C9A227; --brass-light:#DFC066; --seafoam:#E8DCC0; --seafoam-deep:#9C7A3C;
-    --white:#FFFFFF; --muted:#6E655A; --line:#E6DFCF;
-    --radius:18px; --shadow:0 22px 54px rgba(28,26,23,.18);
+    --ink:#0F2A47; --deep:#1663B0; --deep2:#0E4A85; --stone:#EAF3FB; --sand:#F6FAFD;
+    --brass:#1663B0; --brass-light:#38B6E8; --seafoam:#D9EDFA; --seafoam-deep:#1663B0;
+    --white:#FFFFFF; --muted:#5C6B79; --line:#DCE9F5;
+    --radius:18px; --shadow:0 22px 54px rgba(15,42,71,.18);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;overflow-x:hidden;}
@@ -157,6 +157,7 @@ nav a:hover{opacity:1;color:var(--seafoam-deep);}
 @media(prefers-reduced-motion:reduce){
   .hero-text{animation:none!important;opacity:1!important;transform:none!important;}
   .hero-products-track{animation:none!important;}
+  .client-track{animation:none!important;}
   header{transition:none!important;}
   .reveal,.reveal-stagger > *{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
 }
@@ -351,13 +352,21 @@ nav a:hover{opacity:1;color:var(--seafoam-deep);}
 .gallery-more-wrap .btn svg{width:15px;height:15px;flex-shrink:0;transition:transform .3s ease;}
 .gallery-more-wrap .btn.is-expanded svg{transform:rotate(180deg);}
 
-/* ============ CLIENTS (logo grid) ============ */
+/* ============ CLIENTS — continuous left-to-right auto-scrolling marquee ============ */
 .clients-section{background:var(--white);}
-.client-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
+.client-marquee{
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+  mask-image:linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
 }
+.client-track{
+  display:flex;
+  gap:20px;
+  width:max-content;
+  animation:clientMarquee 26s linear infinite;
+  will-change:transform;
+}
+.client-marquee:hover .client-track{animation-play-state:paused;}
 .client-card{
   background:var(--sand);
   border:1px solid var(--line);
@@ -367,6 +376,8 @@ nav a:hover{opacity:1;color:var(--seafoam-deep);}
   align-items:center;
   justify-content:center;
   min-height:120px;
+  width:220px;
+  flex:0 0 auto;
   transition:.3s ease;
 }
 .client-card:hover{
@@ -380,21 +391,21 @@ nav a:hover{opacity:1;color:var(--seafoam-deep);}
   max-height:64px;
   width:auto;
   object-fit:contain;
-  filter:grayscale(100%) opacity(.75);
   transition:.35s ease;
 }
 .client-card:hover img{
-  filter:grayscale(0%) opacity(1);
   transform:scale(1.04);
 }
 
-@media(max-width:980px){
-  .client-grid{grid-template-columns:repeat(3,1fr);}
+@keyframes clientMarquee{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
 }
+
 @media(max-width:600px){
-  .client-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
-  .client-card{padding:20px 14px;min-height:96px;border-radius:12px;}
+  .client-card{width:170px;padding:20px 14px;min-height:96px;border-radius:12px;}
   .client-card img{max-height:46px;}
+  .client-track{gap:14px;}
 }
 
 /* ============ CLIENT VIDEOS — "What Our Clients Say" reel-style video grid ============ */
@@ -697,19 +708,27 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 
             <div class="about-points">
                 <div class="about-point">
-                    <div class="pt-ic">🏆</div>
+                    <div class="pt-ic">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"/></svg>
+                    </div>
                     <div><h4>Proven Craftsmanship</h4><p>Hundreds of pools built and still going strong.</p></div>
                 </div>
                 <div class="about-point">
-                    <div class="pt-ic">🤝</div>
+                    <div class="pt-ic">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5 3 20M15.5 9.5 21 4M9.5 6 4 11.5a2.5 2.5 0 0 0 3.5 3.5L13 9.5"/><path d="M14.5 18 20 12.5a2.5 2.5 0 0 0-3.5-3.5L11 14.5"/></svg>
+                    </div>
                     <div><h4>One Team, Start to Finish</h4><p>Design, build, fit-out and upkeep — all under one roof.</p></div>
                 </div>
                 <div class="about-point">
-                    <div class="pt-ic">💧</div>
+                    <div class="pt-ic">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>
+                    </div>
                     <div><h4>Genuine Materials</h4><p>Certified equipment and treatment chemicals only.</p></div>
                 </div>
                 <div class="about-point">
-                    <div class="pt-ic">📍</div>
+                    <div class="pt-ic">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
                     <div><h4>Local & Reachable</h4><p>Based in Kochi, serving clients across Kerala.</p></div>
                 </div>
             </div>
@@ -858,13 +877,20 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     <h2>Clients who trust our craftsmanship</h2>
     <p>Resorts, hotels, institutions and homes across Kerala rely on us for pools that perform and last.</p>
     </div>
-    <div class="client-grid">
-        {% for c in clients %}
-        <div class="client-card reveal"><img src="{{ c.image }}" alt="{{ c.name }}"></div>
-        {% empty %}
-        <p style="grid-column:1/-1;color:var(--muted);text-align:center;padding:20px 0;">Client logos coming soon.</p>
-        {% endfor %}
+    {% if clients %}
+    <div class="client-marquee reveal">
+        <div class="client-track">
+            {% for c in clients %}
+            <div class="client-card"><img src="{{ c.image }}" alt="{{ c.name }}"></div>
+            {% endfor %}
+            {% for c in clients %}
+            <div class="client-card" aria-hidden="true"><img src="{{ c.image }}" alt="{{ c.name }}"></div>
+            {% endfor %}
+        </div>
     </div>
+    {% else %}
+    <p style="color:var(--muted);text-align:center;padding:20px 0;">Client logos coming soon.</p>
+    {% endif %}
 </div>
 </section>
 
@@ -1015,7 +1041,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     </div>
     <div class="footer-bottom">
     <span>© 2026 Master Pools. All rights reserved.</span>
-    <span>Made with 💙 in Kerala, India</span>
     </div>
 </div>
 </footer>
