@@ -104,6 +104,7 @@ CATEGORY_CHOICES = [
     ("heater", "Pool Heaters"),
     ("controller", "Pool Controllers"),
     ("tiles", "Pool Tiles"),
+    ("cleaning", "Pool Cleaning Equipment"),
 ]
 
 VARIANT_TYPE_CHOICES = [
