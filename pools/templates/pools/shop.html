@@ -281,32 +281,32 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 <a href="/" class="logo"><img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="logo-img"></a>
 <nav>
     <ul>
-    <li><a href="/#about">About</a></li>
-    <li><a href="/#services">Services</a></li>
+    <li><a href="/#about" data-section="about">About</a></li>
+    <li><a href="/#services" data-section="services">Services</a></li>
     <li><a href="{% url 'shop' %}" class="active">Shop</a></li>
-    <li><a href="/#gallery">Gallery</a></li>
-    <li><a href="/#clients">Clients</a></li>
-    <li><a href="/#reviews">Reviews</a></li>
-    <li><a href="/#contact">Contact</a></li>
+    <li><a href="/#gallery" data-section="gallery">Gallery</a></li>
+    <li><a href="/#clients" data-section="clients">Clients</a></li>
+    <li><a href="/#reviews" data-section="reviews">Reviews</a></li>
+    <li><a href="/#contact" data-section="contact">Contact</a></li>
     </ul>
 </nav>
 <div class="header-actions">
     <a class="icon-btn" href="tel:+919876543210" title="Call us">☎</a>
     <div class="icon-btn" id="cartBtn" title="Cart">🛒<span class="cart-count" id="cartCount">0</span></div>
-    <a class="nav-cta" href="/#contact">Contact Us</a>
+    <a class="nav-cta" href="/#contact" data-section="contact">Contact Us</a>
     <button class="menu-toggle" id="menuToggle">☰</button>
 </div>
 </header>
 
 <div class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close menu">✕</button>
-  <a href="/#about">About</a>
-  <a href="/#services">Services</a>
+  <a href="/#about" data-section="about">About</a>
+  <a href="/#services" data-section="services">Services</a>
   <a href="{% url 'shop' %}" class="active">Shop</a>
-  <a href="/#gallery">Gallery</a>
-  <a href="/#clients">Clients</a>
-  <a href="/#reviews">Reviews</a>
-  <a href="/#contact">Contact</a>
+  <a href="/#gallery" data-section="gallery">Gallery</a>
+  <a href="/#clients" data-section="clients">Clients</a>
+  <a href="/#reviews" data-section="reviews">Reviews</a>
+  <a href="/#contact" data-section="contact">Contact</a>
 </div>
 
 <!-- ============ SHOP BANNER — clean premium header, no video/hero, no jagged clip-path ============ -->
@@ -447,7 +447,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <p style="font-size:.88rem;max-width:280px;">Master Pools designs and builds custom swimming pools and premium pool accessories across Kerala.</p>
     </div>
     <div><h4>Shop</h4><ul><li><a href="{% url 'shop' %}?category=Pumps%20%26%20Filters">Pumps & Filters</a></li><li><a href="{% url 'shop' %}?category=Lightings">Lightings</a></li><li><a href="{% url 'shop' %}?category=Covers%20%26%20Ladders">Covers & Ladders</a></li><li><a href="{% url 'shop' %}?category=Cleaning">Cleaning</a></li></ul></div>
-    <div><h4>Company</h4><ul><li><a href="/#about">About</a></li><li><a href="/#services">Services</a></li><li><a href="/#gallery">Gallery</a></li><li><a href="/#reviews">Reviews</a></li><li><a href="/#contact">Contact</a></li></ul></div>
+    <div><h4>Company</h4><ul><li><a href="/#about" data-section="about">About</a></li><li><a href="/#services" data-section="services">Services</a></li><li><a href="/#gallery" data-section="gallery">Gallery</a></li><li><a href="/#reviews" data-section="reviews">Reviews</a></li><li><a href="/#contact" data-section="contact">Contact</a></li></ul></div>
     <div><h4>Contact</h4><ul><li><a href="https://wa.me/917356462150">WhatsApp</a></li><li><a href="mailto:hello@masterpools.com">hello@masterpools.com</a></li><li>Kochi, Kerala — 682001</li></ul></div>
     </div>
     <div class="footer-bottom">
@@ -521,6 +521,7 @@ const WHATSAPP_NUMBER = "917356462150"; // 91 = India country code + 7356462150
 const CART_KEY = "masterpools_cart";
 const CUSTOMER_KEY = "masterpools_customer";
 const SUBMIT_ORDER_URL = "{% url 'submit_order' %}"; // Django endpoint that saves the order to the DB
+const SCROLL_TARGET_KEY = "masterpools_scroll_target";
 
 /* Short unit label shown next to each size, matching the admin dashboard's
    variant_type field (inches / feet / meter / sqft / sizes). "sizes" is
@@ -634,6 +635,22 @@ window.addEventListener('scroll', ()=>{
     ticking = true;
   }
 }, {passive:true});
+
+/* ---------- Section links that point at the home page (About, Services, Gallery,
+   Clients, Reviews, Contact) — go there WITHOUT ever putting a "#section" in the
+   address bar. We remember which section was requested in sessionStorage, then
+   navigate to a clean "/". The home page reads that value on load, scrolls to the
+   section, and clears it. Regular links (tel:, wa.me, Django-reversed shop links,
+   mailto:) are left completely alone since they don't carry a data-section attribute. ---------- */
+document.querySelectorAll('a[data-section]').forEach(a=>{
+    a.addEventListener('click', function(e){
+        const section = this.dataset.section;
+        if(!section) return;
+        e.preventDefault();
+        try{ sessionStorage.setItem(SCROLL_TARGET_KEY, section); }catch(err){}
+        window.location.href = '/';
+    });
+});
 
 /* ---------- header / mobile nav ---------- */
 document.getElementById('menuToggle').addEventListener('click', ()=>{

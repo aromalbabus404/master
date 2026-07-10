@@ -1131,6 +1131,27 @@ window.addEventListener('scroll', ()=>{
   }
 }, {passive:true});
 
+// Smooth-scroll to in-page sections without leaving a #hash in the address bar.
+// Applies to every anchor link that points at an on-page id (nav links, mobile
+// nav links, footer "Company" links, the "Contact Us" pill, etc). External
+// their href doesn't start with "#".
+(function(){
+  function smoothScrollNoHash(e){
+    const link = e.currentTarget;
+    const hash = link.getAttribute('href');
+    if(!hash || hash.charAt(0) !== '#' || hash.length < 2) return;
+    const target = document.querySelector(hash);
+    if(!target) return;
+    e.preventDefault();
+    target.scrollIntoView({behavior:'smooth', block:'start'});
+    const cleanUrl = window.location.pathname + window.location.search;
+    history.replaceState(null, '', cleanUrl);
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', smoothScrollNoHash);
+  });
+})();
+
 document.getElementById('menuToggle').addEventListener('click', ()=>{
   mobileNav.classList.toggle('open');
   header.classList.remove('header-hidden');
