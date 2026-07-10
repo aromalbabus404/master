@@ -422,6 +422,7 @@ def shop(request):
         "products": products,
         "query": query,
         "selected_category": selected_category,
+        "category_choices": CATEGORY_CHOICES,
         "settings": SiteSettings.load(),
     })
 

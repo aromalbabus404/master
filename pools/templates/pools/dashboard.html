@@ -1,22 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AquaCraft Pools | Admin Dashboard</title>
+<title>Master Pools | Admin Dashboard</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#0B3C5D;
-    --navy-deep:#082C44;
-    --teal:#1FA2B8;
-    --aqua:#1FA2B8;
-    --aqua-deep:#17839A;
-    --aqua-tint:#E6F5F8;
-    --gold:#E8B84B;
-    --gold-deep:#D9A331;
-    --gold-tint:#FBF0DA;
+    --navy:#123F7A;
+    --navy-deep:#0A2C57;
+    --teal:#29ABE2;
+    --aqua:#29ABE2;
+    --aqua-deep:#1E8AC0;
+    --aqua-tint:#E9F6FC;
+    --gold:#1C6FBF;
+    --gold-deep:#14568F;
+    --gold-tint:#E6F1FA;
     --bg:#F7FAFC;
     --card:#FFFFFF;
     --text:#1E2A32;
@@ -56,10 +57,11 @@
   }
   .sidebar .brand-row{display:flex;align-items:center;gap:10px;padding:4px 10px 20px;}
   .brand-mark{
-    width:38px;height:38px;border-radius:11px;background:var(--gold);color:var(--navy);
-    display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:1rem;flex:0 0 38px;
+    width:38px;height:38px;border-radius:11px;background:#fff;
+    display:flex;align-items:center;justify-content:center;padding:5px;flex:0 0 38px;
     transition:transform .25s ease;
   }
+  .brand-mark img{width:100%;height:100%;object-fit:contain;display:block;}
   .sidebar .brand-row:hover .brand-mark{transform:rotate(-6deg) scale(1.05);}
   .brand-text{line-height:1.15;}
   .brand-text .b1{font-family:'Archivo Black';font-size:1rem;}
@@ -80,7 +82,7 @@
   }
   .nav-link:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateX(3px);}
   .nav-link:hover .nav-icon{transform:scale(1.12);}
-  .nav-link.active{background:var(--gold);color:var(--navy);}
+  .nav-link.active{background:var(--gold);color:#fff;}
   .nav-link.logout-link{color:#F3B6B6;}
   .sidebar .nav-link.logout-link{margin-top:auto;}
   .nav-link.logout-link:hover{background:rgba(212,83,83,.18);color:#fff;}
@@ -109,12 +111,12 @@
   .hamburger-btn.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
 
   .mobile-brand-inline{display:none;align-items:center;gap:8px;flex:0 0 auto;}
-  .mobile-brand-inline .brand-mark{width:32px;height:32px;font-size:.85rem;border-radius:9px;}
+  .mobile-brand-inline .brand-mark{width:32px;height:32px;font-size:.85rem;border-radius:9px;padding:4px;}
   .mobile-brand-inline .mb-text{font-family:'Archivo Black';font-size:.9rem;color:var(--navy);}
 
   .mobile-nav-menu{
     display:none;position:fixed;top:var(--topbar-h);left:0;right:0;bottom:0;
-    background:rgba(7,44,68,.35);z-index:40;
+    background:rgba(10,44,87,.35);z-index:40;
   }
   .mobile-nav-menu.open{display:block;animation:fadeIn .2s ease both;}
   .mobile-nav-menu .sheet{
@@ -131,7 +133,7 @@
     display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);
     border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;transition:background-color .2s ease, box-shadow .2s ease;
   }
-  .profile-btn:hover{background:var(--aqua-tint);box-shadow:0 4px 14px rgba(11,60,93,.08);}
+  .profile-btn:hover{background:var(--aqua-tint);box-shadow:0 4px 14px rgba(18,63,122,.08);}
   .profile-btn .avatar-circle{
     width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;
     display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex:0 0 32px;
@@ -141,7 +143,7 @@
   .profile-dropdown.open .profile-btn .caret{transform:rotate(180deg);}
   .profile-menu{
     position:absolute;right:0;top:calc(100% + 10px);min-width:210px;background:var(--card);
-    border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 34px rgba(11,60,93,.14);
+    border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 34px rgba(18,63,122,.14);
     padding:8px;display:none;z-index:30;
   }
   .profile-dropdown.open .profile-menu{display:block;animation:popIn .18s ease both;transform-origin:top right;}
@@ -157,10 +159,10 @@
 
   .card-section{
     background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;
-    box-shadow:0 8px 24px rgba(11,60,93,.05);margin-bottom:22px;
+    box-shadow:0 8px 24px rgba(18,63,122,.05);margin-bottom:22px;
     transition:box-shadow .25s ease, transform .25s ease;
   }
-  .card-section:hover{box-shadow:0 12px 30px rgba(11,60,93,.09);}
+  .card-section:hover{box-shadow:0 12px 30px rgba(18,63,122,.09);}
   .card-section .section-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
   .card-section .section-head .head-icon{
     width:32px;height:32px;border-radius:9px;background:var(--aqua-tint);color:var(--aqua-deep);
@@ -170,11 +172,11 @@
 
   .stat-card{
     background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;
-    box-shadow:0 8px 24px rgba(11,60,93,.05);display:flex;align-items:center;gap:14px;height:100%;
+    box-shadow:0 8px 24px rgba(18,63,122,.05);display:flex;align-items:center;gap:14px;height:100%;
     transition:transform .22s ease, box-shadow .22s ease;
     animation:fadeInUp .4s ease both;
   }
-  .stat-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(11,60,93,.12);}
+  .stat-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(18,63,122,.12);}
   .row.g-3.mb-4 .col-6:nth-child(1) .stat-card{animation-delay:.02s;}
   .row.g-3.mb-4 .col-6:nth-child(2) .stat-card{animation-delay:.08s;}
   .row.g-3.mb-4 .col-6:nth-child(3) .stat-card{animation-delay:.14s;}
@@ -195,13 +197,13 @@
 
   .highlight-card{
     background:linear-gradient(135deg, var(--navy), var(--navy-deep));border-radius:18px;padding:26px;color:#fff;
-    box-shadow:0 8px 24px rgba(11,60,93,.18);transition:box-shadow .25s ease, transform .25s ease;
+    box-shadow:0 8px 24px rgba(18,63,122,.18);transition:box-shadow .25s ease, transform .25s ease;
   }
-  .highlight-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(11,60,93,.26);}
+  .highlight-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(18,63,122,.26);}
   .highlight-card h5{color:#fff;font-family:'Archivo Black';font-size:1rem;margin-bottom:10px;}
   .highlight-card p{color:rgba(255,255,255,.78);margin-bottom:16px;}
   .highlight-card .btn-gold{
-    background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700;border-radius:999px;padding:9px 20px;
+    background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700;border-radius:999px;padding:9px 20px;
   }
   .highlight-card .btn-gold:hover{background:var(--gold-deep);border-color:var(--gold-deep);}
 
@@ -253,11 +255,11 @@
   .btn{border-radius:999px;font-weight:600;transition:background-color .18s ease, border-color .18s ease, color .18s ease, transform .12s ease, box-shadow .18s ease;}
   .btn:active{transform:scale(.97);}
   .btn-primary, .btn-dark{
-    background-color:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700;
+    background-color:var(--gold);border-color:var(--gold);color:#fff;font-weight:700;
   }
   .btn-primary:hover, .btn-primary:focus, .btn-dark:hover, .btn-dark:focus{
-    background-color:var(--gold-deep);border-color:var(--gold-deep);color:var(--navy);
-    box-shadow:0 6px 16px rgba(217,163,49,.3);
+    background-color:var(--gold-deep);border-color:var(--gold-deep);color:#fff;
+    box-shadow:0 6px 16px rgba(28,111,191,.3);
   }
   .btn-outline-dark{color:var(--navy);border-color:var(--navy);}
   .btn-outline-dark:hover{background-color:var(--navy);border-color:var(--navy);color:#fff;}
@@ -270,7 +272,7 @@
   .btn-outline-secondary{border-color:var(--border);color:var(--text-muted);}
   .btn-outline-secondary:hover{background-color:var(--bg);border-color:var(--text-muted);color:var(--text);}
   .form-control,.form-select{border-radius:10px;border-color:var(--border);transition:border-color .18s ease, box-shadow .18s ease;}
-  .form-control:focus,.form-select:focus{border-color:var(--aqua);box-shadow:0 0 0 .2rem rgba(31,162,184,.15);}
+  .form-control:focus,.form-select:focus{border-color:var(--aqua);box-shadow:0 0 0 .2rem rgba(41,171,226,.15);}
   .form-actions{display:flex;gap:10px;flex-wrap:wrap;}
 
   .preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
@@ -283,7 +285,7 @@
   @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:.35;}}
   .preview-frame-wrap{
     position:relative;border:1px solid var(--border);border-radius:16px;overflow:hidden;
-    box-shadow:0 8px 24px rgba(11,60,93,.05);background:#fff;transition:max-width .3s ease;
+    box-shadow:0 8px 24px rgba(18,63,122,.05);background:#fff;transition:max-width .3s ease;
   }
   .preview-frame-wrap iframe{width:100%;height:80vh;border:0;display:block;background:#fff;}
   .preview-loading{
@@ -365,7 +367,7 @@
         max-height:88vh;
         border-radius:20px 20px 0 0;
         border:none;
-        box-shadow:0 -8px 30px rgba(11,60,93,.18);
+        box-shadow:0 -8px 30px rgba(10,44,87,.18);
         display:flex;
         flex-direction:column;
         overflow:hidden;
@@ -505,7 +507,7 @@
       height:55px;
       border:none;
       border-radius:50%;
-      background:#0d6efd;
+      background:var(--gold);
       color:#fff;
       font-size:24px;
       cursor:pointer;
@@ -516,7 +518,7 @@
   }
 
   .scroll-top-btn:hover{
-      background:#0b5ed7;
+      background:var(--gold-deep);
       transform:translateY(-3px);
   }
 </style>
@@ -527,9 +529,9 @@
   <!-- SIDEBAR (desktop) -->
   <div class="sidebar">
     <div class="brand-row">
-      <div class="brand-mark">AC</div>
+      <div class="brand-mark"><img src="{% static 'images/logo-dark.png' %}" alt="Master Pools logo"></div>
       <div class="brand-text">
-        <div class="b1">AquaCraft</div>
+        <div class="b1">Master Pools</div>
         <div class="b2">Admin</div>
       </div>
     </div>
@@ -560,8 +562,8 @@
           <span></span><span></span><span></span>
         </button>
         <div class="mobile-brand-inline">
-          <div class="brand-mark">AC</div>
-          <span class="mb-text">AquaCraft</span>
+          <div class="brand-mark"><img src="{% static 'images/logo-dark.png' %}" alt="Master Pools logo"></div>
+          <span class="mb-text">Master Pools</span>
         </div>
         <div>
           <div class="welcome-eyebrow">Welcome back</div>
@@ -686,7 +688,7 @@
           <p class="text-muted small mb-3">This is your real storefront, fully working — cart, WhatsApp checkout, and review form all function exactly as visitors see them. Save changes in Products, Gallery, Clients or Reviews, then hit Refresh to see them update below.</p>
           <div class="preview-frame-wrap" id="previewFrameWrap">
             <div class="preview-loading" id="previewLoading"><span class="spinner-dot"></span>Loading live site…</div>
-            <iframe id="previewFrame" src="{% url 'index' %}" title="AquaCraft Pools — live storefront preview"></iframe>
+            <iframe id="previewFrame" src="{% url 'index' %}" title="Master Pools — live storefront preview"></iframe>
           </div>
         </div>
       </div>
@@ -730,7 +732,7 @@
                 <label class="form-label fw-bold">Colors (optional)</label>
                 <div id="colorRowsAdd"></div>
                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addColorRowBtn">+ Add Color</button>
-                <div class="form-text">Add as many colors as this product comes in — e.g. Blue, Red, Green, or a hex code like #1FA2B8. Entirely optional: leave all rows empty (or remove them) if this product has no color options.</div>
+                <div class="form-text">Add as many colors as this product comes in — e.g. Blue, Red, Green, or a hex code like #29ABE2. Entirely optional: leave all rows empty (or remove them) if this product has no color options.</div>
               </div>
 
               <div class="col-md-8"><label class="form-label fw-bold">Image URL</label>{{ product_form.image_url }}</div>
@@ -1451,7 +1453,7 @@ function makeColorRow(container, color = ""){
   row.className = "d-flex gap-2 mb-2 color-row";
   row.innerHTML = `
     <span class="color-swatch" aria-hidden="true"></span>
-    <input type="text" class="form-control color-input" name="color[]" placeholder="e.g. Blue or #1FA2B8" value="${color}">
+    <input type="text" class="form-control color-input" name="color[]" placeholder="e.g. Blue or #29ABE2" value="${color}">
     <button type="button" class="btn btn-outline-danger remove-color-row">✕</button>
   `;
   const swatchEl = row.querySelector('.color-swatch');

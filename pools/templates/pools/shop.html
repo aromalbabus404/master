@@ -100,10 +100,27 @@ nav a.active{opacity:1;color:var(--seafoam-deep);}
 .search-box button{padding:16px 28px;border:none;background:var(--brass);color:var(--white);cursor:pointer;font-weight:700;font-family:'Manrope',sans-serif;flex:0 0 auto;}
 .search-box button:hover{background:var(--brass-light);}
 
-.category-tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;}
-.cat-tab{padding:10px 22px;border-radius:999px;background:var(--white);border:1.5px solid var(--line);color:var(--muted);font-weight:700;font-size:.85rem;transition:.2s ease;box-shadow:0 4px 14px rgba(28,26,23,.05);}
-.cat-tab:hover{border-color:var(--brass);color:var(--deep);transform:translateY(-1px);}
-.cat-tab.active{background:var(--deep);border-color:var(--deep);color:var(--white);box-shadow:0 8px 18px rgba(22,99,176,.3);}
+/* ============ CATEGORY DROPDOWN (replaces the old hardcoded 4-item pill tabs,
+   which linked to display strings like "Pumps & Filters" that never matched
+   the actual stored category keys e.g. "pump_filter" — that mismatch was why
+   filtering silently returned nothing / categories "weren't showing"). ============ */
+.category-filter{display:flex;justify-content:center;margin-bottom:30px;}
+.category-form{width:100%;max-width:320px;}
+.select-wrap{position:relative;width:100%;}
+.select-wrap::after{
+    content:"▾";position:absolute;right:22px;top:50%;transform:translateY(-50%);
+    color:var(--muted);pointer-events:none;font-size:.8rem;
+}
+.category-select{
+    width:100%;padding:14px 42px 14px 24px;border-radius:999px;
+    border:1.5px solid var(--line);background:var(--white);
+    appearance:none;-webkit-appearance:none;-moz-appearance:none;
+    font-weight:700;font-size:.88rem;color:var(--deep);cursor:pointer;
+    box-shadow:0 6px 18px rgba(28,26,23,.06);font-family:'Manrope',sans-serif;
+    transition:.2s ease;
+}
+.category-select:hover{border-color:var(--brass);}
+.category-select:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(56,182,232,.25);}
 
 .active-filter{display:flex;justify-content:center;margin-bottom:28px;}
 .active-filter span{
@@ -252,8 +269,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
     .search-box form{flex-wrap:wrap;border-radius:16px;}
     .search-box input{border-right:1.5px solid var(--line);border-radius:16px 16px 0 0;flex:1 1 100%;}
     .search-box button{flex:1 1 100%;border-radius:0 0 16px 16px;}
-    .category-tabs{gap:8px;margin-bottom:22px;}
-    .cat-tab{padding:8px 15px;font-size:.76rem;}
+    .category-form{max-width:100%;padding:0 4px;}
     .product-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
     .product-card{border-radius:12px;}
     .badge{top:8px;left:8px;font-size:9px;padding:4px 8px;}
@@ -335,25 +351,29 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
 </form>
 </div>
 
-<!-- ============ CATEGORY FILTER — plain server-rendered links, no JS required ============
-     Each tab is a real URL with the category (and current search text) baked in via
-     Django's urlencode filter, so request.GET.get('category') gets it reliably on refresh. -->
-<div class="category-tabs reveal">
-    <a href="{% url 'shop' %}{% if query %}?q={{ query|urlencode }}{% endif %}"
-       class="cat-tab{% if not selected_category %} active{% endif %}">All Categories</a>
-    <a href="{% url 'shop' %}?category={{ "Pumps & Filters"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
-       class="cat-tab{% if selected_category == "Pumps & Filters" %} active{% endif %}">Pumps & Filters</a>
-    <a href="{% url 'shop' %}?category={{ "Lightings"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
-       class="cat-tab{% if selected_category == "Lightings" %} active{% endif %}">Lightings</a>
-    <a href="{% url 'shop' %}?category={{ "Covers & Ladders"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
-       class="cat-tab{% if selected_category == "Covers & Ladders" %} active{% endif %}">Covers & Ladders</a>
-    <a href="{% url 'shop' %}?category={{ "Cleaning"|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}"
-       class="cat-tab{% if selected_category == "Cleaning" %} active{% endif %}">Cleaning</a>
+<!-- ============ CATEGORY FILTER — dropdown, built from Product.CATEGORY_CHOICES
+     (passed into context as `category_choices`), so the value submitted always
+     matches the key actually stored on product.category. Auto-submits on change. ============ -->
+<div class="category-filter reveal">
+    <form method="GET" id="categoryForm" class="category-form">
+        <input type="hidden" name="q" value="{{ query }}">
+        <div class="select-wrap">
+            <select name="category" class="category-select" onchange="document.getElementById('categoryForm').submit()">
+                <option value="" {% if not selected_category %}selected{% endif %}>All Categories</option>
+                {% for key, label in category_choices %}
+                <option value="{{ key }}" {% if selected_category == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
 </div>
 
 {% if selected_category %}
 <div class="active-filter">
-    <span>Category: {{ selected_category }} <a href="{% url 'shop' %}{% if query %}?q={{ query|urlencode }}{% endif %}">✕</a></span>
+    <span>Category:
+        {% for key, label in category_choices %}{% if key == selected_category %}{{ label }}{% endif %}{% endfor %}
+        <a href="{% url 'shop' %}{% if query %}?q={{ query|urlencode }}{% endif %}">✕</a>
+    </span>
 </div>
 {% endif %}
 
@@ -401,7 +421,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         </div>
         {% endif %}
 
-        <p class="info"><strong>Category:</strong> {{ product.category }}</p>
+        <p class="info"><strong>Category:</strong> {{ product.get_category_display }}</p>
 
         <div class="opt-row size-row">
             <label>Size</label>
@@ -446,7 +466,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.72);padding:68px 0 28px;}
         <img src="{% static 'images/logo-dark.png' %}" alt="Master Pools" class="f-logo-img">
         <p style="font-size:.88rem;max-width:280px;">Master Pools designs and builds custom swimming pools and premium pool accessories across Kerala.</p>
     </div>
-    <div><h4>Shop</h4><ul><li><a href="{% url 'shop' %}?category=Pumps%20%26%20Filters">Pumps & Filters</a></li><li><a href="{% url 'shop' %}?category=Lightings">Lightings</a></li><li><a href="{% url 'shop' %}?category=Covers%20%26%20Ladders">Covers & Ladders</a></li><li><a href="{% url 'shop' %}?category=Cleaning">Cleaning</a></li></ul></div>
+    <div>
+        <h4>Shop</h4>
+        <ul>
+        {% for key, label in category_choices %}
+            <li><a href="{% url 'shop' %}?category={{ key|urlencode }}">{{ label }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
     <div><h4>Company</h4><ul><li><a href="/#about" data-section="about">About</a></li><li><a href="/#services" data-section="services">Services</a></li><li><a href="/#gallery" data-section="gallery">Gallery</a></li><li><a href="/#reviews" data-section="reviews">Reviews</a></li><li><a href="/#contact" data-section="contact">Contact</a></li></ul></div>
     <div><h4>Contact</h4><ul><li><a href="https://wa.me/917356462150">WhatsApp</a></li><li><a href="mailto:hello@masterpools.com">hello@masterpools.com</a></li><li>Kochi, Kerala — 682001</li></ul></div>
     </div>
